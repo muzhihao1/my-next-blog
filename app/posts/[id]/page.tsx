@@ -1,4 +1,12 @@
-export default function Post({ params }: { params: { id: string } }) {
+export async function generateStaticParams() {
+  return [
+    { id: '1' },
+    { id: '2' }
+  ]
+}
+
+export default async function Post({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   // 这里暂时使用模拟数据，之后可以从 Markdown 文件读取
   const posts: { [key: string]: { title: string; date: string; content: string } } = {
     '1': {
@@ -35,7 +43,7 @@ export default function Post({ params }: { params: { id: string } }) {
     }
   }
 
-  const post = posts[params.id] || { title: '文章不存在', date: '', content: '<p>抱歉，找不到这篇文章。</p>' }
+  const post = posts[id] || { title: '文章不存在', date: '', content: '<p>抱歉，找不到这篇文章。</p>' }
 
   return (
     <article className="max-w-none">
