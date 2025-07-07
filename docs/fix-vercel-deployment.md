@@ -68,14 +68,20 @@ node scripts/verify-env.js
 
 所有检查应该显示 ✅ 正确。
 
-### 5. 测试 API 调试端点
+### 5. 本地测试连接
 
-部署后，访问以下 URL 查看环境变量状态：
-```
-https://my-next-blog-cjh9.vercel.app/api/debug-env
+使用本地脚本测试环境变量：
+
+```bash
+# 创建 .env.local 文件（如果还没有）
+echo "NOTION_TOKEN=你的token" >> .env.local
+echo "NOTION_DATABASE_ID=你的数据库ID" >> .env.local
+
+# 运行测试脚本
+node scripts/test-notion-connection.js
 ```
 
-这将显示环境变量的格式是否正确（仅在预览环境可用）。
+如果本地测试成功，使用相同的值在 Vercel 中配置。
 
 ## 🚀 重新部署
 
