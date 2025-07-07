@@ -13,22 +13,12 @@ export const metadata: Metadata = {
   description: '回顾这一年的创作历程和成就'
 }
 
-// 标记为动态页面，因为需要根据查询参数动态渲染
-export const dynamic = 'force-dynamic'
+// 对于静态导出，我们只生成当前年份的页面
+// 如果需要其他年份，可以通过客户端导航实现
 
-interface PageProps {
-  searchParams: Promise<{ year?: string }>
-}
-
-export default async function YearInReviewPage({ searchParams }: PageProps) {
-  const params = await searchParams
+export default async function YearInReviewPage() {
   const currentDate = new Date()
-  const requestedYear = params.year ? parseInt(params.year) : currentDate.getFullYear()
-  
-  // 确保年份在合理范围内
-  const startYear = 2023
-  const maxYear = currentDate.getFullYear()
-  const year = Math.max(startYear, Math.min(requestedYear, maxYear))
+  const year = currentDate.getFullYear()
   
   const yearStats = await getYearStatistics(year)
   
