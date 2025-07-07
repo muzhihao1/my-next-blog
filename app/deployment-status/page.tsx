@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: '部署状态 - 无题之墨',
@@ -49,20 +50,20 @@ export default function DeploymentStatusPage() {
             📝 检查清单
           </h2>
           <ul className="space-y-2 text-gray-600 dark:text-gray-400">
-            <li>• 访问 <a href="/blog" className="text-blue-600 hover:underline">/blog</a> 查看文章列表</li>
-            <li>• 访问 <a href="/projects" className="text-blue-600 hover:underline">/projects</a> 查看项目展示</li>
-            <li>• 访问 <a href="/tools" className="text-blue-600 hover:underline">/tools</a> 查看工具推荐</li>
-            <li>• 如果页面显示"暂无内容"，检查 Notion 环境变量配置</li>
+            <li>• 访问 <Link href="/blog" className="text-blue-600 hover:underline">/blog</Link> 查看文章列表</li>
+            <li>• 访问 <Link href="/projects" className="text-blue-600 hover:underline">/projects</Link> 查看项目展示</li>
+            <li>• 访问 <Link href="/tools" className="text-blue-600 hover:underline">/tools</Link> 查看工具推荐</li>
+            <li>• 如果页面显示&ldquo;暂无内容&rdquo;，检查 Notion 环境变量配置</li>
           </ul>
         </div>
 
         <div className="mt-8 text-center">
-          <a 
+          <Link 
             href="/"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             返回首页
-          </a>
+          </Link>
         </div>
       </div>
     </div>
