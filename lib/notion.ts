@@ -69,7 +69,11 @@ function validateEnv() {
  * Get all published blog posts from Notion
  */
 export async function getPublishedPosts(): Promise<BlogPost[]> {
-  validateEnv()
+  // 检查环境变量，如果缺失则返回空数组（让调用方使用 fallback）
+  if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
+    console.warn('Notion environment variables not configured, returning empty array')
+    return []
+  }
   
   const cacheKey = 'published_posts'
   const cached = cache.get<BlogPost[]>(cacheKey)
@@ -108,7 +112,11 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
  * Get a single blog post by slug
  */
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  validateEnv()
+  // 检查环境变量，如果缺失则返回 null（让调用方使用 fallback）
+  if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
+    console.warn('Notion environment variables not configured, returning null')
+    return null
+  }
   
   const cacheKey = `post_${slug}`
   const cached = cache.get<BlogPost>(cacheKey)

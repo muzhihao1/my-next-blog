@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { fallbackPosts } from '@/lib/fallback-posts'
 import { fallbackProjects } from '@/lib/fallback-projects'
@@ -9,15 +8,8 @@ import { formatDate } from '@/lib/notion'
 import LazyLoad from '@/components/ui/LazyLoad'
 import { OptimizedImage } from '@/components/ui/OptimizedImage'
 import Container from '@/components/ui/Container'
-
-// 动态导入组件以实现代码分割
-const StatsSection = dynamic(() => import('@/components/sections/StatsSection'), {
-  loading: () => <div className="h-32 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg" />
-})
-
-const StatsWidget = dynamic(() => import('@/components/widgets/StatsWidget'), {
-  loading: () => <div className="h-64 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg" />
-})
+import StatsSection from '@/components/sections/StatsSection'
+import StatsWidget from '@/components/widgets/StatsWidget'
 
 // 提取 Hero Section 作为独立组件
 function HeroSection() {

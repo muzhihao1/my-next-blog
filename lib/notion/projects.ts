@@ -21,23 +21,23 @@ export async function getProjects(): Promise<Project[]> {
     let sortOptions: any[] = []
     
     try {
-      // 尝试使用 Featured 字段排序
+      // 尝试使用 featured 字段排序
       sortOptions = [
         {
-          property: 'Featured',
+          property: 'featured',
           direction: 'descending'
         },
         {
-          property: 'StartDate', 
+          property: 'startDate', 
           direction: 'descending'
         }
       ]
     } catch (sortError) {
-      console.warn('Featured field not available, using fallback sorting')
-      // 如果 Featured 字段不存在，使用 StartDate 排序
+      console.warn('featured field not available, using fallback sorting')
+      // 如果 featured 字段不存在，使用 startDate 排序
       sortOptions = [
         {
-          property: 'StartDate',
+          property: 'startDate',
           direction: 'descending'
         }
       ]
@@ -56,9 +56,9 @@ export async function getProjects(): Promise<Project[]> {
         sorts: sortOptions
       })
     } catch (error: any) {
-      // 如果包含 Featured 字段的排序失败，尝试不使用 Featured 字段
-      if (error.message?.includes('Featured') || error.code === 'validation_error') {
-        console.warn('Featured property not found, using simplified sorting')
+      // 如果包含 featured 字段的排序失败，尝试不使用 featured 字段
+      if (error.message?.includes('featured') || error.code === 'validation_error') {
+        console.warn('featured property not found, using simplified sorting')
         response = await notion.databases.query({
           database_id: projectsDatabaseId,
           filter: {
@@ -69,7 +69,7 @@ export async function getProjects(): Promise<Project[]> {
           },
           sorts: [
             {
-              property: 'StartDate',
+              property: 'startDate',
               direction: 'descending'
             }
           ]
@@ -208,7 +208,7 @@ function formatProject(page: any, content: string): Project {
     description: getTextProperty(properties.Description) || '',
     category: getCategoryProperty(properties.Category),
     status: getStatusProperty(properties.Status),
-    featured: getCheckboxProperty(properties.Featured),
+    featured: getCheckboxProperty(properties.featured),
     techStack,
     tags,
     thumbnail,
@@ -216,7 +216,7 @@ function formatProject(page: any, content: string): Project {
     demoUrl: getUrlProperty(properties.DemoUrl),
     githubUrl: getUrlProperty(properties.GithubUrl),
     content,
-    startDate: getDateProperty(properties.StartDate),
+    startDate: getDateProperty(properties.startDate),
     endDate: properties.EndDate?.date?.start,
     lastUpdated: page.last_edited_time,
     metrics: Object.keys(metrics).length > 0 ? metrics : undefined

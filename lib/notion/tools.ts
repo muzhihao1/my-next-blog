@@ -72,11 +72,11 @@ export async function getTools(): Promise<Tool[]> {
       },
       sorts: [
         {
-          property: 'Featured',
+          property: 'featured',
           direction: 'descending',
         },
         {
-          property: 'Rating',
+          property: 'rating',
           direction: 'descending',
         },
       ],
@@ -217,7 +217,7 @@ function parseNotionTool(page: any): Tool {
     slug: getTextFromRichText(properties.Slug?.rich_text) || '',
     category: properties.Category?.select?.name?.toLowerCase() || 'development',
     description: getTextFromRichText(properties.Description?.rich_text) || '',
-    rating: properties.Rating?.number || 3,
+    rating: properties.rating?.number || 3,
     price: properties.Price?.select?.name?.toLowerCase() || 'free',
     website: properties.Website?.url || '',
     pros: properties.Pros?.rich_text?.map((item: any) => item.text.content).filter(Boolean) || [],
@@ -226,7 +226,7 @@ function parseNotionTool(page: any): Tool {
     review: '', // Will be populated when fetching individual tool
     alternatives: properties.Alternatives?.rich_text?.map((item: any) => item.text.content).filter(Boolean) || [],
     tags: properties.Tags?.multi_select?.map((tag: any) => tag.name) || [],
-    featured: properties.Featured?.checkbox || false,
+    featured: properties.featured?.checkbox || false,
     lastUpdated: page.last_edited_time,
   }
 }
