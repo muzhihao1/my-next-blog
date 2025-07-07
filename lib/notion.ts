@@ -176,6 +176,16 @@ export async function getAllPostSlugs(): Promise<string[]> {
 }
 
 /**
+ * Alias for getPublishedPosts for compatibility
+ */
+export const getAllPosts = getPublishedPosts
+
+/**
+ * Alias for getPublishedPosts for compatibility
+ */
+export const getPosts = getPublishedPosts
+
+/**
  * Parse a Notion page into a BlogPost object
  */
 function parseNotionPage(page: NotionPage): BlogPost {

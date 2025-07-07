@@ -36,7 +36,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </div>
-        <div className="p-6">
+        <div className="p-5 sm:p-6">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {project.title}
           </h3>

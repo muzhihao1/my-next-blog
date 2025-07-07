@@ -13,6 +13,7 @@ import ArticleReactions from '@/components/features/ArticleReactions'
 import TagList from '@/components/features/TagList'
 import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/FavoriteButton'
 import { FavoriteType } from '@/lib/hooks/useFavorites'
+import { ContentContainer } from '@/components/ui/Container'
 
 export async function generateStaticParams() {
   // Use fallback slugs for static export when Notion API may not be available
@@ -118,7 +119,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     <article className="py-16 bg-white dark:bg-gray-900">
       <SEO structuredData={articleStructuredData} />
       <ReadingProgress showPercentage={false} offset={80} />
-      <div className="container-narrow">
+      <ContentContainer>
         
         {/* 文章头部 */}
         <header className="mb-16 mt-8">
@@ -297,7 +298,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             </p>
           </div>
         </footer>
-      </div>
+      </ContentContainer>
       
       {/* 浮动收藏按钮 */}
       <FloatingFavoriteButton

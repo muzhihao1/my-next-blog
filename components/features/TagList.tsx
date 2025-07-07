@@ -9,6 +9,15 @@ import Link from 'next/link'
 import { Tag } from '@/types/tag'
 
 /**
+ * 简化的标签数据接口
+ */
+interface SimpleTag {
+  name: string
+  slug?: string
+  color?: string
+}
+
+/**
  * 标签列表组件的属性
  * @interface TagListProps
  * @property {string[]} [tags] - 标签名称数组
@@ -56,7 +65,7 @@ export default function TagList({
   }
 
   // 统一处理为标签数据格式
-  const tagData = tagObjects || tags?.map(name => ({
+  const tagData: SimpleTag[] | undefined = tagObjects || tags?.map(name => ({
     name,
     slug: name.toLowerCase().replace(/[\s_]+/g, '-')
   }))
@@ -74,16 +83,12 @@ export default function TagList({
     }
   }
 
-  const TagElement = interactive ? Link : 'span'
-
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {tagData?.map((tag, index) => {
-        const tagName = typeof tag === 'string' ? tag : tag.name
-        const tagSlug = typeof tag === 'string' 
-          ? tag.toLowerCase().replace(/[\s_]+/g, '-') 
-          : tag.slug || tag.name.toLowerCase().replace(/[\s_]+/g, '-')
-        const tagColor = typeof tag === 'object' && 'color' in tag ? tag.color : undefined
+        const tagName = tag.name
+        const tagSlug = tag.slug || tag.name.toLowerCase().replace(/[\s_]+/g, '-')
+        const tagColor = 'color' in tag ? tag.color : undefined
 
         const baseClasses = `
           inline-flex items-center rounded-full font-medium
@@ -99,17 +104,40 @@ export default function TagList({
           ? 'text-white'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
 
-        const tagProps = interactive
-          ? { href: `/tags/${tagSlug}` }
-          : {}
+        if (interactive) {
+          return (
+            <Link
+              key={`${tagSlug}-${index}`}
+              href={`/tags/${tagSlug}`}
+              className={`${baseClasses} ${colorClasses}`}
+              style={tagColor ? { backgroundColor: tagColor } : undefined}
+              onClick={onTagClick ? (e) => handleTagClick(e, tagName) : undefined}
+            >
+            <span className="flex items-center gap-1">
+              <svg 
+                className={`${size === 'small' ? 'w-3 h-3' : size === 'large' ? 'w-5 h-5' : 'w-4 h-4'}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" 
+                />
+              </svg>
+              {tagName}
+            </span>
+            </Link>
+          )
+        }
 
         return (
-          <TagElement
+          <span
             key={`${tagSlug}-${index}`}
-            {...tagProps}
             className={`${baseClasses} ${colorClasses}`}
             style={tagColor ? { backgroundColor: tagColor } : undefined}
-            onClick={interactive && onTagClick ? (e) => handleTagClick(e, tagName) : undefined}
           >
             <span className="flex items-center gap-1">
               <svg 
@@ -127,7 +155,7 @@ export default function TagList({
               </svg>
               {tagName}
             </span>
-          </TagElement>
+          </span>
         )
       })}
     </div>

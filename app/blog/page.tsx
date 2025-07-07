@@ -1,6 +1,7 @@
 import { getPublishedPosts, withFallback, formatDate } from '@/lib/notion'
 import { getFallbackPosts } from '@/lib/fallback-posts'
 import Link from 'next/link'
+import { PageContainer } from '@/components/ui/Container'
 
 export default async function BlogPage() {
   const posts = await withFallback(
@@ -19,8 +20,7 @@ export default async function BlogPage() {
   }
 
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <PageContainer size="xl">
         {/* 页面标题 */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -75,7 +75,6 @@ export default async function BlogPage() {
             <p className="text-gray-500 dark:text-gray-400">暂无文章</p>
           </div>
         )}
-      </div>
-    </div>
+    </PageContainer>
   )
 }

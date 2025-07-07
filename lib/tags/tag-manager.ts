@@ -152,7 +152,8 @@ export class TagManager {
 
     // 最小使用次数过滤
     if (options?.minCount !== undefined) {
-      tags = tags.filter(tag => tag.count >= options.minCount)
+      const minCount = options.minCount
+      tags = tags.filter(tag => tag.count >= minCount)
     }
 
     // 排序

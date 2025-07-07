@@ -1,9 +1,22 @@
+/**
+ * 工具选择器组件
+ * @module components/features/ToolSelector
+ */
+
 'use client'
 
 import { useState } from 'react'
 import { Tool } from '@/types/tool'
 import Image from 'next/image'
 
+/**
+ * 工具选择器组件的属性
+ * @interface ToolSelectorProps
+ * @property {Tool[]} tools - 可选择的工具列表
+ * @property {Tool[]} selectedTools - 已选中的工具列表
+ * @property {(tool: Tool) => void} onSelectTool - 选择工具的回调函数
+ * @property {number} maxSelection - 最大可选择数量
+ */
 interface ToolSelectorProps {
   tools: Tool[]
   selectedTools: Tool[]
@@ -11,6 +24,12 @@ interface ToolSelectorProps {
   maxSelection: number
 }
 
+/**
+ * 工具分类标签映射
+ * @constant
+ * @type {Record<string, string>}
+ * @description 将英文分类标识映射为中文显示名称
+ */
 const categoryLabels: Record<string, string> = {
   development: '开发工具',
   design: '设计工具',
@@ -19,6 +38,22 @@ const categoryLabels: Record<string, string> = {
   service: '在线服务'
 }
 
+/**
+ * 工具选择器组件
+ * @component
+ * @param {ToolSelectorProps} props - 组件属性
+ * @returns {JSX.Element} 渲染的工具选择器
+ * @description 提供工具搜索、分类筛选和多选功能的交互式选择器。
+ * 支持最大选择数量限制，包含搜索框、分类筛选按钮和工具卡片网格。
+ * 当达到最大选择数时，未选中的工具会被禁用。
+ * @example
+ * <ToolSelector
+ *   tools={allTools}
+ *   selectedTools={selected}
+ *   onSelectTool={handleSelect}
+ *   maxSelection={3}
+ * />
+ */
 export default function ToolSelector({
   tools,
   selectedTools,
@@ -28,10 +63,17 @@ export default function ToolSelector({
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // 获取所有分类
+  /**
+   * 获取所有工具分类
+   * @constant {string[]}
+   */
   const categories = ['all', ...Array.from(new Set(tools.map(tool => tool.category)))]
 
-  // 过滤工具
+  /**
+   * 根据分类和搜索条件过滤工具
+   * @constant {Tool[]}
+   * @description 根据选中的分类和搜索关键词过滤工具列表
+   */
   const filteredTools = tools.filter(tool => {
     const matchesCategory = selectedCategory === 'all' || tool.category === selectedCategory
     const matchesSearch = searchQuery === '' || 
@@ -42,12 +84,21 @@ export default function ToolSelector({
     return matchesCategory && matchesSearch
   })
 
-  // 检查工具是否已选中
+  /**
+   * 检查工具是否已选中
+   * @function isToolSelected
+   * @param {string} toolId - 工具ID
+   * @returns {boolean} 是否已选中
+   */
   const isToolSelected = (toolId: string) => {
     return selectedTools.some(t => t.id === toolId)
   }
 
-  // 检查是否达到最大选择数
+  /**
+   * 检查是否达到最大选择数
+   * @function isMaxSelectionReached
+   * @returns {boolean} 是否达到最大选择数
+   */
   const isMaxSelectionReached = () => {
     return selectedTools.length >= maxSelection
   }

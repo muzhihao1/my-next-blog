@@ -10,6 +10,7 @@ import BookCard from '@/components/features/BookCard'
 import ViewToggle from '@/components/features/ViewToggle'
 import LazyLoad from '@/components/ui/LazyLoad'
 import { Book, BookStats, BookshelfView, BookSortOption } from '@/types/bookshelf'
+import { PageContainer } from '@/components/ui/Container'
 
 /**
  * 书架客户端组件的属性
@@ -90,8 +91,7 @@ export default function BookshelfClient({ books }: BookshelfClientProps) {
   }, [books])
 
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <PageContainer size="xl">
         {/* 页面标题 */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -132,7 +132,7 @@ export default function BookshelfClient({ books }: BookshelfClientProps) {
             {/* 状态筛选 */}
             <select
               value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
+              onChange={(e) => setSelectedStatus(e.target.value as Book['status'] | 'all')}
               className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">全部状态</option>
@@ -156,7 +156,7 @@ export default function BookshelfClient({ books }: BookshelfClientProps) {
             {/* 排序 */}
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
+              onChange={(e) => setSortBy(e.target.value as BookSortOption)}
               className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="date">按日期排序</option>
@@ -171,7 +171,7 @@ export default function BookshelfClient({ books }: BookshelfClientProps) {
 
         {/* 书籍列表 */}
         <div className={view === 'grid' 
-          ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6'
+          ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6'
           : 'space-y-4'
         }>
           {filteredAndSortedBooks.map((book) => (
@@ -196,7 +196,6 @@ export default function BookshelfClient({ books }: BookshelfClientProps) {
             <p className="text-gray-500 dark:text-gray-400">没有找到符合条件的书籍</p>
           </div>
         )}
-      </div>
-    </div>
+    </PageContainer>
   )
 }

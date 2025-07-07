@@ -4,7 +4,8 @@ import { useState, useMemo } from 'react'
 import { getProjects } from '@/lib/notion/projects'
 import { fallbackProjects } from '@/lib/fallback-projects'
 import { ProjectCard } from '@/components/features/ProjectCard'
-import { LazyLoad } from '@/components/ui/LazyLoad'
+import LazyLoad from '@/components/ui/LazyLoad'
+import { PageContainer } from '@/components/ui/Container'
 
 // 使用后备数据，因为还没有配置 Notion
 const projects = fallbackProjects
@@ -147,8 +148,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <PageContainer size="xl">
         {/* 页面标题 */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -260,7 +260,6 @@ export default function ProjectsPage() {
             <p className="text-gray-500 dark:text-gray-400">该分类下暂无项目</p>
           </div>
         )}
-      </div>
-    </div>
+    </PageContainer>
   )
 }

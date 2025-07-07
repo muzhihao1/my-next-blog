@@ -6,8 +6,9 @@ import Link from 'next/link'
 import { fallbackPosts } from '@/lib/fallback-posts'
 import { fallbackProjects } from '@/lib/fallback-projects'
 import { formatDate } from '@/lib/notion'
-import { LazyLoad } from '@/components/ui/LazyLoad'
+import LazyLoad from '@/components/ui/LazyLoad'
 import { OptimizedImage } from '@/components/ui/OptimizedImage'
+import Container from '@/components/ui/Container'
 
 // 动态导入组件以实现代码分割
 const StatsSection = dynamic(() => import('@/components/sections/StatsSection'), {
@@ -21,8 +22,8 @@ const StatsWidget = dynamic(() => import('@/components/widgets/StatsWidget'), {
 // 提取 Hero Section 作为独立组件
 function HeroSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-4xl mx-auto text-center">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <Container size="md" className="text-center">
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
           欢迎来到我的<span className="text-gradient">数字花园</span>
         </h1>
@@ -43,7 +44,7 @@ function HeroSection() {
             阅读博客
           </Link>
         </div>
-      </div>
+      </Container>
     </section>
   )
 }
@@ -85,17 +86,17 @@ export default function Home() {
 
       {/* Statistics Widget */}
       <LazyLoad threshold={0.1} rootMargin="100px">
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto">
+        <section className="py-16">
+          <Container size="lg">
             <StatsWidget />
-          </div>
+          </Container>
         </section>
       </LazyLoad>
 
       {/* Featured Projects */}
       <LazyLoad threshold={0.1} rootMargin="200px">
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto">
+        <section className="py-20">
+          <Container size="xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 精选项目
@@ -149,14 +150,14 @@ export default function Home() {
                 </svg>
               </Link>
             </div>
-          </div>
+          </Container>
         </section>
       </LazyLoad>
 
       {/* Recent Posts */}
       <LazyLoad threshold={0.1} rootMargin="200px">
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto">
+        <section className="py-20 bg-gray-50 dark:bg-gray-900">
+          <Container size="xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 最新文章
@@ -198,7 +199,7 @@ export default function Home() {
                 </svg>
               </Link>
             </div>
-          </div>
+          </Container>
         </section>
       </LazyLoad>
     </div>

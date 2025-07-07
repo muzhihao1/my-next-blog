@@ -10,7 +10,7 @@ interface LazyLoadProps {
   onVisible?: () => void
 }
 
-export function LazyLoad({
+function LazyLoad({
   children,
   threshold = 0.1,
   rootMargin = '50px',
@@ -52,3 +52,5 @@ export function LazyLoad({
     </div>
   )
 }
+
+export default LazyLoad

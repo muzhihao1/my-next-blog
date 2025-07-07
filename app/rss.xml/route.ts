@@ -7,6 +7,8 @@
 import { getAllPosts } from '@/lib/notion'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-static'
+
 /**
  * 转义 XML 特殊字符
  * @param {string} str - 需要转义的字符串

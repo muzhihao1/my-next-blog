@@ -7,6 +7,8 @@
 import { getAllPosts } from '@/lib/notion'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-static'
+
 /**
  * 生成 JSON Feed
  * @returns {Response} JSON Feed 响应

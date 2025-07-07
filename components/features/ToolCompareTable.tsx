@@ -1,13 +1,28 @@
+/**
+ * 工具对比表格组件
+ * @module components/features/ToolCompareTable
+ */
+
 'use client'
 
 import { Tool } from '@/types/tool'
 import Link from 'next/link'
 
+/**
+ * 工具对比表格组件的属性
+ * @interface ToolCompareTableProps
+ * @property {Tool[]} tools - 需要对比的工具数组
+ */
 interface ToolCompareTableProps {
   tools: Tool[]
 }
 
-// 对比维度配置
+/**
+ * 对比维度配置
+ * @constant
+ * @type {Array<{key: string, label: string, type: string}>}
+ * @description 定义工具对比的维度和显示方式
+ */
 const compareAspects = [
   { key: 'category', label: '分类', type: 'text' },
   { key: 'platform', label: '平台', type: 'list' },
@@ -20,6 +35,12 @@ const compareAspects = [
   { key: 'lastUpdated', label: '更新时间', type: 'date' }
 ]
 
+/**
+ * 工具分类标签映射
+ * @constant
+ * @type {Record<string, string>}
+ * @description 将英文分类标识映射为中文显示名称
+ */
 const categoryLabels: Record<string, string> = {
   development: '开发工具',
   design: '设计工具',
@@ -28,8 +49,29 @@ const categoryLabels: Record<string, string> = {
   service: '在线服务'
 }
 
+/**
+ * 工具对比表格组件
+ * @component
+ * @param {ToolCompareTableProps} props - 组件属性
+ * @returns {JSX.Element} 渲染的对比表格
+ * @description 以表格形式展示多个工具的详细对比信息。
+ * 支持多种数据类型的格式化显示，包括列表、日期等。
+ * 自动过滤空数据维度，确保表格简洁。
+ * @example
+ * <ToolCompareTable tools={[tool1, tool2, tool3]} />
+ */
 export default function ToolCompareTable({ tools }: ToolCompareTableProps) {
-  // 格式化值的显示
+  /**
+   * 格式化值的显示
+   * @function formatValue
+   * @param {any} value - 需要格式化的值
+   * @param {string} type - 值的类型（'list' | 'date' | 'text'）
+   * @returns {JSX.Element | string} 格式化后的显示内容
+   * @description 根据数据类型格式化显示内容：
+   * - list: 渲染为无序列表
+   * - date: 格式化为中文日期
+   * - text: 处理分类标签的中文映射
+   */
   const formatValue = (value: any, type: string) => {
     if (!value) return '-'
     
@@ -64,7 +106,13 @@ export default function ToolCompareTable({ tools }: ToolCompareTableProps) {
     }
   }
 
-  // 检查某个维度是否所有工具都有值
+  /**
+   * 检查某个维度是否至少有一个工具有值
+   * @function hasAnyValue
+   * @param {string} key - 需要检查的属性键名
+   * @returns {boolean} 是否有至少一个工具在该维度有值
+   * @description 用于过滤空数据维度，确保表格只显示有意义的对比项
+   */
   const hasAnyValue = (key: string) => {
     return tools.some(tool => {
       const value = (tool as any)[key]

@@ -151,7 +151,9 @@ export {
   NotionAPIError,
   DataValidationError,
   ResourceNotFoundError,
-  ConfigurationError
+  ConfigurationError,
+  handleBookshelfError,
+  validateBookData
 } from '@/lib/errors/bookshelf-errors'
 
 // 类型守卫函数

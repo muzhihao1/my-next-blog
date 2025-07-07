@@ -47,7 +47,7 @@ export default function ToolCard({ tool, featured = false }: ToolCardProps) {
   return (
     <Link
       href={`/tools/${tool.slug}`}
-      className={`block p-6 rounded-lg border transition-all hover:shadow-lg hover:-translate-y-1 ${
+      className={`block p-5 sm:p-6 rounded-lg border transition-all hover:shadow-lg hover:-translate-y-1 ${
         featured
           ? 'border-primary bg-gradient-to-br from-background to-muted shadow-md'
           : 'border-border bg-card'

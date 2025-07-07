@@ -207,9 +207,16 @@ function formatBook(page: any, notes: string): Book {
   const tags = properties.Tags?.multi_select?.map((tag: any) => tag.name) || []
   
   // 处理封面
-  const cover = properties.Cover?.files?.[0]?.type === 'external' 
-    ? properties.Cover.files[0].external.url 
-    : properties.Cover?.files?.[0]?.file?.url || '/images/book-placeholder.jpg'
+  const cover = (() => {
+    const firstFile = properties.Cover?.files?.[0]
+    if (firstFile?.type === 'external') {
+      return firstFile.external?.url || '/images/book-placeholder.jpg'
+    }
+    if (firstFile?.type === 'file') {
+      return firstFile.file?.url || '/images/book-placeholder.jpg'
+    }
+    return '/images/book-placeholder.jpg'
+  })()
 
   // 处理评分
   const ratingValue = properties.Rating?.select?.name ? parseInt(properties.Rating.select.name) : 3
@@ -219,21 +226,21 @@ function formatBook(page: any, notes: string): Book {
     id: page.id,
     title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
     author: properties.Author?.rich_text?.[0]?.plain_text || 'Unknown',
-    isbn: properties.ISBN?.rich_text?.[0]?.plain_text,
+    isbn: properties.ISBN?.rich_text?.[0]?.plain_text || undefined,
     category: properties.Category?.select?.name || '其他',
     status: (() => {
       const statusValue = properties.Status?.select?.name?.toLowerCase()
-      return isValidBookStatus(statusValue) ? statusValue : 'want-to-read'
+      return statusValue && isValidBookStatus(statusValue) ? statusValue : 'want-to-read'
     })() as Book['status'],
     rating: rating as 1 | 2 | 3 | 4 | 5,
-    startDate: properties.StartDate?.date?.start,
-    finishDate: properties.FinishDate?.date?.start,
+    startDate: properties.StartDate?.date?.start || undefined,
+    finishDate: properties.FinishDate?.date?.start || undefined,
     cover,
     notes,
-    takeaways: properties.Takeaways?.rich_text?.[0]?.plain_text,
+    takeaways: properties.Takeaways?.rich_text?.[0]?.plain_text || undefined,
     tags,
-    publishYear: properties.PublishYear?.number,
-    pages: properties.Pages?.number,
+    publishYear: properties.PublishYear?.number || undefined,
+    pages: properties.Pages?.number || undefined,
     language: properties.Language?.select?.name || '中文'
   }
   } catch (error) {
@@ -241,8 +248,8 @@ function formatBook(page: any, notes: string): Book {
     // 返回一个最小可用的书籍对象
     return {
       id: page?.id || 'unknown',
-      title: properties?.Title?.title?.[0]?.plain_text || 'Unknown Book',
-      author: properties?.Author?.rich_text?.[0]?.plain_text || 'Unknown Author',
+      title: page?.properties?.Title?.title?.[0]?.plain_text || 'Unknown Book',
+      author: page?.properties?.Author?.rich_text?.[0]?.plain_text || 'Unknown Author',
       category: '其他',
       status: 'want-to-read',
       rating: 3,

@@ -7,6 +7,8 @@
 import { NextResponse } from 'next/server'
 import { getCachedStatistics } from '@/lib/statistics'
 
+export const dynamic = 'force-static'
+
 /**
  * 获取统计数据
  * @returns {Response} JSON 格式的统计数据

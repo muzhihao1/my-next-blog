@@ -7,6 +7,7 @@
 import Link from 'next/link'
 import { Metadata } from 'next'
 import SubscribeForm from '@/components/features/SubscribeForm'
+import CopyButton from '@/components/ui/CopyButton'
 
 export const metadata: Metadata = {
   title: '订阅 - 无题之墨',
@@ -104,12 +105,12 @@ export default function SubscribePage() {
                         >
                           {baseUrl}{format.url}
                         </Link>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(`${baseUrl}${format.url}`)}
+                        <CopyButton
+                          text={`${baseUrl}${format.url}`}
                           className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
                           复制链接
-                        </button>
+                        </CopyButton>
                       </div>
                     </div>
                   </div>

@@ -17,22 +17,67 @@ export async function getProjects(): Promise<Project[]> {
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: projectsDatabaseId,
-      filter: {
-        property: 'Status',
-        select: {
-          does_not_equal: 'Draft'
+    // 首先尝试获取数据库架构以确定可用字段
+    let sortOptions: any[] = []
+    
+    try {
+      // 尝试使用 Featured 字段排序
+      sortOptions = [
+        {
+          property: 'Featured',
+          direction: 'descending'
+        },
+        {
+          property: 'StartDate', 
+          direction: 'descending'
         }
-      },
-      sorts: [{
-        property: 'Featured',
-        direction: 'descending'
-      }, {
-        property: 'StartDate',
-        direction: 'descending'
-      }]
-    })
+      ]
+    } catch (sortError) {
+      console.warn('Featured field not available, using fallback sorting')
+      // 如果 Featured 字段不存在，使用 StartDate 排序
+      sortOptions = [
+        {
+          property: 'StartDate',
+          direction: 'descending'
+        }
+      ]
+    }
+
+    let response
+    try {
+      response = await notion.databases.query({
+        database_id: projectsDatabaseId,
+        filter: {
+          property: 'Status',
+          select: {
+            does_not_equal: 'Draft'
+          }
+        },
+        sorts: sortOptions
+      })
+    } catch (error: any) {
+      // 如果包含 Featured 字段的排序失败，尝试不使用 Featured 字段
+      if (error.message?.includes('Featured') || error.code === 'validation_error') {
+        console.warn('Featured property not found, using simplified sorting')
+        response = await notion.databases.query({
+          database_id: projectsDatabaseId,
+          filter: {
+            property: 'Status',
+            select: {
+              does_not_equal: 'Draft'
+            }
+          },
+          sorts: [
+            {
+              property: 'StartDate',
+              direction: 'descending'
+            }
+          ]
+        })
+      } else {
+        throw error
+      }
+    }
 
     const projects = await Promise.all(
       response.results.map(async (page: any) => {
@@ -43,7 +88,15 @@ export async function getProjects(): Promise<Project[]> {
       })
     )
 
-    return projects
+    // 如果有 featured 字段，在客户端进行排序以确保正确性
+    return projects.sort((a, b) => {
+      // 首先按 featured 状态排序
+      if (a.featured && !b.featured) return -1
+      if (!a.featured && b.featured) return 1
+      
+      // 然后按开始日期排序
+      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+    })
   } catch (error) {
     console.error('Failed to fetch projects from Notion:', error)
     return []
@@ -63,46 +116,107 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 function formatProject(page: any, content: string): Project {
   const properties = page.properties
 
+  // 安全获取属性的辅助函数
+  const getTextProperty = (prop: any): string => {
+    if (!prop) return ''
+    if (prop.title?.[0]?.plain_text) return prop.title[0].plain_text
+    if (prop.rich_text?.[0]?.plain_text) return prop.rich_text[0].plain_text
+    return ''
+  }
+
+  const getSelectProperty = (prop: any): string => {
+    return prop?.select?.name || ''
+  }
+
+  const getCategoryProperty = (prop: any): 'website' | 'opensource' | 'design' | 'other' => {
+    const value = prop?.select?.name?.toLowerCase()
+    if (value === 'website' || value === 'opensource' || value === 'design') {
+      return value
+    }
+    return 'other'
+  }
+
+  const getStatusProperty = (prop: any): 'active' | 'completed' | 'archived' => {
+    const value = prop?.select?.name?.toLowerCase()
+    if (value === 'active' || value === 'completed' || value === 'archived') {
+      return value
+    }
+    return 'active'
+  }
+
+  const getCheckboxProperty = (prop: any): boolean => {
+    return prop?.checkbox || false
+  }
+
+  const getMultiSelectProperty = (prop: any): string[] => {
+    return prop?.multi_select?.map((tag: any) => tag.name) || []
+  }
+
+  const getUrlProperty = (prop: any): string | undefined => {
+    return prop?.url || undefined
+  }
+
+  const getDateProperty = (prop: any): string => {
+    return prop?.date?.start || new Date().toISOString()
+  }
+
+  const getNumberProperty = (prop: any): number | undefined => {
+    return prop?.number || undefined
+  }
+
+  const getFilesProperty = (prop: any): string[] => {
+    if (!prop?.files) return []
+    return prop.files.map((file: any) => 
+      file.type === 'external' ? file.external.url : file.file.url
+    ).filter(Boolean)
+  }
+
   // 处理技术栈
-  const techStack = properties.TechStack?.multi_select?.map((tag: any) => tag.name) || []
+  const techStack = getMultiSelectProperty(properties.TechStack)
+  
+  // 处理标签
+  const tags = getMultiSelectProperty(properties.Tags)
   
   // 处理截图
-  const screenshots = properties.Screenshots?.files?.map((file: any) => 
-    file.type === 'external' ? file.external.url : file.file.url
-  ) || []
+  const screenshots = getFilesProperty(properties.Screenshots)
 
   // 处理缩略图
-  const thumbnail = properties.Thumbnail?.files?.[0]?.type === 'external' 
-    ? properties.Thumbnail.files[0].external.url 
-    : properties.Thumbnail?.files?.[0]?.file?.url || '/images/project-placeholder.jpg'
+  const thumbnailFiles = getFilesProperty(properties.Thumbnail)
+  const thumbnail = thumbnailFiles[0] || '/images/project-placeholder.jpg'
 
-  // 处理metrics
+  // 处理metrics - 更安全的方式
   const metrics: Project['metrics'] = {}
-  if (properties.Users?.number) {
-    metrics.users = properties.Users.number
+  const usersNumber = getNumberProperty(properties.Users)
+  if (usersNumber !== undefined) {
+    metrics.users = usersNumber
   }
-  if (properties.Performance?.rich_text?.[0]?.plain_text) {
-    metrics.performance = properties.Performance.rich_text[0].plain_text
+  
+  const performanceText = getTextProperty(properties.Performance)
+  if (performanceText) {
+    metrics.performance = performanceText
   }
-  if (properties.Achievement?.rich_text?.[0]?.plain_text) {
-    metrics.achievement = properties.Achievement.rich_text[0].plain_text
+  
+  const achievementText = getTextProperty(properties.Achievement)
+  if (achievementText) {
+    metrics.achievement = achievementText
   }
 
   return {
     id: page.id,
-    title: properties.Title?.title?.[0]?.plain_text || 'Untitled',
-    slug: properties.Slug?.rich_text?.[0]?.plain_text || page.id,
-    description: properties.Description?.rich_text?.[0]?.plain_text || '',
-    category: properties.Category?.select?.name?.toLowerCase() || 'other',
-    status: properties.Status?.select?.name?.toLowerCase() || 'active',
-    featured: properties.Featured?.checkbox || false,
+    title: getTextProperty(properties.Title) || 'Untitled',
+    slug: getTextProperty(properties.Slug) || page.id,
+    description: getTextProperty(properties.Description) || '',
+    category: getCategoryProperty(properties.Category),
+    status: getStatusProperty(properties.Status),
+    featured: getCheckboxProperty(properties.Featured),
     techStack,
+    tags,
     thumbnail,
     screenshots,
-    demoUrl: properties.DemoUrl?.url,
-    githubUrl: properties.GithubUrl?.url,
+    demoUrl: getUrlProperty(properties.DemoUrl),
+    githubUrl: getUrlProperty(properties.GithubUrl),
     content,
-    startDate: properties.StartDate?.date?.start || new Date().toISOString(),
+    startDate: getDateProperty(properties.StartDate),
     endDate: properties.EndDate?.date?.start,
     lastUpdated: page.last_edited_time,
     metrics: Object.keys(metrics).length > 0 ? metrics : undefined

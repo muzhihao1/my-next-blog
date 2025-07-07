@@ -114,7 +114,7 @@ export default function BookCard({ book, view }: BookCardProps) {
             </span>
           </div>
         </div>
-        <div className="p-4">
+        <div className="p-4 sm:p-5">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {book.title}
           </h3>
