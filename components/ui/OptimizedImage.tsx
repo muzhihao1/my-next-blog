@@ -60,7 +60,7 @@ export function OptimizedImage({
   }
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn("relative overflow-hidden", fill && "w-full h-full", className)}>
       {isLoading && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 animate-pulse" />
       )}

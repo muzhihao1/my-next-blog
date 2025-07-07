@@ -88,11 +88,11 @@ export default function RootLayout({
   })
 
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className="light">
       <head>
         <SEO structuredData={websiteStructuredData} />
       </head>
-      <body>
+      <body className="bg-white text-gray-900">
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-grow">
