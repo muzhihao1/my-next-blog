@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /test/
+
+User-agent: GPTBot
+Disallow: /
+
+Sitemap: https://yourdomain.com/sitemap.xml

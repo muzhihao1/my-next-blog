@@ -1,11 +1,63 @@
-import { getPublishedPosts, withFallback, formatDate } from '@/lib/notion'
-import { getFallbackPosts } from '@/lib/fallback-posts'
+'use client'
 
-export default async function Home() {
-  const posts = await withFallback(
-    () => getPublishedPosts(),
-    getFallbackPosts()
+import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import Link from 'next/link'
+import { fallbackPosts } from '@/lib/fallback-posts'
+import { fallbackProjects } from '@/lib/fallback-projects'
+import { formatDate } from '@/lib/notion'
+import { LazyLoad } from '@/components/ui/LazyLoad'
+import { OptimizedImage } from '@/components/ui/OptimizedImage'
+
+// 动态导入组件以实现代码分割
+const StatsSection = dynamic(() => import('@/components/sections/StatsSection'), {
+  loading: () => <div className="h-32 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg" />
+})
+
+const StatsWidget = dynamic(() => import('@/components/widgets/StatsWidget'), {
+  loading: () => <div className="h-64 animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg" />
+})
+
+// 提取 Hero Section 作为独立组件
+function HeroSection() {
+  return (
+    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-4xl mx-auto text-center">
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          欢迎来到我的<span className="text-gradient">数字花园</span>
+        </h1>
+        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+          在这里，我分享技术见解、展示项目成果、记录学习历程，与你一起探索知识的边界
+        </p>
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Link
+            href="/projects"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            查看项目
+          </Link>
+          <Link
+            href="/blog"
+            className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+          >
+            阅读博客
+          </Link>
+        </div>
+      </div>
+    </section>
   )
+}
+
+export default function Home() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // 使用后备数据
+  const recentPosts = fallbackPosts.slice(0, 3)
+  const featuredProjects = fallbackProjects.filter(p => p.featured).slice(0, 3)
 
   function getCategoryClass(category: string) {
     const categoryMap: { [key: string]: string } = {
@@ -17,91 +69,138 @@ export default async function Home() {
     return `category-badge ${categoryMap[category] || 'category-technology'}`
   }
 
+  if (!mounted) {
+    return <div className="min-h-screen animate-pulse bg-gray-50 dark:bg-gray-900" />
+  }
+
   return (
-    <div className="py-16 bg-gradient-to-b from-white to-gray-50/30">
-      <div className="container-narrow">
-        {/* 页面标题区域 */}
-        <div className="text-center mb-20">
-          <h1 className="page-title">最新文章</h1>
-          <div className="divider"></div>
-          <p className="page-subtitle">探索技术、设计与生活的交集</p>
-        </div>
+    <div>
+      {/* Hero Section */}
+      <HeroSection />
 
-        {/* 文章列表 */}
-        <div className="articles-grid">
-          {posts.map((post, index) => (
-            <article key={post.id} className="article-card group">
-              <div className={getCategoryClass(post.category)}>
-                {post.category}
-              </div>
-              
-              <h2 className="article-title">
-                <a href={`/posts/${post.slug}`}>
-                  {post.title}
-                </a>
-              </h2>
-              
-              <p className="article-excerpt">
-                {post.excerpt}
-              </p>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center">
-                  <img 
-                    src={post.author.avatar} 
-                    alt={post.author.name}
-                    className="author-avatar mr-4"
-                  />
-                  <div className="article-meta">
-                    <span className="font-medium text-gray-700">{post.author.name}</span>
-                    <span className="mx-2">·</span>
-                    <time>{formatDate(post.date)}</time>
-                    <span className="mx-2">·</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                </div>
-                
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex gap-1">
-                    {post.tags.slice(0, 2).map((tag) => (
-                      <span key={tag} className="tag">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
+      {/* Stats Section */}
+      <LazyLoad threshold={0.1} rootMargin="100px">
+        <StatsSection />
+      </LazyLoad>
 
-        {/* 订阅区域 */}
-        <div className="mt-20">
-          <div className="subscribe-section">
-            <h2 className="text-3xl font-light mb-4 text-gray-900">订阅更新</h2>
-            <div className="divider"></div>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              获取最新文章推送，每周不超过一封邮件，随时可以取消订阅
-            </p>
-            <form className="flex max-w-md mx-auto gap-3">
-              <input
-                type="email"
-                placeholder="输入您的邮箱地址"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
-              />
-              <button 
-                type="submit"
-                className="btn-subscribe"
-              >
-                订阅
-              </button>
-            </form>
-            <p className="text-xs text-gray-500 mt-4">
-              我们尊重您的隐私，不会分享您的邮箱地址
-            </p>
+      {/* Statistics Widget */}
+      <LazyLoad threshold={0.1} rootMargin="100px">
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <StatsWidget />
           </div>
-        </div>
-      </div>
+        </section>
+      </LazyLoad>
+
+      {/* Featured Projects */}
+      <LazyLoad threshold={0.1} rootMargin="200px">
+        <section className="py-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                精选项目
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                探索我最引以为豪的作品
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredProjects.map((project) => (
+                <Link 
+                  key={project.id} 
+                  href={`/projects/${project.slug}`}
+                  className="group block bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="aspect-video relative overflow-hidden">
+                    <OptimizedImage
+                      src={project.thumbnail}
+                      alt={project.title}
+                      fill
+                      className="group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {project.techStack.slice(0, 3).map((tech) => (
+                        <span key={tech} className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              >
+                查看所有项目
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </LazyLoad>
+
+      {/* Recent Posts */}
+      <LazyLoad threshold={0.1} rootMargin="200px">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                最新文章
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                技术思考与经验分享
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {recentPosts.map((post) => (
+                <article key={post.id} className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <Link href={`/posts/${post.slug}`} className="block p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <span className={getCategoryClass(post.category)}>
+                        {post.category}
+                      </span>
+                      <time className="text-sm text-gray-500 dark:text-gray-400">
+                        {formatDate(post.date)}
+                      </time>
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                  </Link>
+                </article>
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              >
+                查看所有文章
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+      </LazyLoad>
     </div>
   )
 }

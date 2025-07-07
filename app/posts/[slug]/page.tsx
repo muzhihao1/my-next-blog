@@ -1,7 +1,18 @@
 import { getAllPostSlugs, getPostBySlug, withFallback, formatDate } from '@/lib/notion'
 import { getFallbackPostBySlug } from '@/lib/fallback-posts'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
 import type { Metadata } from 'next'
+import { SEO, generateArticleStructuredData } from '@/components/seo/SEO'
+import { calculateWordCount, formatUpdateTime } from '@/lib/utils/content'
+import TableOfContents from '@/components/features/TableOfContents'
+import ReadingProgress from '@/components/features/ReadingProgress'
+import { SocialShare } from '@/components/features/SocialShare'
+import ArticleReactions from '@/components/features/ArticleReactions'
+import TagList from '@/components/features/TagList'
+import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/FavoriteButton'
+import { FavoriteType } from '@/lib/hooks/useFavorites'
 
 export async function generateStaticParams() {
   // Use fallback slugs for static export when Notion API may not be available
@@ -86,11 +97,31 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
     return `category-badge ${categoryMap[category] || 'category-technology'}`
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  const articleStructuredData = generateArticleStructuredData({
+    title: post.title,
+    description: post.excerpt,
+    publishedDate: post.date,
+    modifiedDate: post.lastEditedTime || post.date,
+    authorName: post.author.name,
+    authorUrl: `${baseUrl}/about`,
+    image: post.cover,
+    keywords: post.tags,
+    url: `${baseUrl}/posts/${slug}`
+  })
+
+  // Calculate word count
+  const wordCount = post.content ? calculateWordCount(post.content) : 0
+  const updateTime = formatUpdateTime(post.date, post.lastEditedTime)
+
   return (
-    <article className="py-16 bg-white">
+    <article className="py-16 bg-white dark:bg-gray-900">
+      <SEO structuredData={articleStructuredData} />
+      <ReadingProgress showPercentage={false} offset={80} />
       <div className="container-narrow">
+        
         {/* 文章头部 */}
-        <header className="mb-16">
+        <header className="mb-16 mt-8">
           {/* 分类标签 */}
           <div className="mb-8 text-center">
             <span className={getCategoryClass(post.category)}>
@@ -99,13 +130,13 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           </div>
           
           {/* 文章标题 */}
-          <h1 className="text-4xl md:text-6xl font-light leading-tight mb-8 text-center text-gray-900 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-light leading-tight mb-8 text-center text-gray-900 dark:text-white tracking-tight">
             {post.title}
           </h1>
           
           {/* 文章摘要 */}
           {post.excerpt && (
-            <p className="text-xl text-gray-600 leading-relaxed text-center mb-12 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed text-center mb-12 max-w-3xl mx-auto">
               {post.excerpt}
             </p>
           )}
@@ -113,52 +144,88 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           {/* 作者信息和元数据 */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-8">
             <div className="flex items-center">
-              <img 
-                src={post.author.avatar} 
-                alt={post.author.name}
-                className="author-avatar mr-4"
-              />
+              <div className="relative w-12 h-12 mr-4">
+                <Image 
+                  src={post.author.avatar} 
+                  alt={post.author.name}
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </div>
               <div className="text-center sm:text-left">
-                <div className="font-medium text-gray-900">{post.author.name}</div>
-                <div className="text-sm text-gray-500">作者</div>
+                <div className="font-medium text-gray-900 dark:text-white">{post.author.name}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">作者</div>
               </div>
             </div>
             
-            <div className="hidden sm:block w-px h-12 bg-gray-300"></div>
+            <div className="hidden sm:block w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
             
             <div className="text-center">
-              <div className="text-sm text-gray-500 mb-1">发布时间</div>
-              <time dateTime={post.date} className="text-gray-700 font-medium">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">发布时间</div>
+              <time dateTime={post.date} className="text-gray-700 dark:text-gray-300 font-medium">
                 {formatDate(post.date)}
               </time>
             </div>
             
-            <div className="hidden sm:block w-px h-12 bg-gray-300"></div>
+            <div className="hidden sm:block w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
             
             <div className="text-center">
-              <div className="text-sm text-gray-500 mb-1">阅读时间</div>
-              <span className="text-gray-700 font-medium">{post.readTime}</span>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">阅读时间</div>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{post.readTime}</span>
             </div>
+            
+            <div className="hidden sm:block w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
+            
+            <div className="text-center">
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">字数</div>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">{wordCount.toLocaleString()} 字</span>
+            </div>
+            
+            {updateTime && (
+              <>
+                <div className="hidden sm:block w-px h-12 bg-gray-300 dark:bg-gray-600"></div>
+                <div className="text-center">
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">最后更新</div>
+                  <span className="text-gray-700 dark:text-gray-300 font-medium">{updateTime}</span>
+                </div>
+              </>
+            )}
           </div>
           
           {/* 标签 */}
           {post.tags && post.tags.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 mb-12">
-              {post.tags.map((tag) => (
-                <span key={tag} className="tag">
-                  #{tag}
-                </span>
-              ))}
+            <div className="flex justify-center mb-8">
+              <TagList tags={post.tags} size="medium" />
             </div>
           )}
+          
+          {/* 社交分享和收藏 */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+            <SocialShare 
+              url={`${baseUrl}/posts/${slug}`}
+              title={post.title}
+              description={post.excerpt || ''}
+              tags={post.tags || []}
+            />
+            <FavoriteButton
+              itemId={post.id}
+              itemType={FavoriteType.POST}
+              title={post.title}
+              description={post.excerpt}
+              thumbnail={post.cover}
+              slug={post.slug}
+              size="medium"
+            />
+          </div>
 
           {/* 封面图片 */}
           {post.cover && (
-            <div className="mb-12">
-              <img 
+            <div className="relative w-full h-64 md:h-96 mb-12">
+              <Image 
                 src={post.cover} 
                 alt={post.title}
-                className="w-full h-64 md:h-96 object-cover rounded-2xl shadow-2xl"
+                fill
+                className="object-cover rounded-2xl shadow-2xl"
               />
             </div>
           )}
@@ -167,66 +234,56 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           <div className="divider"></div>
         </header>
 
-        {/* 文章内容 */}
-        <div className="max-w-3xl mx-auto">
-          <div 
-            className="prose-blog"
-            dangerouslySetInnerHTML={{ __html: post.content || '<p>内容加载中...</p>' }}
-          />
+        {/* 文章内容区域 */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-8 max-w-6xl mx-auto">
+          {/* 文章内容 */}
+          <div className="max-w-3xl">
+            <div 
+              className="prose-blog"
+              dangerouslySetInnerHTML={{ __html: post.content || '<p>内容加载中...</p>' }}
+            />
+          </div>
+          
+          {/* 侧边栏目录 */}
+          <aside className="hidden lg:block">
+            <TableOfContents content={post.content} />
+          </aside>
         </div>
 
         {/* 文章底部 */}
         <footer className="mt-20">
+          {/* 文章反应 */}
+          <ArticleReactions articleId={slug} />
+          
           {/* 分割线 */}
           <div className="divider"></div>
           
           {/* 操作区域 */}
           <div className="flex flex-col sm:flex-row items-center justify-between mb-16 gap-6">
-            <a 
+            <Link 
               href="/" 
-              className="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 rounded-lg font-medium transition-all group"
+              className="inline-flex items-center px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg font-medium transition-all group"
             >
               <svg className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               返回首页
-            </a>
-            
-            <div className="flex items-center gap-4">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-pink-600 hover:bg-pink-50 rounded-lg transition-all"
-                title="点赞"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <span className="text-sm">喜欢</span>
-              </button>
-              
-              <button 
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
-                title="分享"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 10-15.432 0m15.432 0a9.001 9.001 0 01-15.432 0m15.432 0A8.961 8.961 0 0112 21a8.961 8.961 0 01-5.716-2.026" />
-                </svg>
-                <span className="text-sm">分享</span>
-              </button>
-            </div>
+            </Link>
           </div>
+
 
           {/* 订阅区域 */}
           <div className="subscribe-section">
-            <h3 className="text-2xl font-light mb-4 text-gray-900">喜欢这篇文章？</h3>
+            <h3 className="text-2xl font-light mb-4 text-gray-900 dark:text-white">喜欢这篇文章？</h3>
             <div className="divider"></div>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
               订阅我的博客，获取更多关于技术、设计和生活的深度思考
             </p>
             <form className="flex max-w-md mx-auto gap-3">
               <input
                 type="email"
                 placeholder="输入您的邮箱地址"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all"
+                className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:border-pink-500 dark:focus:border-pink-400 focus:ring-2 focus:ring-pink-200 dark:focus:ring-pink-800 transition-all"
               />
               <button 
                 type="submit"
@@ -235,12 +292,22 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
                 订阅
               </button>
             </form>
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
               每周最多一封邮件，随时可以取消订阅
             </p>
           </div>
         </footer>
       </div>
+      
+      {/* 浮动收藏按钮 */}
+      <FloatingFavoriteButton
+        itemId={post.id}
+        itemType={FavoriteType.POST}
+        title={post.title}
+        description={post.excerpt}
+        thumbnail={post.cover}
+        slug={post.slug}
+      />
     </article>
   )
 }
