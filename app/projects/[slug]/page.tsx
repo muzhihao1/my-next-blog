@@ -12,6 +12,7 @@ import TagList from '@/components/features/TagList'
 import FavoriteButton from '@/components/features/FavoriteButton'
 import { FavoriteType } from '@/lib/hooks/useFavorites'
 import type { Metadata } from 'next'
+import type { Project } from '@/types/project'
 
 // ISR配置：每小时重新验证一次
 export const revalidate = 3600
@@ -23,7 +24,7 @@ export async function generateStaticParams() {
     projects = fallbackProjects
   }
   
-  return projects.map((project) => ({
+  return projects.map((project: Project) => ({
     slug: project.slug,
   }))
 }
@@ -200,7 +201,7 @@ export default async function ProjectDetailPage({
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">技术栈</h3>
             <div className="flex flex-wrap gap-2">
-              {project.techStack.map((tech) => (
+              {project.techStack.map((tech: string) => (
                 <span
                   key={tech}
                   className="px-3 py-1 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm"
@@ -263,7 +264,7 @@ export default async function ProjectDetailPage({
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">项目截图</h2>
             <div className="grid gap-4">
-              {project.screenshots.map((screenshot, index) => (
+              {project.screenshots.map((screenshot: string, index: number) => (
                 <div key={index} className="relative aspect-video overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-900">
                   <Image
                     src={screenshot}
@@ -282,7 +283,7 @@ export default async function ProjectDetailPage({
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">主要功能</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {project.keyFeatures.map((feature, index) => (
+              {project.keyFeatures.map((feature: string, index: number) => (
                 <div key={index} className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <svg className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -320,7 +321,7 @@ export default async function ProjectDetailPage({
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">技术挑战与解决方案</h2>
             <div className="space-y-6">
-              {project.challenges && project.challenges.map((challenge, index) => (
+              {project.challenges && project.challenges.map((challenge: string, index: number) => (
                 <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
                   <div className="flex items-start gap-4">
                     <div className="flex-shrink-0">
