@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
-import { cache } from 'react'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
 import { Project } from '@/types/project'
 import { withRetry } from '@/lib/utils/retry'
 
@@ -121,21 +121,21 @@ async function _getProjects(): Promise<Project[]> {
   }
 }
 
-export const getProjects = cache(_getProjects)
+export const getProjects = _getProjects // TODO: 重新启用 cache
 
 async function _getProjectBySlug(slug: string): Promise<Project | null> {
   const projects = await getProjects()
   return projects.find(project => project.slug === slug) || null
 }
 
-export const getProjectBySlug = cache(_getProjectBySlug)
+export const getProjectBySlug = _getProjectBySlug // TODO: 重新启用 cache
 
 async function _getFeaturedProjects(): Promise<Project[]> {
   const projects = await getProjects()
   return projects.filter(project => project.featured).slice(0, 3)
 }
 
-export const getFeaturedProjects = cache(_getFeaturedProjects)
+export const getFeaturedProjects = _getFeaturedProjects // TODO: 重新启用 cache
 
 function formatProject(page: any, content: string): Project {
   const properties = page.properties

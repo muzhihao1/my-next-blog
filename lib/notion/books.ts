@@ -6,7 +6,7 @@
 
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
-import { cache } from 'react'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
 import { 
   Book, 
   NotionBookProperties,
@@ -124,7 +124,7 @@ async function _getBooks(): Promise<Book[]> {
  * 包含缓存机制，当 Notion 不可用时使用后备数据。
  * @throws {Error} 当 Notion API 调用失败时，不会抛出错误，而是返回后备数据
  */
-export const getBooks = cache(_getBooks)
+export const getBooks = _getBooks // TODO: 重新启用 cache
 
 /**
  * Internal function to get book by ID
@@ -164,7 +164,7 @@ async function _getBookById(id: string): Promise<Book | null> {
  * @returns {Promise<Book | null>} 返回匹配的书籍或 null
  * @description 从书籍列表中查找指定 ID 的书籍
  */
-export const getBookById = cache(_getBookById)
+export const getBookById = _getBookById // TODO: 重新启用 cache
 
 /**
  * Internal function to get books by status
@@ -192,7 +192,7 @@ async function _getBooksByStatus(status: Book['status']): Promise<Book[]> {
  * @returns {Promise<Book[]>} 返回指定状态的书籍数组
  * @description 筛选出特定阅读状态的所有书籍
  */
-export const getBooksByStatus = cache(_getBooksByStatus)
+export const getBooksByStatus = _getBooksByStatus // TODO: 重新启用 cache
 
 /**
  * Internal function to get featured books
@@ -224,7 +224,7 @@ async function _getFeaturedBooks(limit: number = 6): Promise<Book[]> {
  * @example
  * const featuredBooks = await getFeaturedBooks(3) // 获取 3 本推荐书籍
  */
-export const getFeaturedBooks = cache(_getFeaturedBooks)
+export const getFeaturedBooks = _getFeaturedBooks // TODO: 重新启用 cache
 
 /**
  * 格式化 Notion 页面数据为 Book 类型

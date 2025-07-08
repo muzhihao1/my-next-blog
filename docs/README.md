@@ -6,63 +6,75 @@
 
 如果你是第一次接触这个项目，请按以下顺序阅读：
 
-1. **[快速启动指南](./快速启动指南.md)** - 5分钟内启动博客
-2. **[Notion 完整配置指南](./notion-complete-guide.md)** - 配置内容管理系统
-3. **[部署指南](./deployment-guide.md)** - 部署到生产环境
+1. **[快速启动指南](./guides/快速启动指南.md)** - 5分钟内启动博客
+2. **[Notion 完整配置指南](./setup/notion-complete-guide.md)** - 配置内容管理系统（如果存在）
+3. **[部署指南](./guides/deployment-guide.md)** - 部署到生产环境
 
-## 📖 核心文档
+## 📖 文档分类
 
-### 使用指南
+### 📁 setup/ - 配置指南
+- **[Supabase API Keys 指南](./setup/supabase-api-keys-guide.md)** - Supabase 密钥配置
+- **[Vercel 部署修复指南](./setup/fix-vercel-deployment.md)** - Vercel 部署错误修复
+- **[Vercel 部署配置](./setup/vercel-deployment-fix.md)** - Vercel 环境变量配置
+- **[RSS 配置](./setup/rss-configuration.md)** - RSS/Atom/JSON Feed 设置
+- **[订阅功能设置](./setup/subscription-setup.md)** - 邮件订阅配置
 
-- **[博主使用指南](./blogger-guide.md)** - 📝 内容创作者的完整操作手册
-- **[快速参考卡](./quick-reference.md)** - 🎯 常用操作的快速查询
-- **[维护指南](./maintenance-guide.md)** - 🔧 日常维护和故障排除
+### 📁 guides/ - 使用指南
+- **[博主使用指南](./guides/blogger-guide.md)** - 📝 内容创作者的完整操作手册
+- **[快速参考卡](./guides/quick-reference.md)** - 🎯 常用操作的快速查询
+- **[维护指南](./guides/maintenance-guide.md)** - 🔧 日常维护和故障排除
+- **[数据统计指南](./guides/data-statistics-guide.md)** - 统计功能使用说明
+- **[部署指南](./guides/deployment-guide.md)** - 生产环境部署指南
 
-### 技术文档
+### 📁 development/ - 开发文档
+- **[API 设计规范](./development/api-standards.md)** - 接口设计标准
+- **[代码审查标准](./development/code-review-standards.md)** - 代码质量要求
+- **[监控系统设置](./development/monitoring-setup.md)** - 性能监控配置
+- **[SEO 和可访问性实现](./development/seo-accessibility-implementation.md)** - SEO 优化指南
+- **[B3.3 测试覆盖报告](./development/B3.3-testing-coverage-report.md)** - 测试实现情况
 
-- **[API 设计规范](./api-standards.md)** - 接口设计标准
-- **[代码审查标准](./code-review-standards.md)** - 代码质量要求
-- **[文件结构说明](./file-structure.md)** - 项目目录结构
+### 📁 reports/ - 项目报告
+- **[项目完成总结](./reports/project-completion-summary.md)** - 项目成果概览
+- **[部署验证报告](./reports/deployment-verification.md)** - 部署状态验证
+- **[部署成功清单](./reports/deployment-success-checklist.md)** - 部署检查清单
+- **[终端A进度报告](./reports/terminal-a-progress-2025-01-10.md)** - 最新进度更新
 
-### 功能配置
-
-- **[Giscus 评论设置](./giscus-setup.md)** - 评论系统配置
-- **[RSS 订阅配置](./rss-configuration.md)** - RSS/Atom/JSON Feed 设置
-- **[订阅功能设置](./subscription-setup.md)** - 邮件订阅配置
-- **[监控系统设置](./monitoring-setup.md)** - Google Analytics 配置
-- **[数据统计指南](./data-statistics-guide.md)** - 统计功能使用说明
-
-### 项目管理
-
-- **[项目交付文档](./project-handover.md)** - 正式交付清单
-- **[项目完成总结](./project-completion-summary.md)** - 项目成果概览
+### 📁 根目录核心文档
 - **[项目治理规范](./project-governance.md)** - 开发流程和规范
+- **[项目交付文档](./project-handover.md)** - 正式交付清单
+- **[文件结构说明](./file-structure.md)** - 项目目录结构
 - **[产品需求分析](./product-requirements-analysis.md)** - 需求实现对比
+
+### 📁 archive/ - 归档文档
+包含历史版本、已完成的任务报告和过时的文档
 
 ## 🗂️ 文档结构
 
 ```
 docs/
-├── README.md                     # 本文档
-├── 快速启动指南.md               # 开发者快速上手
-├── notion-complete-guide.md      # Notion CMS 完整配置
-├── deployment-guide.md           # 生产环境部署
-├── blogger-guide.md              # 博主操作手册
-├── quick-reference.md            # 快速参考卡
-├── maintenance-guide.md          # 维护指南
-├── api-standards.md              # API 规范
-├── code-review-standards.md      # 代码规范
+├── README.md                      # 本文档
+├── setup/                         # 配置指南
+│   ├── supabase-api-keys-guide.md
+│   ├── fix-vercel-deployment.md
+│   └── ...
+├── guides/                        # 使用指南
+│   ├── blogger-guide.md
+│   ├── maintenance-guide.md
+│   └── ...
+├── development/                   # 开发文档
+│   ├── api-standards.md
+│   ├── code-review-standards.md
+│   └── ...
+├── reports/                       # 项目报告
+│   ├── project-completion-summary.md
+│   ├── deployment-verification.md
+│   └── ...
+├── archive/                       # 归档文档
+│   └── ...
+├── project-governance.md          # 项目治理
+├── project-handover.md           # 项目交付
 ├── file-structure.md             # 文件结构
-├── giscus-setup.md              # 评论配置
-├── rss-configuration.md         # RSS 配置
-├── subscription-setup.md        # 订阅配置
-├── monitoring-setup.md          # 监控配置
-├── data-statistics-guide.md    # 统计指南
-├── product-requirements-analysis.md # 需求分析
-├── project-handover.md          # 交付文档
-├── project-completion-summary.md # 完成总结
-├── project-governance.md        # 项目治理
-└── archive/                     # 归档文档（历史版本）
+└── product-requirements-analysis.md # 需求分析
 ```
 
 ## 🔍 文档查找
@@ -70,39 +82,39 @@ docs/
 ### 按用户角色
 
 **博主/内容创作者**：
-- [博主使用指南](./blogger-guide.md)
-- [快速参考卡](./quick-reference.md)
+- [博主使用指南](./guides/blogger-guide.md)
+- [快速参考卡](./guides/quick-reference.md)
 
 **开发者**：
-- [快速启动指南](./快速启动指南.md)
-- [API 设计规范](./api-standards.md)
-- [代码审查标准](./code-review-standards.md)
+- [快速启动指南](./guides/快速启动指南.md)
+- [API 设计规范](./development/api-standards.md)
+- [代码审查标准](./development/code-review-standards.md)
 
 **运维人员**：
-- [部署指南](./deployment-guide.md)
-- [维护指南](./maintenance-guide.md)
-- [监控系统设置](./monitoring-setup.md)
+- [部署指南](./guides/deployment-guide.md)
+- [维护指南](./guides/maintenance-guide.md)
+- [监控系统设置](./development/monitoring-setup.md)
 
 ### 按任务类型
 
 **初始设置**：
-- [Notion 完整配置指南](./notion-complete-guide.md)
-- [Giscus 评论设置](./giscus-setup.md)
-- [订阅功能设置](./subscription-setup.md)
+- [Supabase 配置](./setup/supabase-api-keys-guide.md)
+- [Vercel 部署配置](./setup/fix-vercel-deployment.md)
+- [订阅功能设置](./setup/subscription-setup.md)
 
 **日常使用**：
-- [博主使用指南](./blogger-guide.md)
-- [数据统计指南](./data-statistics-guide.md)
+- [博主使用指南](./guides/blogger-guide.md)
+- [数据统计指南](./guides/data-statistics-guide.md)
 
 **问题解决**：
-- [维护指南](./maintenance-guide.md)
-- [快速参考卡](./quick-reference.md)
+- [维护指南](./guides/maintenance-guide.md)
+- [快速参考卡](./guides/quick-reference.md)
 
 ## 📌 重要提示
 
 1. **环境变量**：所有敏感配置都通过环境变量管理，请参考 `.env.example`
-2. **Notion 权限**：确保 Notion 集成有正确的数据库访问权限
-3. **静态生成**：博客使用静态生成，内容更新后需要重新构建
+2. **Supabase 配置**：确保 Supabase 密钥正确配置
+3. **ISR 模式**：博客使用 ISR 模式，支持增量静态再生
 
 ## 🔄 文档维护
 
@@ -115,7 +127,7 @@ docs/
 
 如果文档无法解决你的问题：
 
-1. 查看 [维护指南](./maintenance-guide.md) 的故障排除部分
+1. 查看 [维护指南](./guides/maintenance-guide.md) 的故障排除部分
 2. 检查项目的 GitHub Issues
 3. 联系项目维护者
 
@@ -127,4 +139,4 @@ docs/
 
 ---
 
-*文档最后更新：2025-01-07*
+*文档最后更新：2025-01-10*

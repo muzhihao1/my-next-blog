@@ -1,0 +1,109 @@
+/** @type {import('next').NextConfig} */
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
+const nextConfig = {
+  // 从原始配置复制
+  reactStrictMode: true,
+  images: {
+    domains: [
+      'images.unsplash.com', 
+      'source.unsplash.com',
+      'www.notion.so',
+      'notion.so',
+      's3.us-west-2.amazonaws.com',
+      'prod-files-secure.s3.us-west-2.amazonaws.com'
+    ],
+  },
+  
+  // webpack配置优化
+  webpack: (config, { isServer, dev }) => {
+    // 生产环境优化
+    if (!dev && !isServer) {
+      // 启用模块连接
+      config.optimization.concatenateModules = true
+      
+      // 代码分割策略
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // 第三方库
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /node_modules/,
+            priority: 20,
+          },
+          // 公共模块
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+            enforce: true,
+          },
+          // React相关
+          react: {
+            name: 'react',
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            chunks: 'all',
+            priority: 30,
+          },
+          // Supabase SDK
+          supabase: {
+            name: 'supabase',
+            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+            chunks: 'all',
+            priority: 25,
+          },
+          // UI组件库
+          ui: {
+            name: 'ui',
+            test: /[\\/]components[\\/](ui|layout)[\\/]/,
+            chunks: 'all',
+            priority: 15,
+          },
+        },
+      }
+      
+      // 运行时chunk单独打包
+      config.optimization.runtimeChunk = {
+        name: 'runtime',
+      }
+      
+      // 模块ID策略
+      config.optimization.moduleIds = 'deterministic'
+    }
+    
+    // Tree shaking优化
+    config.optimization.usedExports = true
+    config.optimization.sideEffects = false
+    
+    return config
+  },
+  
+  // 实验性功能
+  experimental: {
+    // 优化包导入
+    optimizePackageImports: [
+      '@supabase/supabase-js',
+      '@supabase/ssr',
+      'date-fns',
+      'react-syntax-highlighter',
+    ],
+  },
+  
+  // 编译器选项
+  compiler: {
+    // 删除console（生产环境）
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+}
+
+module.exports = withBundleAnalyzer(nextConfig)

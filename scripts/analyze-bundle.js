@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+
+/**
+ * Bundle分析脚本
+ * 用于分析Next.js应用的打包大小和依赖关系
+ */
+
+const { execSync } = require('child_process')
+const fs = require('fs')
+const path = require('path')
+
+console.log('🔍 开始Bundle分析...\n')
+
+// 检查是否安装了必要的依赖
+try {
+  require.resolve('@next/bundle-analyzer')
+} catch (e) {
+  console.error('❌ 错误：未安装 @next/bundle-analyzer')
+  console.log('请运行以下命令安装：')
+  console.log('npm install --save-dev @next/bundle-analyzer')
+  process.exit(1)
+}
+
+// 备份原始配置文件
+const configPath = path.join(process.cwd(), 'next.config.js')
+const bundleConfigPath = path.join(process.cwd(), 'next.config.bundle.js')
+const backupPath = path.join(process.cwd(), 'next.config.backup.js')
+
+if (!fs.existsSync(bundleConfigPath)) {
+  console.error('❌ 错误：未找到 next.config.bundle.js')
+  console.log('请确保已创建bundle分析配置文件')
+  process.exit(1)
+}
+
+console.log('📦 准备构建并分析...')
+
+try {
+  // 备份当前配置
+  if (fs.existsSync(configPath)) {
+    fs.copyFileSync(configPath, backupPath)
+    console.log('✅ 已备份原始配置')
+  }
+  
+  // 使用bundle配置
+  fs.copyFileSync(bundleConfigPath, configPath)
+  console.log('✅ 已切换到bundle分析配置')
+  
+  // 设置环境变量并构建
+  console.log('\n🏗️  开始构建（这可能需要几分钟）...')
+  execSync('ANALYZE=true npm run build', { 
+    stdio: 'inherit',
+    env: { ...process.env, ANALYZE: 'true' }
+  })
+  
+  console.log('\n✅ Bundle分析完成！')
+  console.log('📊 分析报告已在浏览器中打开')
+  
+} catch (error) {
+  console.error('\n❌ 构建失败:', error.message)
+} finally {
+  // 恢复原始配置
+  if (fs.existsSync(backupPath)) {
+    fs.copyFileSync(backupPath, configPath)
+    fs.unlinkSync(backupPath)
+    console.log('\n✅ 已恢复原始配置')
+  }
+}
+
+// 显示优化建议
+console.log('\n💡 优化建议：')
+console.log('1. 检查大型依赖包，考虑是否可以使用更轻量的替代品')
+console.log('2. 确保未使用的代码被正确tree-shaking')
+console.log('3. 考虑使用动态导入延迟加载大型组件')
+console.log('4. 检查是否有重复的依赖包')
+console.log('5. 使用 next/dynamic 对非关键组件进行代码分割\n')
+
+// 生成分析报告
+const reportPath = path.join(process.cwd(), 'bundle-analysis-report.txt')
+const report = `
+Bundle分析报告
+生成时间：${new Date().toISOString()}
+
+请查看浏览器中打开的交互式报告，重点关注：
+
+1. 最大的包：
+   - 检查是否真的需要这些依赖
+   - 是否可以按需导入而不是完整导入
+
+2. 重复的包：
+   - 检查是否有多个版本的同一个包
+   - 使用 npm dedupe 优化
+
+3. 未使用的导出：
+   - 确保正确配置了tree shaking
+   - 使用具名导入而不是默认导入
+
+4. 建议的优化操作：
+   - 大型库考虑CDN加载
+   - 使用生产版本的库
+   - 启用压缩和最小化
+
+详细分析结果请查看：
+- .next/analyze/client.html
+- .next/analyze/server.html
+`
+
+fs.writeFileSync(reportPath, report)
+console.log(`📄 分析报告已保存到: ${reportPath}`)
+
+process.exit(0)

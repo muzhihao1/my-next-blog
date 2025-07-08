@@ -14,6 +14,7 @@ import TagList from '@/components/features/TagList'
 import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/FavoriteButton'
 import { FavoriteType } from '@/lib/hooks/useFavorites'
 import { ContentContainer } from '@/components/ui/Container'
+import { CommentSection } from '@/components/comments/CommentSection'
 
 // ISR配置：每小时重新验证一次
 export const revalidate = 3600
@@ -275,6 +276,8 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
             </Link>
           </div>
 
+          {/* 评论区域 */}
+          <CommentSection contentId={post.id} contentType="post" />
 
           {/* 订阅区域 */}
           <div className="subscribe-section">

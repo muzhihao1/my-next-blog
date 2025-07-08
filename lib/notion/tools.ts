@@ -6,7 +6,7 @@ import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
-import { cache } from 'react'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
 import type { Tool } from '../../types/tool'
 import { withRetry } from '@/lib/utils/retry'
 
@@ -108,7 +108,7 @@ async function _getTools(): Promise<Tool[]> {
  * const tools = await getTools();
  * console.log(`Found ${tools.length} tools`);
  */
-export const getTools = cache(_getTools)
+export const getTools = _getTools // TODO: 重新启用 cache
 
 /**
  * Internal function to get tools by category
@@ -129,7 +129,7 @@ async function _getToolsByCategory(category: Tool['category']): Promise<Tool[]> 
  * const devTools = await getToolsByCategory('development');
  * console.log(`Found ${devTools.length} development tools`);
  */
-export const getToolsByCategory = cache(_getToolsByCategory)
+export const getToolsByCategory = _getToolsByCategory // TODO: 重新启用 cache
 
 /**
  * Internal function to get a single tool by slug with retry logic
@@ -221,7 +221,7 @@ async function _getToolBySlug(slug: string): Promise<Tool | null> {
  *   console.log(`Found tool: ${tool.name}`);
  * }
  */
-export const getToolBySlug = cache(_getToolBySlug)
+export const getToolBySlug = _getToolBySlug // TODO: 重新启用 cache
 
 /**
  * Internal function to get all tool slugs
@@ -247,7 +247,7 @@ async function _getAllToolSlugs(): Promise<string[]> {
  * const slugs = await getAllToolSlugs();
  * // ['visual-studio-code', 'github-copilot', 'docker', ...]
  */
-export const getAllToolSlugs = cache(_getAllToolSlugs)
+export const getAllToolSlugs = _getAllToolSlugs // TODO: 重新启用 cache
 
 /**
  * Parse a Notion page into a Tool object

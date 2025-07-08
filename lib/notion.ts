@@ -6,7 +6,7 @@ import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
-import { cache } from 'react'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
 import type { 
   BlogPost, 
   NotionPage, 
@@ -122,9 +122,10 @@ async function _fetchPublishedPosts(): Promise<BlogPost[]> {
 }
 
 /**
- * Get all published blog posts from Notion with React cache
+ * Get all published blog posts from Notion
+ * TODO: 重新启用 React cache 当兼容性问题解决后
  */
-export const getPublishedPosts = cache(_fetchPublishedPosts)
+export const getPublishedPosts = _fetchPublishedPosts
 
 /**
  * Internal function to fetch a single blog post by slug with retry logic
@@ -202,9 +203,10 @@ async function _fetchPostBySlug(slug: string): Promise<BlogPost | null> {
 }
 
 /**
- * Get a single blog post by slug with React cache
+ * Get a single blog post by slug
+ * TODO: 重新启用 React cache 当兼容性问题解决后
  */
-export const getPostBySlug = cache(_fetchPostBySlug)
+export const getPostBySlug = _fetchPostBySlug
 
 /**
  * Internal function to get all post slugs
@@ -222,7 +224,7 @@ async function _getAllPostSlugs(): Promise<string[]> {
 /**
  * Get all post slugs for static generation with React cache
  */
-export const getAllPostSlugs = cache(_getAllPostSlugs)
+export const getAllPostSlugs = _getAllPostSlugs
 
 /**
  * Alias for getPublishedPosts for compatibility

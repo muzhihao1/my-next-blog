@@ -8,7 +8,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:notion": "node scripts/test-notion-connection.js"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
+    "test:api": "tsx tests/api-integration/run-tests.ts",
+    "test:api:auth": "tsx tests/api-integration/auth.test.ts",
+    "test:api:comments": "tsx tests/api-integration/comments.test.ts",
+    "test:notion": "node scripts/test-notion-connection.js",
+    "test:supabase": "node scripts/test-supabase-connection.js",
+    "db:init": "echo '请在 Supabase SQL Editor 中执行 scripts/supabase-init.sql'",
+    "analyze": "node scripts/analyze-bundle.js",
+    "build:analyze": "ANALYZE=true npm run build",
+    "sync:algolia": "tsx scripts/sync-algolia.ts",
+    "build:with-search": "npm run sync:algolia && npm run build"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +29,8 @@
   "description": "",
   "dependencies": {
     "@notionhq/client": "^3.1.3",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.50.3",
     "@types/node": "^24.0.4",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -39,7 +54,15 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
+    "babel-jest": "^30.0.4",
     "eslint": "^9.30.1",
-    "eslint-config-next": "^15.3.5"
+    "eslint-config-next": "^15.3.5",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "ts-node": "^10.9.2"
   }
 }

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Search } from '@/components/features/Search'
+import AuthButton from '@/components/auth/AuthButton'
 
 const navigation = [
   { name: '首页', href: '/' },
@@ -39,11 +40,12 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav id="main-navigation" className="hidden md:flex items-center space-x-8" aria-label="主导航">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
                 className={`text-sm font-medium transition-colors duration-200 ${
                   isActive(item.href)
                     ? 'text-blue-600 dark:text-blue-400'
@@ -62,6 +64,9 @@ export function Header() {
 
             {/* Theme Toggle */}
             <ThemeToggle />
+
+            {/* Auth Button */}
+            <AuthButton />
 
             {/* Mobile Menu Button */}
             <button
