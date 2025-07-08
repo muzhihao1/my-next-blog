@@ -1,6 +1,7 @@
 import { getPublishedPosts } from '@/lib/notion'
 import { fallbackPosts } from '@/lib/fallback-posts'
 import Link from 'next/link'
+import type { BlogPost } from '@/types/notion'
 
 export default async function ArchivePage() {
   let posts = []
@@ -12,14 +13,14 @@ export default async function ArchivePage() {
   }
 
   // 按年份分组文章
-  const postsByYear = posts.reduce((acc: Record<string, typeof posts>, post) => {
+  const postsByYear = posts.reduce((acc: Record<string, BlogPost[]>, post: BlogPost) => {
     const year = new Date(post.date).getFullYear()
     if (!acc[year]) {
       acc[year] = []
     }
     acc[year].push(post)
     return acc
-  }, {} as Record<string, typeof posts>)
+  }, {} as Record<string, BlogPost[]>)
 
   // 按年份倒序排列
   const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a))
