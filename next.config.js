@@ -37,7 +37,7 @@ const nextConfig = {
   // 启用实验性功能
   experimental: {
     // Next.js 15 不再需要特殊的ISR配置
-  }
+  },
   
   // 配置重定向（如果需要）
   async redirects() {
@@ -70,7 +70,7 @@ const nextConfig = {
         ],
       },
     ]
-  },
+  }
 }
 
 module.exports = nextConfig
