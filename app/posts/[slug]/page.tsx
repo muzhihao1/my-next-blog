@@ -32,7 +32,7 @@ export async function generateStaticParams() {
     if (process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID) {
       const slugs = await getAllPostSlugs()
       if (slugs.length > 0) {
-        return slugs.map((slug) => ({ slug }))
+        return slugs.map((slug: string) => ({ slug }))
       }
     }
   } catch (error) {
@@ -40,7 +40,7 @@ export async function generateStaticParams() {
   }
   
   // Return fallback slugs
-  return fallbackSlugs.map((slug) => ({ slug }))
+  return fallbackSlugs.map((slug: string) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {

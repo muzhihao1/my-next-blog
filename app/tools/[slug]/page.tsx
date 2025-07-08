@@ -20,14 +20,14 @@ export async function generateStaticParams() {
   try {
     const slugs = await getAllToolSlugs()
     if (slugs.length > 0) {
-      return slugs.map(slug => ({ slug }))
+      return slugs.map((slug: string) => ({ slug }))
     }
   } catch (error) {
     console.error('Error generating static params:', error)
   }
   
   // Fallback to static tools
-  return fallbackTools.map(tool => ({ slug: tool.slug }))
+  return fallbackTools.map((tool: Tool) => ({ slug: tool.slug }))
 }
 
 /**
