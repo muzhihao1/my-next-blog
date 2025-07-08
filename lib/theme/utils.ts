@@ -8,6 +8,8 @@ import { Theme, UserThemePreferences } from './types'
  * 应用主题到 DOM
  */
 export function applyTheme(theme: Theme, preferences: UserThemePreferences) {
+  if (typeof window === 'undefined') return
+  
   const root = document.documentElement
 
   // 应用颜色变量

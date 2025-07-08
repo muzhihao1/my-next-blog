@@ -1,0 +1,27 @@
+# 临时文件清理列表
+
+## 进度报告文件（已删除）
+- terminal-a-progress-2025-01-10.md
+- terminal-b-progress-2025-01-10.md
+- terminal-a-algolia-progress-2025-01-10.md
+- terminal-a-realtime-progress-2025-01-10.md
+- terminal-a-monitoring-progress-2025-01-11.md
+- terminal-a-recommendation-progress-2025-01-11.md
+- terminal-a-deployment-progress-2025-01-11.md
+- terminal-a-final-summary-2025-01-11.md
+- terminal-a-b5-b6-completion-2025-01-11.md
+- B1-testing-progress.md
+- B3.3-testing-progress.md
+- algolia-implementation-progress.md
+- terminal-b-search-completion-summary.md
+
+## Archive目录中的临时报告（已删除）
+- project-status-report.md
+- file-organization-report.md
+- terminal-c-final-report.md
+- build-issues-report.md
+- terminal-c-quality-review-report.md
+- terminal-supervision-report.md
+- build-success-report.md
+- documentation-cleanup-summary.md
+- terminal-a-phase2-summary.md

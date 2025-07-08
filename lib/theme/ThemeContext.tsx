@@ -59,26 +59,28 @@ export function ThemeProvider({
   useEffect(() => {
     setMounted(true)
     
-    const stored = localStorage.getItem(storageKey)
-    if (stored) {
-      try {
-        const savedPreferences = JSON.parse(stored) as UserThemePreferences
-        setPreferences(savedPreferences)
-        
-        // 加载保存的主题
-        const savedTheme = getThemeById(savedPreferences.currentTheme)
-        if (savedTheme) {
-          setThemeState(savedTheme)
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(storageKey)
+      if (stored) {
+        try {
+          const savedPreferences = JSON.parse(stored) as UserThemePreferences
+          setPreferences(savedPreferences)
+          
+          // 加载保存的主题
+          const savedTheme = getThemeById(savedPreferences.currentTheme)
+          if (savedTheme) {
+            setThemeState(savedTheme)
+          }
+        } catch (error) {
+          console.error('Failed to load theme preferences:', error)
         }
-      } catch (error) {
-        console.error('Failed to load theme preferences:', error)
       }
     }
   }, [storageKey])
 
   // 监听系统主题变化
   useEffect(() => {
-    if (preferences.mode !== 'system') return
+    if (preferences.mode !== 'system' || typeof window === 'undefined') return
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = (e: MediaQueryListEvent) => {
@@ -98,7 +100,7 @@ export function ThemeProvider({
 
   // 应用主题
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted || typeof window === 'undefined') return
     
     applyTheme(theme, preferences)
     
@@ -154,11 +156,6 @@ export function ThemeProvider({
     updatePreferences,
     resetTheme,
     availableThemes,
-  }
-
-  // 避免服务端渲染时的主题闪烁
-  if (!mounted) {
-    return <>{children}</>
   }
 
   return (
