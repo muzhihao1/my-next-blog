@@ -141,7 +141,7 @@ async function ToolContent({ slug }: { slug: string }) {
         
         <div className="flex items-center gap-6">
           <div className="flex items-center space-x-1">
-            {[...Array(5)].map((_, i) => (
+            {[...Array(5)].map((_: undefined, i: number) => (
               <svg
                 key={i}
                 className={`w-5 h-5 ${
@@ -196,7 +196,7 @@ async function ToolContent({ slug }: { slug: string }) {
               优点
             </h3>
             <ul className="space-y-2">
-              {tool.pros.map((pro, index) => (
+              {tool.pros.map((pro: string, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <svg className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -212,7 +212,7 @@ async function ToolContent({ slug }: { slug: string }) {
               缺点
             </h3>
             <ul className="space-y-2">
-              {tool.cons.map((con, index) => (
+              {tool.cons.map((con: string, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <svg className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -229,7 +229,7 @@ async function ToolContent({ slug }: { slug: string }) {
           <section>
             <h3 className="text-xl font-bold mb-4">使用场景</h3>
             <div className="flex flex-wrap gap-3">
-              {tool.useCases.map((useCase, index) => (
+              {tool.useCases.map((useCase: string, index: number) => (
                 <span
                   key={index}
                   className="px-4 py-2 bg-muted rounded-full text-sm"
@@ -246,7 +246,7 @@ async function ToolContent({ slug }: { slug: string }) {
           <section>
             <h3 className="text-xl font-bold mb-4">替代工具</h3>
             <div className="flex flex-wrap gap-3">
-              {tool.alternatives.map((alt, index) => (
+              {tool.alternatives.map((alt: string, index: number) => (
                 <span
                   key={index}
                   className="px-4 py-2 border border-border rounded-full text-sm hover:bg-muted transition-colors"
@@ -263,7 +263,7 @@ async function ToolContent({ slug }: { slug: string }) {
           <section>
             <h3 className="text-xl font-bold mb-4">标签</h3>
             <div className="flex flex-wrap gap-2">
-              {tool.tags.map((tag, index) => (
+              {tool.tags.map((tag: string, index: number) => (
                 <span
                   key={index}
                   className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
