@@ -21,7 +21,11 @@
     "analyze": "node scripts/analyze-bundle.js",
     "build:analyze": "ANALYZE=true npm run build",
     "sync:algolia": "tsx scripts/sync-algolia.ts",
-    "build:with-search": "npm run sync:algolia && npm run build"
+    "build:with-search": "npm run sync:algolia && npm run build",
+    "test:deployment": "tsx scripts/test-deployment.ts",
+    "db:migrate:analytics": "echo '请在 Supabase SQL Editor 中执行 scripts/supabase-migration-analytics.sql'",
+    "db:migrate:monitoring": "echo '请在 Supabase SQL Editor 中执行 scripts/supabase-migration-monitoring.sql'",
+    "db:migrate:notifications": "echo '请在 Supabase SQL Editor 中执行 scripts/supabase-migration-notifications.sql'"
   },
   "keywords": [],
   "author": "",
