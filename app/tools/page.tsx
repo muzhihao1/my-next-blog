@@ -40,11 +40,11 @@ async function ToolsContent() {
 function ToolsSkeleton() {
   return (
     <div className="space-y-12">
-      {[1, 2, 3].map(section => (
+      {[1, 2, 3].map((section: number) => (
         <section key={section}>
           <div className="h-8 w-32 bg-muted rounded mb-6 animate-pulse" />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map(item => (
+            {[1, 2, 3].map((item: number) => (
               <div
                 key={item}
                 className="p-6 rounded-lg border border-border bg-card"
