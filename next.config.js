@@ -36,9 +36,8 @@ const nextConfig = {
   
   // 启用实验性功能
   experimental: {
-    // 启用增量缓存
-    isrMemoryCacheSize: 25 * 1024 * 1024, // 25MB
-  },
+    // Next.js 15 不再需要特殊的ISR配置
+  }
   
   // 配置重定向（如果需要）
   async redirects() {
