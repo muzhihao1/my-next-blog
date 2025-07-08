@@ -1,0 +1,37 @@
+#!/bin/bash
+
+echo "📝 请在 Supabase Dashboard → Settings → API 中找到您的密钥"
+echo ""
+read -p "请输入 anon key (公开密钥): " ANON_KEY
+read -p "请输入 service_role key (服务端密钥): " SERVICE_KEY
+
+# 添加到 .env.local
+cat >> .env.local << EOF
+
+# Supabase 配置
+NEXT_PUBLIC_SUPABASE_URL=https://xelyobfvfjqeuysfzpcf.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY=$SERVICE_KEY
+
+# 功能开关
+NEXT_PUBLIC_REALTIME_ENABLED=true
+NEXT_PUBLIC_ANALYTICS_ENABLED=true
+NEXT_PUBLIC_MONITORING_ENABLED=true
+
+# 实时配置
+NEXT_PUBLIC_REALTIME_HEARTBEAT_INTERVAL=30000
+NEXT_PUBLIC_REALTIME_RECONNECT_DELAY=5000
+
+# 分析配置
+NEXT_PUBLIC_ANALYTICS_BATCH_SIZE=10
+NEXT_PUBLIC_ANALYTICS_FLUSH_INTERVAL=10000
+
+# 监控配置
+NEXT_PUBLIC_MONITORING_SAMPLE_RATE=1.0
+NEXT_PUBLIC_MONITORING_REPORT_INTERVAL=60000
+
+# 缓存配置
+CACHE_TTL=3600000
+EOF
+
+echo "✅ 环境变量已配置完成！"

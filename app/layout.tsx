@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer'
 import { SEO, generateWebsiteStructuredData } from '@/components/seo/SEO'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
+import { ThemeProvider } from '@/lib/theme/ThemeContext'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -90,24 +91,26 @@ export default function RootLayout({
   })
 
   return (
-    <html lang="zh-CN" className="light">
+    <html lang="zh-CN">
       <head>
         <SEO structuredData={websiteStructuredData} />
       </head>
-      <body className="bg-white text-gray-900">
-        <AuthProvider>
-          {/* 跳转链接 - 提升可访问性 */}
-          <SkipLink href="#main-content">跳转到主要内容</SkipLink>
-          <SkipLink href="#main-navigation">跳转到导航</SkipLink>
-          
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main id="main-content" className="flex-grow" role="main" aria-label="主要内容">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </AuthProvider>
+      <body>
+        <ThemeProvider>
+          <AuthProvider>
+            {/* 跳转链接 - 提升可访问性 */}
+            <SkipLink href="#main-content">跳转到主要内容</SkipLink>
+            <SkipLink href="#main-navigation">跳转到导航</SkipLink>
+            
+            <div className="min-h-screen flex flex-col">
+              <Header />
+              <main id="main-content" className="flex-grow" role="main" aria-label="主要内容">
+                {children}
+              </main>
+              <Footer />
+            </div>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

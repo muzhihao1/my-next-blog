@@ -41,7 +41,7 @@ export function CommentItem({
 
     setSubmitting(true)
     try {
-      const response = await fetch(`/api/comments/${comment.id}`, {
+      const response = await fetch(`/api/comment/${comment.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -69,7 +69,7 @@ export function CommentItem({
 
     setSubmitting(true)
     try {
-      const response = await fetch(`/api/comments/${comment.id}`, {
+      const response = await fetch(`/api/comment/${comment.id}`, {
         method: 'DELETE'
       })
 

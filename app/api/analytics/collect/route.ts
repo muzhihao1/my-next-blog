@@ -5,7 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { AnalyticsEvent, EventType } from '@/lib/analytics/types'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { headers } from 'next/headers'
 
 /**
@@ -80,8 +80,8 @@ function parseUserAgent(ua: string) {
 /**
  * 获取客户端IP
  */
-function getClientIP(request: NextRequest): string {
-  const headersList = headers()
+async function getClientIP(request: NextRequest): Promise<string> {
+  const headersList = await headers()
   
   // 尝试各种头部
   const forwardedFor = headersList.get('x-forwarded-for')
@@ -153,12 +153,12 @@ export async function POST(request: NextRequest) {
     }
     
     // 获取请求信息
-    const clientIP = getClientIP(request)
+    const clientIP = await getClientIP(request)
     const userAgent = request.headers.get('user-agent') || ''
     const { browser, browserVersion, os, osVersion } = parseUserAgent(userAgent)
     
-    // 创建 Supabase 客户端
-    const supabase = await createClient()
+    // 创建 Supabase 管理客户端（用于插入分析数据）
+    const supabase = createAdminClient()
     
     // 处理每个事件
     const processedEvents = []
@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
     }
     
     // 更新会话信息
-    const sessionIds = [...new Set(processedEvents.map(e => e.session_id))]
+    const sessionIds = Array.from(new Set(processedEvents.map(e => e.session_id)))
     for (const sessionId of sessionIds) {
       const sessionEvents = processedEvents.filter(e => e.session_id === sessionId)
       const firstEvent = sessionEvents[0]
@@ -255,12 +255,13 @@ export async function POST(request: NextRequest) {
  * 更新实时统计
  */
 async function updateRealtimeStats(events: AnalyticsEvent[]) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   
   // 更新当前活跃用户
   const uniqueSessions = new Set(events.map(e => e.session_id))
+  const sessionIds = Array.from(uniqueSessions)
   
-  for (const sessionId of uniqueSessions) {
+  for (const sessionId of sessionIds) {
     await supabase
       .from('realtime_active_sessions')
       .upsert({

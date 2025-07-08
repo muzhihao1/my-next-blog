@@ -1,58 +1,13 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
   "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
-    },
-    "app/**/*.tsx": {
+    "app/api/analytics/export/route.ts": {
       "maxDuration": 30
     }
   },
-  "crons": [
+  "rewrites": [
     {
-      "path": "/api/revalidate",
-      "schedule": "0 */6 * * *"
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
     }
-  ],
-  "redirects": [
-    {
-      "source": "/posts",
-      "destination": "/blog",
-      "permanent": true
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        }
-      ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, must-revalidate"
-        }
-      ]
-    }
-  ],
-  "regions": ["sin1"],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }

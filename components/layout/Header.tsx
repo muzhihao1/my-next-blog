@@ -3,8 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { Search } from '@/components/features/Search'
+import { ThemeSettings } from '@/components/theme/ThemeSettings'
+import { AlgoliaSearch } from '@/components/search/AlgoliaSearch'
+import { NotificationCenter } from '@/components/realtime/NotificationCenter'
 import AuthButton from '@/components/auth/AuthButton'
 
 const navigation = [
@@ -60,10 +61,13 @@ export function Header() {
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <Search />
+            <AlgoliaSearch />
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* Notifications */}
+            <NotificationCenter />
+
+            {/* Theme Settings */}
+            <ThemeSettings />
 
             {/* Auth Button */}
             <AuthButton />

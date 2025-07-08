@@ -100,7 +100,7 @@ export const commentTests = {
     try {
       const fakeCommentId = '00000000-0000-0000-0000-000000000000'
       const response = await fetch(
-        `${TEST_CONFIG.baseUrl}/api/comments/${fakeCommentId}`,
+        `${TEST_CONFIG.baseUrl}/api/comment/${fakeCommentId}`,
         {
           method: 'PATCH',
           headers: {
@@ -136,7 +136,7 @@ export const commentTests = {
     try {
       const fakeCommentId = '00000000-0000-0000-0000-000000000000'
       const response = await fetch(
-        `${TEST_CONFIG.baseUrl}/api/comments/${fakeCommentId}`,
+        `${TEST_CONFIG.baseUrl}/api/comment/${fakeCommentId}`,
         {
           method: 'DELETE',
           credentials: 'include',

@@ -71,7 +71,7 @@ export default function SearchMigrationPage() {
       setTestResults({
         provider,
         query: testQuery,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       })
     }
   }

@@ -3,13 +3,13 @@
  * 提供搜索和索引管理功能
  */
 
-import algoliasearch, { SearchClient } from 'algoliasearch'
+import { algoliasearch, type SearchClient } from 'algoliasearch'
 
 // 环境变量验证
 const ALGOLIA_APP_ID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID || process.env.ALGOLIA_APP_ID
-const ALGOLIA_SEARCH_KEY = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_KEY
-const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_KEY
-const ALGOLIA_INDEX_NAME = process.env.ALGOLIA_INDEX_NAME || 'blog_content'
+const ALGOLIA_SEARCH_KEY = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+const ALGOLIA_ADMIN_KEY = process.env.ALGOLIA_ADMIN_API_KEY
+const ALGOLIA_INDEX_NAME = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || 'posts'
 
 /**
  * 创建搜索客户端（只读）

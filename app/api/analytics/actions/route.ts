@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { ActionType, ContentType } from '@/types/supabase'
 
@@ -19,11 +18,7 @@ interface ActionData {
  */
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
     const adminClient = createAdminClient()
-    
-    // 获取当前用户（可选）
-    const { data: { user } } = await supabase.auth.getUser()
     
     const { actions } = await request.json() as { actions: ActionData[] }
 
@@ -43,7 +38,7 @@ export async function POST(request: NextRequest) {
                ['view', 'like', 'unlike', 'bookmark', 'unbookmark', 'comment', 'share'].includes(action.actionType)
       })
       .map(action => ({
-        user_id: action.userId || user?.id || 'anonymous',
+        user_id: action.userId || 'anonymous',
         action_type: action.actionType,
         content_id: action.contentId,
         content_type: action.contentType,

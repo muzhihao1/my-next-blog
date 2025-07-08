@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getAnalyticsAggregator } from '@/lib/analytics/aggregator'
 import { ExportConfig, TimeGranularity } from '@/lib/analytics/types'
 import * as XLSX from 'xlsx'
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     // 如果需要原始数据
     if (config.include_raw_data) {
-      const supabase = await createClient()
+      const supabase = createAdminClient()
       const { data: rawEvents } = await supabase
         .from('analytics_events')
         .select('*')
@@ -355,7 +355,7 @@ export async function PUT(request: NextRequest) {
       format 
     } = body
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // 创建定期报告任务
     const { data, error } = await supabase
@@ -368,6 +368,8 @@ export async function PUT(request: NextRequest) {
         is_active: true,
         created_at: new Date().toISOString(),
       })
+      .select()
+      .single()
 
     if (error) {
       throw error
@@ -375,7 +377,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      report_id: data[0].id,
+      report_id: data?.id || 'scheduled',
     })
 
   } catch (error) {

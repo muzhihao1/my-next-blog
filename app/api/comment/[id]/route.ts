@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 // 更新评论
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -18,7 +18,7 @@ export async function PATCH(
       )
     }
 
-    const { id } = params
+    const { id } = await context.params
     const body = await request.json()
     const { content } = body
 
@@ -101,7 +101,7 @@ export async function PATCH(
 // 删除评论
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -115,7 +115,7 @@ export async function DELETE(
       )
     }
 
-    const { id } = params
+    const { id } = await context.params
 
     // 检查评论是否存在且属于当前用户
     const { data: existingComment, error: fetchError } = await supabase

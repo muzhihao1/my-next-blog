@@ -1,0 +1,6 @@
+**/__tests__/**
+*.test.ts
+*.test.tsx
+scripts/*
+*.config.js
+*.config.ts
