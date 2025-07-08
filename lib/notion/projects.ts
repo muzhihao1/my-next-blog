@@ -1,6 +1,8 @@
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
+import { cache } from 'react'
 import { Project } from '@/types/project'
+import { withRetry } from '@/lib/utils/retry'
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
@@ -10,7 +12,7 @@ const n2m = new NotionToMarkdown({ notionClient: notion })
 
 const projectsDatabaseId = process.env.NOTION_PROJECTS_DB || ''
 
-export async function getProjects(): Promise<Project[]> {
+async function _getProjects(): Promise<Project[]> {
   if (!projectsDatabaseId) {
     console.warn('NOTION_PROJECTS_DB is not configured')
     return []
@@ -45,21 +47,8 @@ export async function getProjects(): Promise<Project[]> {
 
     let response
     try {
-      response = await notion.databases.query({
-        database_id: projectsDatabaseId,
-        filter: {
-          property: 'Status',
-          select: {
-            does_not_equal: 'Draft'
-          }
-        },
-        sorts: sortOptions
-      })
-    } catch (error: any) {
-      // 如果包含 Featured 字段的排序失败，尝试不使用 Featured 字段
-      if (error.message?.includes('Featured') || error.code === 'validation_error') {
-        console.warn('Featured property not found, using simplified sorting')
-        response = await notion.databases.query({
+      response = await withRetry(
+        () => notion.databases.query({
           database_id: projectsDatabaseId,
           filter: {
             property: 'Status',
@@ -67,13 +56,39 @@ export async function getProjects(): Promise<Project[]> {
               does_not_equal: 'Draft'
             }
           },
-          sorts: [
-            {
-              property: 'StartDate',
-              direction: 'descending'
-            }
-          ]
-        })
+          sorts: sortOptions
+        }),
+        {
+          maxRetries: 3,
+          retryableErrors: (error) => {
+            return error.status === 429 || 
+                   error.status >= 500 || 
+                   error.code === 'ECONNRESET'
+          }
+        }
+      )
+    } catch (error: any) {
+      // 如果包含 Featured 字段的排序失败，尝试不使用 Featured 字段
+      if (error.message?.includes('Featured') || error.code === 'validation_error') {
+        console.warn('Featured property not found, using simplified sorting')
+        response = await withRetry(
+          () => notion.databases.query({
+            database_id: projectsDatabaseId,
+            filter: {
+              property: 'Status',
+              select: {
+                does_not_equal: 'Draft'
+              }
+            },
+            sorts: [
+              {
+                property: 'StartDate',
+                direction: 'descending'
+              }
+            ]
+          }),
+          { maxRetries: 3 }
+        )
       } else {
         throw error
       }
@@ -81,7 +96,10 @@ export async function getProjects(): Promise<Project[]> {
 
     const projects = await Promise.all(
       response.results.map(async (page: any) => {
-        const mdblocks = await n2m.pageToMarkdown(page.id)
+        const mdblocks = await withRetry(
+          () => n2m.pageToMarkdown(page.id),
+          { maxRetries: 2 }
+        )
         const mdString = n2m.toMarkdownString(mdblocks)
         
         return formatProject(page, mdString.parent)
@@ -103,15 +121,21 @@ export async function getProjects(): Promise<Project[]> {
   }
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export const getProjects = cache(_getProjects)
+
+async function _getProjectBySlug(slug: string): Promise<Project | null> {
   const projects = await getProjects()
   return projects.find(project => project.slug === slug) || null
 }
 
-export async function getFeaturedProjects(): Promise<Project[]> {
+export const getProjectBySlug = cache(_getProjectBySlug)
+
+async function _getFeaturedProjects(): Promise<Project[]> {
   const projects = await getProjects()
   return projects.filter(project => project.featured).slice(0, 3)
 }
+
+export const getFeaturedProjects = cache(_getFeaturedProjects)
 
 function formatProject(page: any, content: string): Project {
   const properties = page.properties

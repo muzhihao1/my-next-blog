@@ -15,6 +15,9 @@ import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/Fa
 import { FavoriteType } from '@/lib/hooks/useFavorites'
 import { ContentContainer } from '@/components/ui/Container'
 
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   // Use fallback slugs for static export when Notion API may not be available
   const fallbackSlugs = [

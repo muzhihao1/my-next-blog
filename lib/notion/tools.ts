@@ -6,7 +6,9 @@ import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
+import { cache } from 'react'
 import type { Tool } from '../../types/tool'
+import { withRetry } from '@/lib/utils/retry'
 
 // Initialize Notion client
 const notion = new Client({
@@ -17,7 +19,7 @@ const notion = new Client({
 const n2m = new NotionToMarkdown({ notionClient: notion })
 
 // Simple in-memory cache
-const cache = new Map<string, { data: any; timestamp: number; ttl: number }>()
+const toolsCache = new Map<string, { data: any; timestamp: number; ttl: number }>()
 
 /**
  * Validate required environment variables for Notion integration
@@ -36,20 +38,14 @@ function validateEnv(): void {
 }
 
 /**
- * Get all tools from Notion database
- * @async
- * @returns {Promise<Tool[]>} Array of published tools sorted by featured status and rating
- * @description Fetches all published tools from Notion database with caching support.
- * Falls back to empty array if environment variables are missing or if an error occurs.
- * @example
- * const tools = await getTools();
- * console.log(`Found ${tools.length} tools`);
+ * Internal function to get all tools with retry logic
+ * @private
  */
-export async function getTools(): Promise<Tool[]> {
+async function _getTools(): Promise<Tool[]> {
   validateEnv()
   
   const cacheKey = 'all_tools'
-  const cached = cache.get(cacheKey)
+  const cached = toolsCache.get(cacheKey)
   const ttl = parseInt(process.env.CACHE_TTL || '3600000') // 1 hour default
   
   if (cached && Date.now() - cached.timestamp < cached.ttl) {
@@ -62,28 +58,38 @@ export async function getTools(): Promise<Tool[]> {
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_TOOLS_DB,
-      filter: {
-        property: 'Published',
-        checkbox: {
-          equals: true,
+    const response = await withRetry(
+      () => notion.databases.query({
+        database_id: process.env.NOTION_TOOLS_DB,
+        filter: {
+          property: 'Published',
+          checkbox: {
+            equals: true,
+          },
         },
-      },
-      sorts: [
-        {
-          property: 'Featured',
-          direction: 'descending',
-        },
-        {
-          property: 'Rating',
-          direction: 'descending',
-        },
-      ],
-    })
+        sorts: [
+          {
+            property: 'Featured',
+            direction: 'descending',
+          },
+          {
+            property: 'Rating',
+            direction: 'descending',
+          },
+        ],
+      }),
+      {
+        maxRetries: 3,
+        retryableErrors: (error) => {
+          return error.status === 429 || 
+                 error.status >= 500 || 
+                 error.code === 'ECONNRESET'
+        }
+      }
+    )
 
     const tools = response.results.map(page => parseNotionTool(page as any))
-    cache.set(cacheKey, { data: tools, timestamp: Date.now(), ttl })
+    toolsCache.set(cacheKey, { data: tools, timestamp: Date.now(), ttl })
     
     return tools
   } catch (error) {
@@ -93,7 +99,28 @@ export async function getTools(): Promise<Tool[]> {
 }
 
 /**
- * Get tools filtered by category
+ * Get all tools from Notion database with React cache
+ * @async
+ * @returns {Promise<Tool[]>} Array of published tools sorted by featured status and rating
+ * @description Fetches all published tools from Notion database with caching support.
+ * Falls back to empty array if environment variables are missing or if an error occurs.
+ * @example
+ * const tools = await getTools();
+ * console.log(`Found ${tools.length} tools`);
+ */
+export const getTools = cache(_getTools)
+
+/**
+ * Internal function to get tools by category
+ * @private
+ */
+async function _getToolsByCategory(category: Tool['category']): Promise<Tool[]> {
+  const tools = await getTools()
+  return tools.filter(tool => tool.category === category)
+}
+
+/**
+ * Get tools filtered by category with React cache
  * @async
  * @param {Tool['category']} category - The tool category to filter by ('development' | 'design' | 'productivity' | 'hardware' | 'service')
  * @returns {Promise<Tool[]>} Array of tools matching the specified category
@@ -102,27 +129,15 @@ export async function getTools(): Promise<Tool[]> {
  * const devTools = await getToolsByCategory('development');
  * console.log(`Found ${devTools.length} development tools`);
  */
-export async function getToolsByCategory(category: Tool['category']): Promise<Tool[]> {
-  const tools = await getTools()
-  return tools.filter(tool => tool.category === category)
-}
+export const getToolsByCategory = cache(_getToolsByCategory)
 
 /**
- * Get a single tool by its URL slug
- * @async
- * @param {string} slug - The URL-friendly slug of the tool
- * @returns {Promise<Tool | null>} The tool object if found, null otherwise
- * @description Fetches a single tool from Notion by its slug, including full review content.
- * Uses caching to improve performance.
- * @example
- * const tool = await getToolBySlug('visual-studio-code');
- * if (tool) {
- *   console.log(`Found tool: ${tool.name}`);
- * }
+ * Internal function to get a single tool by slug with retry logic
+ * @private
  */
-export async function getToolBySlug(slug: string): Promise<Tool | null> {
+async function _getToolBySlug(slug: string): Promise<Tool | null> {
   const cacheKey = `tool_${slug}`
-  const cached = cache.get(cacheKey)
+  const cached = toolsCache.get(cacheKey)
   const ttl = parseInt(process.env.CACHE_TTL || '3600000')
   
   if (cached && Date.now() - cached.timestamp < cached.ttl) {
@@ -135,25 +150,35 @@ export async function getToolBySlug(slug: string): Promise<Tool | null> {
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_TOOLS_DB,
-      filter: {
-        and: [
-          {
-            property: 'Slug',
-            rich_text: {
-              equals: slug,
+    const response = await withRetry(
+      () => notion.databases.query({
+        database_id: process.env.NOTION_TOOLS_DB,
+        filter: {
+          and: [
+            {
+              property: 'Slug',
+              rich_text: {
+                equals: slug,
+              },
             },
-          },
-          {
-            property: 'Published',
-            checkbox: {
-              equals: true,
+            {
+              property: 'Published',
+              checkbox: {
+                equals: true,
+              },
             },
-          },
-        ],
-      },
-    })
+          ],
+        },
+      }),
+      {
+        maxRetries: 3,
+        retryableErrors: (error) => {
+          return error.status === 429 || 
+                 error.status >= 500 || 
+                 error.code === 'ECONNRESET'
+        }
+      }
+    )
 
     if (response.results.length === 0) {
       return null
@@ -162,8 +187,11 @@ export async function getToolBySlug(slug: string): Promise<Tool | null> {
     const page = response.results[0] as any
     const tool = parseNotionTool(page)
     
-    // Get page content for detailed review
-    const mdblocks = await n2m.pageToMarkdown(page.id)
+    // Get page content for detailed review with retry
+    const mdblocks = await withRetry(
+      () => n2m.pageToMarkdown(page.id),
+      { maxRetries: 2 }
+    )
     const mdString = n2m.toMarkdownString(mdblocks)
     const review = await markdownToHtml(mdString.parent)
     
@@ -172,7 +200,7 @@ export async function getToolBySlug(slug: string): Promise<Tool | null> {
       review,
     }
     
-    cache.set(cacheKey, { data: fullTool, timestamp: Date.now(), ttl })
+    toolsCache.set(cacheKey, { data: fullTool, timestamp: Date.now(), ttl })
     return fullTool
   } catch (error) {
     console.error(`Error fetching tool with slug ${slug}:`, error)
@@ -181,16 +209,25 @@ export async function getToolBySlug(slug: string): Promise<Tool | null> {
 }
 
 /**
- * Get all tool slugs for static page generation
+ * Get a single tool by its URL slug with React cache
  * @async
- * @returns {Promise<string[]>} Array of tool slugs
- * @description Fetches all tool slugs for Next.js static generation (generateStaticParams).
- * Returns empty array on error.
+ * @param {string} slug - The URL-friendly slug of the tool
+ * @returns {Promise<Tool | null>} The tool object if found, null otherwise
+ * @description Fetches a single tool from Notion by its slug, including full review content.
+ * Uses caching to improve performance.
  * @example
- * const slugs = await getAllToolSlugs();
- * // ['visual-studio-code', 'github-copilot', 'docker', ...]
+ * const tool = await getToolBySlug('visual-studio-code');
+ * if (tool) {
+ *   console.log(`Found tool: ${tool.name}`);
+ * }
  */
-export async function getAllToolSlugs(): Promise<string[]> {
+export const getToolBySlug = cache(_getToolBySlug)
+
+/**
+ * Internal function to get all tool slugs
+ * @private
+ */
+async function _getAllToolSlugs(): Promise<string[]> {
   try {
     const tools = await getTools()
     return tools.map(tool => tool.slug).filter(slug => slug && slug.length > 0)
@@ -199,6 +236,18 @@ export async function getAllToolSlugs(): Promise<string[]> {
     return []
   }
 }
+
+/**
+ * Get all tool slugs for static page generation with React cache
+ * @async
+ * @returns {Promise<string[]>} Array of tool slugs
+ * @description Fetches all tool slugs for Next.js static generation (generateStaticParams).
+ * Returns empty array on error.
+ * @example
+ * const slugs = await getAllToolSlugs();
+ * // ['visual-studio-code', 'github-copilot', 'docker', ...]
+ */
+export const getAllToolSlugs = cache(_getAllToolSlugs)
 
 /**
  * Parse a Notion page into a Tool object
@@ -280,5 +329,5 @@ async function markdownToHtml(markdown: string): Promise<string> {
  * const freshTools = await getTools();
  */
 export function clearToolsCache(): void {
-  cache.clear()
+  toolsCache.clear()
 }

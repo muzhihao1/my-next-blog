@@ -6,12 +6,14 @@ import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
 import { remark } from 'remark'
 import remarkHtml from 'remark-html'
+import { cache } from 'react'
 import type { 
   BlogPost, 
   NotionPage, 
   CacheItem 
 } from '../types/notion'
 import { NotionError } from '../types/notion'
+import { withRetry } from './utils/retry'
 
 // Initialize Notion client
 const notion = new Client({
@@ -66,9 +68,9 @@ function validateEnv() {
 }
 
 /**
- * Get all published blog posts from Notion
+ * Internal function to fetch published posts with retry logic
  */
-export async function getPublishedPosts(): Promise<BlogPost[]> {
+async function _fetchPublishedPosts(): Promise<BlogPost[]> {
   // 检查环境变量，如果缺失则返回空数组（让调用方使用 fallback）
   if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
     console.warn('Notion environment variables not configured, returning empty array')
@@ -82,21 +84,32 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID!,
-      filter: {
-        property: 'Published',
-        checkbox: {
-          equals: true,
+    const response = await withRetry(
+      () => notion.databases.query({
+        database_id: process.env.NOTION_DATABASE_ID!,
+        filter: {
+          property: 'Published',
+          checkbox: {
+            equals: true,
+          },
         },
-      },
-      sorts: [
-        {
-          property: 'Date',
-          direction: 'descending',
-        },
-      ],
-    })
+        sorts: [
+          {
+            property: 'Date',
+            direction: 'descending',
+          },
+        ],
+      }),
+      {
+        maxRetries: 3,
+        retryableErrors: (error) => {
+          // Retry on rate limits or server errors
+          return error.status === 429 || 
+                 error.status >= 500 || 
+                 error.code === 'ECONNRESET'
+        }
+      }
+    )
 
     const posts = response.results.map(page => parseNotionPage(page as any))
     cache.set(cacheKey, posts)
@@ -109,9 +122,14 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
 }
 
 /**
- * Get a single blog post by slug
+ * Get all published blog posts from Notion with React cache
  */
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+export const getPublishedPosts = cache(_fetchPublishedPosts)
+
+/**
+ * Internal function to fetch a single blog post by slug with retry logic
+ */
+async function _fetchPostBySlug(slug: string): Promise<BlogPost | null> {
   // 检查环境变量，如果缺失则返回 null（让调用方使用 fallback）
   if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
     console.warn('Notion environment variables not configured, returning null')
@@ -125,25 +143,35 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   }
 
   try {
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID!,
-      filter: {
-        and: [
-          {
-            property: 'Slug',
-            rich_text: {
-              equals: slug,
+    const response = await withRetry(
+      () => notion.databases.query({
+        database_id: process.env.NOTION_DATABASE_ID!,
+        filter: {
+          and: [
+            {
+              property: 'Slug',
+              rich_text: {
+                equals: slug,
+              },
             },
-          },
-          {
-            property: 'Published',
-            checkbox: {
-              equals: true,
+            {
+              property: 'Published',
+              checkbox: {
+                equals: true,
+              },
             },
-          },
-        ],
-      },
-    })
+          ],
+        },
+      }),
+      {
+        maxRetries: 3,
+        retryableErrors: (error) => {
+          return error.status === 429 || 
+                 error.status >= 500 || 
+                 error.code === 'ECONNRESET'
+        }
+      }
+    )
 
     if (response.results.length === 0) {
       return null
@@ -152,8 +180,11 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     const page = response.results[0] as any
     const post = parseNotionPage(page)
     
-    // Get page content
-    const mdblocks = await n2m.pageToMarkdown(page.id)
+    // Get page content with retry
+    const mdblocks = await withRetry(
+      () => n2m.pageToMarkdown(page.id),
+      { maxRetries: 2 }
+    )
     const mdString = n2m.toMarkdownString(mdblocks)
     const content = await markdownToHtml(mdString.parent)
     
@@ -171,9 +202,14 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 }
 
 /**
- * Get all post slugs for static generation
+ * Get a single blog post by slug with React cache
  */
-export async function getAllPostSlugs(): Promise<string[]> {
+export const getPostBySlug = cache(_fetchPostBySlug)
+
+/**
+ * Internal function to get all post slugs
+ */
+async function _getAllPostSlugs(): Promise<string[]> {
   try {
     const posts = await getPublishedPosts()
     return posts.map(post => post.slug).filter(slug => slug && slug.length > 0)
@@ -182,6 +218,11 @@ export async function getAllPostSlugs(): Promise<string[]> {
     return []
   }
 }
+
+/**
+ * Get all post slugs for static generation with React cache
+ */
+export const getAllPostSlugs = cache(_getAllPostSlugs)
 
 /**
  * Alias for getPublishedPosts for compatibility

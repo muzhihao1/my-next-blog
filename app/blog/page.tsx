@@ -3,6 +3,9 @@ import { getFallbackPosts } from '@/lib/fallback-posts'
 import Link from 'next/link'
 import { PageContainer } from '@/components/ui/Container'
 
+// ISR配置：每30分钟重新验证一次
+export const revalidate = 1800
+
 export default async function BlogPage() {
   const posts = await withFallback(
     () => getPublishedPosts(),

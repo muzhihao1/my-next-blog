@@ -6,6 +6,7 @@
 
 import { Client } from '@notionhq/client'
 import { NotionToMarkdown } from 'notion-to-md'
+import { cache } from 'react'
 import { 
   Book, 
   NotionBookProperties,
@@ -18,6 +19,7 @@ import {
   validateBookData 
 } from '@/types/bookshelf'
 import { fallbackBooks } from '@/lib/fallback-books'
+import { withRetry } from '@/lib/utils/retry'
 
 /**
  * Notion 客户端实例
@@ -53,14 +55,10 @@ let cacheTime: number | null = null
 const CACHE_TTL = parseInt(process.env.CACHE_TTL || '3600000', 10)
 
 /**
- * 获取所有书籍数据
- * @async
- * @returns {Promise<Book[]>} 返回书籍数组
- * @description 从 Notion 数据库获取所有书籍数据，按完成日期降序排列。
- * 包含缓存机制，当 Notion 不可用时使用后备数据。
- * @throws {Error} 当 Notion API 调用失败时，不会抛出错误，而是返回后备数据
+ * Internal function to get all books with retry logic
+ * @private
  */
-export async function getBooks(): Promise<Book[]> {
+async function _getBooks(): Promise<Book[]> {
   try {
     // 检查缓存
     if (booksCache && cacheTime && Date.now() - cacheTime < CACHE_TTL) {
@@ -70,18 +68,32 @@ export async function getBooks(): Promise<Book[]> {
     if (!booksDatabaseId) {
       throw new ConfigurationError('NOTION_BOOKS_DB environment variable is not configured')
     }
-    const response = await notion.databases.query({
-      database_id: booksDatabaseId,
-      sorts: [{
-        property: 'FinishDate',
-        direction: 'descending'
-      }]
-    })
+    
+    const response = await withRetry(
+      () => notion.databases.query({
+        database_id: booksDatabaseId,
+        sorts: [{
+          property: 'FinishDate',
+          direction: 'descending'
+        }]
+      }),
+      {
+        maxRetries: 3,
+        retryableErrors: (error) => {
+          return error.status === 429 || 
+                 error.status >= 500 || 
+                 error.code === 'ECONNRESET'
+        }
+      }
+    )
 
     const books = await Promise.all(
       response.results.map(async (page: any) => {
         try {
-          const mdblocks = await n2m.pageToMarkdown(page.id)
+          const mdblocks = await withRetry(
+            () => n2m.pageToMarkdown(page.id),
+            { maxRetries: 2 }
+          )
           const mdString = n2m.toMarkdownString(mdblocks)
           
           return formatBook(page, mdString.parent)
@@ -105,13 +117,20 @@ export async function getBooks(): Promise<Book[]> {
 }
 
 /**
- * 根据 ID 获取单本书籍
+ * 获取所有书籍数据 with React cache
  * @async
- * @param {string} id - 书籍 ID
- * @returns {Promise<Book | null>} 返回匹配的书籍或 null
- * @description 从书籍列表中查找指定 ID 的书籍
+ * @returns {Promise<Book[]>} 返回书籍数组
+ * @description 从 Notion 数据库获取所有书籍数据，按完成日期降序排列。
+ * 包含缓存机制，当 Notion 不可用时使用后备数据。
+ * @throws {Error} 当 Notion API 调用失败时，不会抛出错误，而是返回后备数据
  */
-export async function getBookById(id: string): Promise<Book | null> {
+export const getBooks = cache(_getBooks)
+
+/**
+ * Internal function to get book by ID
+ * @private
+ */
+async function _getBookById(id: string): Promise<Book | null> {
   try {
     if (!id || typeof id !== 'string') {
       throw new ResourceNotFoundError(
@@ -139,13 +158,19 @@ export async function getBookById(id: string): Promise<Book | null> {
 }
 
 /**
- * 根据阅读状态获取书籍
+ * 根据 ID 获取单本书籍 with React cache
  * @async
- * @param {Book['status']} status - 阅读状态（'reading' | 'read' | 'want-to-read'）
- * @returns {Promise<Book[]>} 返回指定状态的书籍数组
- * @description 筛选出特定阅读状态的所有书籍
+ * @param {string} id - 书籍 ID
+ * @returns {Promise<Book | null>} 返回匹配的书籍或 null
+ * @description 从书籍列表中查找指定 ID 的书籍
  */
-export async function getBooksByStatus(status: Book['status']): Promise<Book[]> {
+export const getBookById = cache(_getBookById)
+
+/**
+ * Internal function to get books by status
+ * @private
+ */
+async function _getBooksByStatus(status: Book['status']): Promise<Book[]> {
   try {
     if (!isValidBookStatus(status)) {
       console.warn(`Invalid status: ${status}. Using empty array.`)
@@ -161,15 +186,19 @@ export async function getBooksByStatus(status: Book['status']): Promise<Book[]> 
 }
 
 /**
- * 获取推荐书籍
+ * 根据阅读状态获取书籍 with React cache
  * @async
- * @param {number} [limit=6] - 返回数量限制
- * @returns {Promise<Book[]>} 返回高评分书籍数组
- * @description 获取评分 4 分及以上的书籍作为推荐
- * @example
- * const featuredBooks = await getFeaturedBooks(3) // 获取 3 本推荐书籍
+ * @param {Book['status']} status - 阅读状态（'reading' | 'read' | 'want-to-read'）
+ * @returns {Promise<Book[]>} 返回指定状态的书籍数组
+ * @description 筛选出特定阅读状态的所有书籍
  */
-export async function getFeaturedBooks(limit: number = 6): Promise<Book[]> {
+export const getBooksByStatus = cache(_getBooksByStatus)
+
+/**
+ * Internal function to get featured books
+ * @private
+ */
+async function _getFeaturedBooks(limit: number = 6): Promise<Book[]> {
   try {
     if (limit < 0 || !Number.isInteger(limit)) {
       console.warn(`Invalid limit: ${limit}. Using default value 6.`)
@@ -185,6 +214,17 @@ export async function getFeaturedBooks(limit: number = 6): Promise<Book[]> {
     return []
   }
 }
+
+/**
+ * 获取推荐书籍 with React cache
+ * @async
+ * @param {number} [limit=6] - 返回数量限制
+ * @returns {Promise<Book[]>} 返回高评分书籍数组
+ * @description 获取评分 4 分及以上的书籍作为推荐
+ * @example
+ * const featuredBooks = await getFeaturedBooks(3) // 获取 3 本推荐书籍
+ */
+export const getFeaturedBooks = cache(_getFeaturedBooks)
 
 /**
  * 格式化 Notion 页面数据为 Book 类型

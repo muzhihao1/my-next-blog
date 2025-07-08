@@ -15,6 +15,9 @@ import { BlogPost } from '@/types/notion'
 import { Project } from '@/types/project'
 import { createTagSlug } from '@/types/tag'
 
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
 /**
  * 内容卡片组件
  * @component

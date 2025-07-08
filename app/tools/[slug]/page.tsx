@@ -10,6 +10,9 @@ import type { Tool } from '@/types/tool'
 import { StructuredData, generateSoftwareApplicationStructuredData } from '@/components/seo/StructuredData'
 import type { Metadata } from 'next'
 
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
 /**
  * Generate static params for all tools
  */

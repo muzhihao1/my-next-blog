@@ -13,6 +13,9 @@ import html from 'remark-html'
 import { StructuredData, generateBookStructuredData } from '@/components/seo/StructuredData'
 import type { Metadata } from 'next'
 
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
 /**
  * 生成静态路径
  * @async
