@@ -37,7 +37,7 @@ export default async function ArchivePage() {
       </div>
 
       <div className="space-y-12">
-        {years.map(year => (
+        {years.map((year: string) => (
           <div key={year}>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
               <span className="text-blue-600 dark:text-blue-400 mr-3">{year}</span>
@@ -47,7 +47,7 @@ export default async function ArchivePage() {
             </h2>
             
             <div className="space-y-4">
-              {postsByYear[year].map(post => (
+              {postsByYear[year].map((post: BlogPost) => (
                 <article key={post.id} className="group">
                   <Link
                     href={`/posts/${post.slug}`}
