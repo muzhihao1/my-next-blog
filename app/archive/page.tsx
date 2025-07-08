@@ -12,7 +12,7 @@ export default async function ArchivePage() {
   }
 
   // 按年份分组文章
-  const postsByYear = posts.reduce((acc, post) => {
+  const postsByYear = posts.reduce((acc: Record<string, typeof posts>, post) => {
     const year = new Date(post.date).getFullYear()
     if (!acc[year]) {
       acc[year] = []
