@@ -43,7 +43,7 @@ function ToolCompareContent() {
 
   // 更新 URL 参数
   const updateUrlParams = (tools: Tool[]) => {
-    const toolIds = tools.map(t => t.id).join(',')
+    const toolIds = tools.map((t: Tool) => t.id).join(',')
     const newUrl = toolIds ? `/tools/compare?tools=${toolIds}` : '/tools/compare'
     window.history.pushState({}, '', newUrl)
   }
@@ -81,7 +81,7 @@ function ToolCompareContent() {
       try {
         await navigator.share({
           title: '工具对比结果',
-          text: `我正在对比这些工具：${selectedTools.map(t => t.name).join('、')}`,
+          text: `我正在对比这些工具：${selectedTools.map((t: Tool) => t.name).join('、')}`,
           url: url
         })
       } catch (error) {
@@ -153,7 +153,7 @@ function ToolCompareContent() {
             </div>
             
             <div className="flex flex-wrap gap-2">
-              {selectedTools.map(tool => (
+              {selectedTools.map((tool: Tool) => (
                 <div
                   key={tool.id}
                   className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
@@ -217,7 +217,7 @@ function LoadingSkeleton() {
           <div className="h-6 w-96 bg-gray-200 dark:bg-gray-700 rounded mb-8"></div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i: number) => (
               <div key={i} className="h-40 bg-gray-200 dark:bg-gray-700 rounded"></div>
             ))}
           </div>

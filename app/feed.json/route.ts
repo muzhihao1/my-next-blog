@@ -6,6 +6,7 @@
 
 import { getAllPosts } from '@/lib/notion'
 import { NextResponse } from 'next/server'
+import type { BlogPost } from '@/types/notion'
 
 export const dynamic = 'force-static'
 
@@ -31,7 +32,7 @@ export async function GET() {
         name: 'Zhihao Mu',
         url: baseUrl
       }],
-      items: posts.slice(0, 20).map(post => ({
+      items: posts.slice(0, 20).map((post: BlogPost) => ({
         id: `${baseUrl}/posts/${post.slug}`,
         url: `${baseUrl}/posts/${post.slug}`,
         title: post.title,
