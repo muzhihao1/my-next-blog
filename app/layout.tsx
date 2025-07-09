@@ -7,7 +7,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
 import ClientTest from './client-test'
-import SimpleFix from './simple-fix'
+import RootCauseFinder from './root-cause-finder'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -99,7 +99,7 @@ export default function RootLayout({
       </head>
       <body>
         <ClientTest />
-        <SimpleFix />
+        <RootCauseFinder />
         <ThemeProvider>
           <AuthProvider>
             {/* 跳转链接 - 提升可访问性 */}
