@@ -11,13 +11,17 @@ import { ThemeProvider } from '@/lib/theme/ThemeContext'
 // import { LinkFixProviderV3 } from './link-fix-provider-v3'
 // import { LinkFixProviderV4 } from './link-fix-provider-v4'
 // import { LinkFixProviderV5 } from './link-fix-provider-v5'
-import { LinkFixProviderFinal } from './link-fix-provider-final'
+// import { LinkFixProviderFinal } from './link-fix-provider-final'
+// import { LinkFixProviderUltimate } from './link-fix-provider-ultimate'
+// import { LinkFixProviderBrowserSpecific } from './link-fix-provider-browser-specific'
+import { LinkFixProviderWebKit } from './link-fix-provider-webkit'
 // 诊断工具 - 需要时取消注释
 // import { LinkFixProviderV2 } from './link-fix-provider-v2'
 // import ComponentIsolationTester from '@/components/debug/ComponentIsolationTester'
 // import EnhancedEventScanner from '@/components/debug/EnhancedEventScanner'
 // import ThirdPartyDetector from '@/components/debug/ThirdPartyDetector'
 // import NextjsPortalInvestigator from '@/components/debug/NextjsPortalInvestigator'
+import BrowserDetector from '@/components/debug/BrowserDetector'
 // 临时移除所有诊断工具
 // import GlobalListenerChecker from './global-listener-checker'
 // import DeepDiagnostics from './deep-diagnostics'
@@ -115,7 +119,8 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkFixProviderFinal />
+        <LinkFixProviderWebKit />
+        <BrowserDetector />
         {/* 诊断工具 - 需要时取消注释
         <ThirdPartyDetector />
         <NextjsPortalInvestigator />
