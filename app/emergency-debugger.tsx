@@ -120,6 +120,55 @@ export default function EmergencyDebugger() {
             })
           }
         })
+        
+        // 深入检查Next.js特有的问题
+        console.log('\n🔍 检查Next.js特有问题:')
+        
+        // 检查是否有NextJS的路由拦截
+        const clickHandlers = (window as any).__NEXT_DATA__
+        console.log('Next.js Data:', clickHandlers)
+        
+        // 检查是否有React事件委托问题
+        const reactRoot = document.getElementById('__next')
+        if (reactRoot) {
+          console.log('React Root found:', reactRoot)
+          // 检查React事件系统
+          const reactProps = Object.keys(reactRoot).find(key => key.startsWith('__react'))
+          if (reactProps) {
+            console.log('React内部属性:', reactProps)
+          }
+        }
+        
+        // 尝试模拟点击
+        console.log('\n🖱️ 尝试模拟点击测试链接:')
+        const testClickLink = document.querySelector('a[href="/"]') as HTMLAnchorElement
+        if (testClickLink) {
+          // 创建原生点击事件
+          const clickEvent = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window
+          })
+          
+          // 监听事件流
+          const captureHandler = (e: Event) => {
+            console.log('捕获阶段:', e.target, '是否被阻止:', e.defaultPrevented)
+          }
+          const bubbleHandler = (e: Event) => {
+            console.log('冒泡阶段:', e.target, '是否被阻止:', e.defaultPrevented)
+          }
+          
+          document.addEventListener('click', captureHandler, true)
+          document.addEventListener('click', bubbleHandler, false)
+          
+          console.log('发送点击事件...')
+          const result = testClickLink.dispatchEvent(clickEvent)
+          console.log('点击事件结果:', result)
+          
+          // 清理
+          document.removeEventListener('click', captureHandler, true)
+          document.removeEventListener('click', bubbleHandler, false)
+        }
       }
       
       investigateOverlay()
