@@ -59,12 +59,6 @@
   margin-bottom: 0.5rem;
 }
 
-/* 确保链接始终可点击 */
-a {
-  position: relative;
-  z-index: 10;
-  cursor: pointer;
-}
 
 /* 移动端适配 */
 @media (max-width: 768px) {
