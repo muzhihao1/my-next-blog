@@ -5,7 +5,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '@/lib/theme/ThemeContext'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { 
@@ -54,17 +54,18 @@ export function ThemeSettings() {
         <AdjustmentsHorizontalIcon className="w-5 h-5" />
       </button>
 
-      {/* 设置面板 */}
-      {isOpen && (
-        <>
-          {/* 背景遮罩 */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-overlay z-40"
-            onClick={() => setIsOpen(false)}
-          />
+      {/* 设置面板 - 使用 AnimatePresence 确保动画正确清理 */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* 背景遮罩 */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-overlay z-40"
+              onClick={() => setIsOpen(false)}
+            />
 
           {/* 设置抽屉 */}
           <motion.div
@@ -286,8 +287,9 @@ export function ThemeSettings() {
               </div>
             </div>
           </motion.div>
-        </>
-      )}
+          </>
+        )}
+      </AnimatePresence>
     </>
   )
 }

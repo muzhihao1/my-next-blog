@@ -17,8 +17,9 @@ export default function GlobalListenerChecker() {
         // 检查是否是全屏遮罩
         if (
           styles.position === 'fixed' &&
-          styles.inset === '0px' || 
-          (styles.top === '0px' && styles.left === '0px' && styles.right === '0px' && styles.bottom === '0px')
+          (styles.inset === '0px' || 
+          (styles.top === '0px' && styles.left === '0px' && styles.right === '0px' && styles.bottom === '0px') ||
+          (styles.width === '100vw' && styles.height === '100vh'))
         ) {
           // 检查是否可见
           if (
@@ -34,13 +35,33 @@ export default function GlobalListenerChecker() {
       if (overlays.length > 0) {
         console.error('⚠️ 发现全屏遮罩元素！这可能阻止链接点击：')
         overlays.forEach((el, index) => {
+          const parent = el.parentElement
+          const grandParent = parent?.parentElement
           console.log(`  ${index + 1}. ${el.tagName}`, {
             className: el.className,
             id: el.id,
             zIndex: window.getComputedStyle(el).zIndex,
             backgroundColor: window.getComputedStyle(el).backgroundColor,
-            hasOnClick: !!(el as HTMLElement).onclick
+            hasOnClick: !!(el as HTMLElement).onclick,
+            parent: parent ? {
+              tagName: parent.tagName,
+              className: parent.className,
+              id: parent.id
+            } : null,
+            grandParent: grandParent ? {
+              tagName: grandParent.tagName,
+              className: grandParent.className,
+              id: grandParent.id
+            } : null,
+            innerHTML: el.innerHTML.substring(0, 100),
+            attributes: Array.from(el.attributes).map(attr => `${attr.name}="${attr.value}"`)
           })
+          
+          // 尝试找到这个元素所属的 React 组件
+          const reactFiber = (el as any)._reactInternalFiber || (el as any)._reactInternalInstance
+          if (reactFiber) {
+            console.log(`    React组件:`, reactFiber.elementType?.name || '未知')
+          }
         })
       }
     }

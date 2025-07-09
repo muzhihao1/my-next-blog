@@ -28,12 +28,12 @@ export function ThemeSwitcher() {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* 背景遮罩 */}
+            {/* 背景遮罩 - 添加背景色确保可见 */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40"
+              className="fixed inset-0 bg-black/20 z-40"
               onClick={() => setIsOpen(false)}
             />
 
