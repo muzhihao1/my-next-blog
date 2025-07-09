@@ -8,11 +8,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  // 静态导出配置
-  output: 'export',
+  // 移除静态导出配置，因为与 API 路由不兼容
+  // output: 'export',
   images: {
-    // 静态导出需要禁用图片优化
-    unoptimized: true,
+    // 在 Vercel 上可以使用图片优化
+    // unoptimized: true,
     // 配置图片优化和域名白名单
     remotePatterns: [
       {
