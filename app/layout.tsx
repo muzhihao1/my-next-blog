@@ -8,6 +8,7 @@ import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
 import GlobalListenerChecker from './global-listener-checker'
 import DeepDiagnostics from './deep-diagnostics'
+import PreventDefaultTracker from './prevent-default-tracker'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -100,6 +101,7 @@ export default function RootLayout({
       <body>
         <GlobalListenerChecker />
         <DeepDiagnostics />
+        <PreventDefaultTracker />
         <ThemeProvider>
           <AuthProvider>
             {/* 跳转链接 - 提升可访问性 */}
