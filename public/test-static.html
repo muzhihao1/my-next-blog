@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>静态链接测试</title>
+    <style>
+        body {
+            padding: 50px;
+            font-family: sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        a {
+            display: block;
+            margin: 10px 0;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>静态 HTML 链接测试</h1>
+    
+    <div class="test-section">
+        <h2>普通链接</h2>
+        <a href="/">首页</a>
+        <a href="/about">关于</a>
+        <a href="/blog">博客</a>
+        <a href="/projects">项目</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>JavaScript 导航</h2>
+        <button onclick="window.location.href='/about'">使用 location.href</button>
+        <button onclick="window.location.assign('/blog')">使用 location.assign</button>
+        <button onclick="window.location.replace('/projects')">使用 location.replace</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>事件监听测试</h2>
+        <a href="/tools" id="test-link">测试链接</a>
+        <div id="log"></div>
+    </div>
+    
+    <script>
+        // 监听点击事件
+        document.getElementById('test-link').addEventListener('click', function(e) {
+            document.getElementById('log').innerHTML += '<br>Click event fired!';
+            console.log('Link clicked:', e);
+        });
+        
+        // 全局监听
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') {
+                console.log('Global: Link clicked:', e.target.href);
+            }
+        });
+    </script>
+</body>
+</html>
