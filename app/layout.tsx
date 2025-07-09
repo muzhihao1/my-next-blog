@@ -14,14 +14,15 @@ import { ThemeProvider } from '@/lib/theme/ThemeContext'
 // import { LinkFixProviderFinal } from './link-fix-provider-final'
 // import { LinkFixProviderUltimate } from './link-fix-provider-ultimate'
 // import { LinkFixProviderBrowserSpecific } from './link-fix-provider-browser-specific'
-import { LinkFixProviderWebKit } from './link-fix-provider-webkit'
+// import { LinkFixProviderWebKit } from './link-fix-provider-webkit'
+import { LinkFixProviderMinimal } from './link-fix-provider-minimal'
 // 诊断工具 - 需要时取消注释
 // import { LinkFixProviderV2 } from './link-fix-provider-v2'
 // import ComponentIsolationTester from '@/components/debug/ComponentIsolationTester'
 // import EnhancedEventScanner from '@/components/debug/EnhancedEventScanner'
 // import ThirdPartyDetector from '@/components/debug/ThirdPartyDetector'
 // import NextjsPortalInvestigator from '@/components/debug/NextjsPortalInvestigator'
-import BrowserDetector from '@/components/debug/BrowserDetector'
+// import BrowserDetector from '@/components/debug/BrowserDetector'
 // 临时移除所有诊断工具
 // import GlobalListenerChecker from './global-listener-checker'
 // import DeepDiagnostics from './deep-diagnostics'
@@ -119,8 +120,7 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkFixProviderWebKit />
-        <BrowserDetector />
+        <LinkFixProviderMinimal />
         {/* 诊断工具 - 需要时取消注释
         <ThirdPartyDetector />
         <NextjsPortalInvestigator />
