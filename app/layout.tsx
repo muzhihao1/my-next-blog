@@ -9,6 +9,9 @@ import { ThemeProvider } from '@/lib/theme/ThemeContext'
 import GlobalListenerChecker from './global-listener-checker'
 import DeepDiagnostics from './deep-diagnostics'
 import PreventDefaultTracker from './prevent-default-tracker'
+import OverlapInvestigator from './overlap-investigator'
+import EventFlowTracer from './event-flow-tracer'
+import LinkFixFinder from './link-fix-finder'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -102,6 +105,9 @@ export default function RootLayout({
         <GlobalListenerChecker />
         <DeepDiagnostics />
         <PreventDefaultTracker />
+        <OverlapInvestigator />
+        <EventFlowTracer />
+        <LinkFixFinder />
         <ThemeProvider>
           <AuthProvider>
             {/* 跳转链接 - 提升可访问性 */}
