@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 
 /**
  * 链接修复提供者
@@ -18,7 +17,6 @@ import { useRouter } from 'next/navigation'
  * 4. 定期检测并修复被覆盖的链接
  */
 export function LinkFixProvider() {
-  const router = useRouter()
   
   useEffect(() => {
     console.log('🔧 链接修复提供者已启动')
@@ -120,12 +118,13 @@ export function LinkFixProvider() {
             return
           }
           
-          // 对于内部链接，阻止默认行为并使用Next.js路由
+          // 对于内部链接，阻止默认行为并强制导航
           e.preventDefault()
           e.stopImmediatePropagation() // 使用stopImmediatePropagation而不是stopPropagation
           
-          // 使用Next.js路由进行导航
-          router.push(href)
+          // 直接使用 window.location 进行导航
+          // 这会触发完整的页面导航，但能确保链接工作
+          window.location.href = href
         }, true) // true表示在捕获阶段执行
       })
       
@@ -175,7 +174,7 @@ export function LinkFixProvider() {
         styleElement.parentNode.removeChild(styleElement)
       }
     }
-  }, [router])
+  }, [])
   
   return null
 }
