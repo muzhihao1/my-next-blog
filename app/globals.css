@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Ghost Blog 风格快速改进 */
-@import './styles/quick-ghost-fix.css';
+/* Ghost Blog 风格快速改进 - 暂时注释掉以排查问题 */
+/* @import './styles/quick-ghost-fix.css'; */
 
 @layer base {
   /* 主题系统集成 - 默认值 */
