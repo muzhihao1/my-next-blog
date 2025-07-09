@@ -8,6 +8,7 @@ export default function FixLinks() {
 
   useEffect(() => {
     console.log('🔧 Initializing link fix...')
+    console.log('🔧 Router available:', !!router)
 
     // 修复 Next.js Link 组件的点击问题
     const handleClick = (e: MouseEvent) => {
@@ -28,7 +29,16 @@ export default function FixLinks() {
             e.stopPropagation()
             
             // 使用 Next.js router 进行导航
-            router.push(href)
+            try {
+              console.log('🚀 Attempting navigation to:', href)
+              router.push(href)
+              console.log('✅ Navigation command sent')
+            } catch (error) {
+              console.error('❌ Navigation failed:', error)
+              // 如果 router.push 失败，使用 window.location 作为后备
+              console.log('🔄 Falling back to window.location')
+              window.location.href = href
+            }
           }
         }
       }
