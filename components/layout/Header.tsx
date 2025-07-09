@@ -4,7 +4,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ThemeSettings } from '@/components/theme/ThemeSettings'
-import { AlgoliaSearch } from '@/components/search/AlgoliaSearch'
 import { NotificationCenter } from '@/components/realtime/NotificationCenter'
 import AuthButton from '@/components/auth/AuthButton'
 
@@ -60,10 +59,6 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            {/* Search - Hidden on mobile */}
-            <div className="hidden md:block">
-              <AlgoliaSearch />
-            </div>
 
             {/* Notifications */}
             <NotificationCenter />
@@ -104,10 +99,6 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
           <div className="px-4 py-4">
-            {/* Mobile Search */}
-            <div className="mb-4">
-              <AlgoliaSearch />
-            </div>
             
             {/* Mobile Navigation */}
             <nav className="space-y-2 mb-4">
