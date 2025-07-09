@@ -169,6 +169,47 @@ export default function EmergencyDebugger() {
           document.removeEventListener('click', captureHandler, true)
           document.removeEventListener('click', bubbleHandler, false)
         }
+        
+        // 深入调查window上的监听器
+        console.log('\n🔍 深入调查window上的事件监听器:')
+        
+        // 保存原始的addEventListener
+        const originalWindowAddEventListener = window.addEventListener
+        
+        // 临时覆盖以捕获新添加的监听器
+        const capturedListeners: any[] = []
+        window.addEventListener = function(type: string, listener: any, options?: any) {
+          if (type === 'click') {
+            console.log('捕获到window.click监听器:', {
+              type,
+              listenerCode: listener.toString().substring(0, 300),
+              stack: new Error().stack
+            })
+            capturedListeners.push({ type, listener, options })
+          }
+          return originalWindowAddEventListener.call(this, type, listener, options)
+        }
+        
+        // 等待一段时间看是否有新的监听器被添加
+        setTimeout(() => {
+          window.addEventListener = originalWindowAddEventListener
+          console.log(`共捕获到 ${capturedListeners.length} 个window.click监听器`)
+        }, 1000)
+        
+        // 检查Next.js Router
+        console.log('\n🔍 检查Next.js Router:')
+        const nextRouter = (window as any).next?.router
+        if (nextRouter) {
+          console.log('找到Next.js Router:', nextRouter)
+          console.log('Router事件:', Object.keys(nextRouter.events || {}))
+        }
+        
+        // 检查React DevTools
+        console.log('\n🔍 检查React DevTools:')
+        const reactDevTools = (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__
+        if (reactDevTools) {
+          console.log('找到React DevTools Hook')
+        }
       }
       
       investigateOverlay()
@@ -242,22 +283,108 @@ export default function EmergencyDebugger() {
     // 5. 监控 preventDefault 调用
     const monitorPreventDefault = () => {
       const original = Event.prototype.preventDefault
+      const preventDefaultCalls: any[] = []
+      
       Event.prototype.preventDefault = function() {
         const event = this as Event
-        if (event.type === 'click' && (event.target as HTMLElement)?.tagName === 'A') {
-          console.error('❌ preventDefault 被调用!', {
-            target: event.target,
+        const stack = new Error().stack || ''
+        
+        if (event.type === 'click') {
+          const target = event.target as HTMLElement
+          const info = {
+            target: target?.tagName,
+            targetClass: target?.className,
+            targetId: target?.id,
+            targetHref: (target as HTMLAnchorElement)?.href,
             type: event.type,
-            stack: new Error().stack
-          })
+            timestamp: new Date().toISOString(),
+            stack: stack
+          }
+          
+          preventDefaultCalls.push(info)
+          
+          if (target?.tagName === 'A') {
+            console.error('❌ 链接点击被preventDefault阻止!', info)
+            
+            // 尝试分析调用栈
+            const stackLines = stack.split('\n')
+            console.log('调用栈分析:')
+            stackLines.slice(1, 6).forEach((line, index) => {
+              console.log(`  ${index + 1}. ${line.trim()}`)
+            })
+          }
         }
+        
         return original.call(this)
       }
       
-      // 5秒后恢复
+      // 5秒后恢复并输出报告
       setTimeout(() => {
         Event.prototype.preventDefault = original
+        console.log('\n📊 preventDefault 调用统计:')
+        console.log(`总共捕获 ${preventDefaultCalls.length} 次preventDefault调用`)
+        
+        const linkCalls = preventDefaultCalls.filter(call => call.target === 'A')
+        if (linkCalls.length > 0) {
+          console.log(`其中 ${linkCalls.length} 次是对链接的调用:`)
+          linkCalls.forEach((call, index) => {
+            console.log(`\n  ${index + 1}. 链接: ${call.targetHref}`)
+            console.log(`     时间: ${call.timestamp}`)
+            console.log(`     类名: ${call.targetClass || '无'}`)
+          })
+        }
       }, 5000)
+    }
+    
+    // 6. 查找并分析问题根源
+    const findRootCause = () => {
+      console.log('\n🎯 开始查找问题根源...')
+      
+      // 检查是否有第三方库
+      console.log('\n检查已加载的第三方库:')
+      const globalKeys = Object.keys(window)
+      const suspiciousLibs = globalKeys.filter(key => {
+        const lowerKey = key.toLowerCase()
+        return lowerKey.includes('translate') || 
+               lowerKey.includes('immersive') || 
+               lowerKey.includes('extension') ||
+               lowerKey.includes('addon') ||
+               lowerKey.includes('plugin')
+      })
+      
+      if (suspiciousLibs.length > 0) {
+        console.warn('发现可疑的第三方库:', suspiciousLibs)
+      }
+      
+      // 检查DOM中是否有注入的元素
+      console.log('\n检查DOM中的注入元素:')
+      const suspiciousClasses = [
+        'immersive', 'translate', 'extension', 
+        'addon', 'plugin', 'overlay', 'modal'
+      ]
+      
+      suspiciousClasses.forEach(className => {
+        const elements = document.querySelectorAll(`[class*="${className}"]`)
+        if (elements.length > 0) {
+          console.warn(`发现包含"${className}"的元素:`, elements.length, '个')
+          elements.forEach((el, index) => {
+            if (index < 3) { // 只显示前3个
+              console.log(`  - ${el.tagName}.${el.className}`)
+            }
+          })
+        }
+      })
+      
+      // 检查style标签
+      console.log('\n检查注入的样式:')
+      const styleTags = Array.from(document.querySelectorAll('style'))
+      styleTags.forEach((style, index) => {
+        const content = style.textContent || ''
+        if (content.includes('immersive') || content.includes('translate')) {
+          console.warn(`发现可疑的style标签 #${index + 1}:`)
+          console.log(content.substring(0, 200) + '...')
+        }
+      })
     }
     
     // 执行所有检查
@@ -267,6 +394,7 @@ export default function EmergencyDebugger() {
     testLinks()
     removeOverlays()
     monitorPreventDefault()
+    findRootCause()
     console.log('===================================')
     
     // 添加紧急修复按钮
