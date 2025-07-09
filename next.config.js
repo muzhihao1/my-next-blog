@@ -8,8 +8,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
-  // ISR 模式配置（移除了 output: 'export'）
+  // 静态导出配置
+  output: 'export',
   images: {
+    // 静态导出需要禁用图片优化
+    unoptimized: true,
     // 配置图片优化和域名白名单
     remotePatterns: [
       {

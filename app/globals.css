@@ -5,7 +5,22 @@
 /* Ghost Blog 风格快速改进 - 暂时注释掉以排查问题 */
 /* @import './styles/quick-ghost-fix.css'; */
 
+/* 安全的排版改进 */
+@import './styles/safe-typography.css';
+
 @layer base {
+  /* 确保所有链接都可点击 */
+  a {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* 防止任何元素阻挡交互 */
+  main * {
+    pointer-events: auto;
+  }
+  
   /* 主题系统集成 - 默认值 */
   :root {
     /* 主题颜色 - 由主题系统动态设置 */
@@ -231,7 +246,9 @@
   
   .prose-blog a {
     color: var(--color-primary);
-    @apply no-underline hover:underline;
+    @apply no-underline hover:underline cursor-pointer relative z-10;
+    pointer-events: auto !important;
+    display: inline-block;
   }
   
   .prose-blog strong {
