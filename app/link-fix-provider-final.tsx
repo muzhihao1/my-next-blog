@@ -14,12 +14,7 @@ import { useEffect } from 'react'
  */
 export function LinkFixProviderFinal() {
   useEffect(() => {
-    // 生产环境直接返回
-    if (process.env.NODE_ENV === 'production') {
-      return
-    }
-    
-    console.log('🔧 链接修复提供者已启动 (仅开发环境)')
+    console.log('🔧 链接修复提供者已启动')
     
     // 修复 Next.js Portal
     const fixNextjsPortal = () => {
@@ -56,56 +51,82 @@ export function LinkFixProviderFinal() {
     
     // 修复链接点击
     const fixLinks = () => {
-      const links = document.querySelectorAll('a[href]:not([data-link-fixed])')
+      // 更全面的链接选择器，处理 WebKit 的特殊情况
+      const links = document.querySelectorAll('a[href]:not([data-link-fixed]), a:not([data-link-fixed])')
       
       links.forEach(link => {
         const anchor = link as HTMLAnchorElement
         anchor.dataset.linkFixed = 'true'
         
-        // 捕获阶段处理点击
-        anchor.addEventListener('click', (e) => {
+        // 捕获阶段处理点击，并使用多种事件确保兼容性
+        const handleClick = (e: MouseEvent) => {
           // 特殊键或外部链接正常处理
           if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) {
             return
           }
           
-          const href = anchor.getAttribute('href')
+          const href = anchor.getAttribute('href') || anchor.href
           if (!href || href.match(/^(https?:|mailto:|#)/)) {
             return
           }
           
           // 阻止默认行为并导航
           e.preventDefault()
+          e.stopPropagation()
           e.stopImmediatePropagation()
-          window.location.href = href
+          
+          // WebKit 兼容性：使用 setTimeout 确保导航
+          setTimeout(() => {
+            window.location.href = href
+          }, 0)
+        }
+        
+        // 添加多个事件监听器确保兼容性
+        anchor.addEventListener('click', handleClick, true)
+        anchor.addEventListener('mousedown', (e) => {
+          if (e.button === 0) {
+            anchor.style.pointerEvents = 'auto'
+          }
         }, true)
       })
     }
     
-    // CSS 修复
+    // CSS 修复 - 更具体的选择器避免影响其他元素
     const style = document.createElement('style')
     style.textContent = `
-      /* 开发环境链接修复 */
-      nextjs-portal { pointer-events: none !important; }
+      /* Next.js Portal 修复 */
+      nextjs-portal { 
+        pointer-events: none !important; 
+      }
+      
       nextjs-portal button,
       nextjs-portal [role="button"],
       nextjs-portal .nextjs-error-overlay,
+      nextjs-portal [id^="__next-build-error"],
       nextjs-portal [class*="error"],
       nextjs-portal [class*="overlay"] {
         pointer-events: auto !important;
         position: relative !important;
-        z-index: 10001 !important;
+        z-index: 2147483647 !important;
       }
       
-      a[href] {
+      /* 确保链接可点击 - 仅在需要时应用 */
+      a[href][data-link-fixed="true"],
+      a[data-link-fixed="true"] {
         position: relative !important;
-        z-index: 9999 !important;
+        z-index: 1 !important;
         pointer-events: auto !important;
         cursor: pointer !important;
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
       }
       
-      nav a[href], header a[href] {
-        z-index: 10000 !important;
+      /* WebKit 特定修复 */
+      @supports (-webkit-appearance: none) {
+        a[href] {
+          -webkit-user-select: auto !important;
+          -webkit-touch-callout: default !important;
+        }
       }
     `
     document.head.appendChild(style)

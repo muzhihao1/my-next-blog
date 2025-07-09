@@ -63,7 +63,7 @@ export function ThemeSettings() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-overlay z-40"
+              className="fixed inset-0 bg-overlay z-[60]"
               onClick={() => setIsOpen(false)}
             />
 
@@ -73,7 +73,7 @@ export function ThemeSettings() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 20 }}
-            className="fixed right-0 top-0 h-full w-full max-w-sm bg-background border-l border-border shadow-xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full max-w-sm bg-background border-l border-border shadow-xl z-[70] overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">

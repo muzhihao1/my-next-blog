@@ -16,6 +16,12 @@ export function applyTheme(theme: Theme, preferences: UserThemePreferences) {
   Object.entries(theme.colors).forEach(([key, value]) => {
     const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase()
     root.style.setProperty(`--color-${cssKey}`, value)
+    
+    // WebKit 兼容性：确保变量在伪元素中也能正常工作
+    if (window.CSS && CSS.supports('-webkit-appearance', 'none')) {
+      // 强制刷新 WebKit 中的 CSS 变量
+      root.style.setProperty(`--color-${cssKey}`, value, 'important')
+    }
   })
 
   // 应用字体设置
