@@ -6,7 +6,7 @@ import { SEO, generateWebsiteStructuredData } from '@/components/seo/SEO'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
-import LinkClickDebugger from './link-click-debugger'
+// import LinkClickDebugger from './link-click-debugger'
 // 临时移除所有诊断工具
 // import GlobalListenerChecker from './global-listener-checker'
 // import DeepDiagnostics from './deep-diagnostics'
@@ -104,7 +104,7 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkClickDebugger />
+        {/* <LinkClickDebugger /> */}
         {/* 临时移除所有诊断工具
         <GlobalListenerChecker />
         <DeepDiagnostics />
