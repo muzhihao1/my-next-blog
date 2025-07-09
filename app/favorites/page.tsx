@@ -61,65 +61,61 @@ function FavoriteCard({
   const config = typeConfig[item.type]
 
   return (
-    <div className="group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
-      {/* 缩略图 */}
-      {item.thumbnail && (
-        <Link href={config.href} className="block relative aspect-video overflow-hidden">
-          <Image
-            src={item.thumbnail}
-            alt={item.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        </Link>
-      )}
+    <div className="relative group">
+      <Link href={config.href} className="block">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+          {/* 缩略图 */}
+          {item.thumbnail && (
+            <div className="relative aspect-video overflow-hidden">
+              <Image
+                src={item.thumbnail}
+                alt={item.title}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          )}
+          
+          {/* 内容 */}
+          <div className="p-6">
+            {/* 类型和时间 */}
+            <div className="flex items-center justify-between mb-3">
+              <span className={`text-xs font-medium px-2 py-1 rounded ${config.color}`}>
+                {config.label}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {formatFavoriteDate(item.favoriteDate)}
+              </span>
+            </div>
+            
+            {/* 标题 */}
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+              {item.title}
+            </h3>
+            
+            {/* 描述 */}
+            {item.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
+                {item.description}
+              </p>
+            )}
+          </div>
+        </div>
+      </Link>
       
-      {/* 内容 */}
-      <div className="p-6">
-        {/* 类型和时间 */}
-        <div className="flex items-center justify-between mb-3">
-          <span className={`text-xs font-medium px-2 py-1 rounded ${config.color}`}>
-            {config.label}
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {formatFavoriteDate(item.favoriteDate)}
-          </span>
-        </div>
-        
-        {/* 标题 */}
-        <Link href={config.href}>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-            {item.title}
-          </h3>
-        </Link>
-        
-        {/* 描述 */}
-        {item.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-            {item.description}
-          </p>
-        )}
-        
-        {/* 操作按钮 */}
-        <div className="flex items-center justify-between">
-          <Link
-            href={config.href}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            查看详情 →
-          </Link>
-          <FavoriteButton
-            itemId={item.id}
-            itemType={item.type}
-            title={item.title}
-            description={item.description}
-            thumbnail={item.thumbnail}
-            slug={item.slug}
-            size="small"
-            showText={false}
-            onToggle={() => onRemove()}
-          />
-        </div>
+      {/* 收藏按钮 - 放在Link外部 */}
+      <div className="absolute top-2 right-2 z-10">
+        <FavoriteButton
+          itemId={item.id}
+          itemType={item.type}
+          title={item.title}
+          description={item.description}
+          thumbnail={item.thumbnail}
+          slug={item.slug}
+          size="small"
+          showText={false}
+          onToggle={() => onRemove()}
+        />
       </div>
     </div>
   )
