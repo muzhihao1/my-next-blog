@@ -6,7 +6,7 @@ import { SEO, generateWebsiteStructuredData } from '@/components/seo/SEO'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
-import UltimateDebugger from './ultimate-debugger'
+import GlobalListenerChecker from './global-listener-checker'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -97,7 +97,7 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <UltimateDebugger />
+        <GlobalListenerChecker />
         <ThemeProvider>
           <AuthProvider>
             {/* 跳转链接 - 提升可访问性 */}
