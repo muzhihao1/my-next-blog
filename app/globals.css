@@ -575,15 +575,25 @@ main * {
   pointer-events: auto;
 }
 
-/* 防止覆盖层阻止点击 */
-.fixed,
-.absolute {
+/* 只对特定的覆盖层禁用点击，而不是所有 fixed/absolute 元素 */
+.pointer-events-none {
   pointer-events: none;
 }
 
-.fixed *,
-.absolute * {
+.pointer-events-auto {
   pointer-events: auto;
+}
+
+/* 确保交互元素始终可点击 */
+button,
+a,
+input,
+textarea,
+select,
+[role="button"],
+[onclick],
+[data-clickable="true"] {
+  pointer-events: auto !important;
 }
 
 /* Next.js Link 组件样式 */

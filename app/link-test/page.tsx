@@ -1,3 +1,5 @@
+'use client'
+
 export default function LinkTestPage() {
   return (
     <div className="min-h-screen p-8 bg-white">
