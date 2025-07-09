@@ -72,7 +72,7 @@ export function ThemeSettings() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 20 }}
-            className="fixed right-0 top-0 h-full w-96 bg-background border-l border-border shadow-xl z-50 overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full max-w-sm bg-background border-l border-border shadow-xl z-50 overflow-y-auto"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">

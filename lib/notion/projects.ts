@@ -206,7 +206,7 @@ function formatProject(page: any, content: string): Project {
 
   // 处理缩略图
   const thumbnailFiles = getFilesProperty(properties.Thumbnail)
-  const thumbnail = thumbnailFiles[0] || '/images/project-placeholder.jpg'
+  const thumbnail = thumbnailFiles[0] || '/images/project-placeholder.svg'
 
   // 处理metrics - 更安全的方式
   const metrics: Project['metrics'] = {}

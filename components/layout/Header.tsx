@@ -59,9 +59,11 @@ export function Header() {
           </nav>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Search */}
-            <AlgoliaSearch />
+          <div className="flex items-center gap-2 md:gap-4">
+            {/* Search - Hidden on mobile */}
+            <div className="hidden md:block">
+              <AlgoliaSearch />
+            </div>
 
             {/* Notifications */}
             <NotificationCenter />
@@ -69,8 +71,10 @@ export function Header() {
             {/* Theme Settings */}
             <ThemeSettings />
 
-            {/* Auth Button */}
-            <AuthButton />
+            {/* Auth Button - Hidden on mobile */}
+            <div className="hidden md:block">
+              <AuthButton />
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -99,22 +103,35 @@ export function Header() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-          <nav className="px-4 py-4 space-y-2">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${
-                  isActive(item.href)
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+          <div className="px-4 py-4">
+            {/* Mobile Search */}
+            <div className="mb-4">
+              <AlgoliaSearch />
+            </div>
+            
+            {/* Mobile Navigation */}
+            <nav className="space-y-2 mb-4">
+              {navigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-base font-medium transition-colors duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </nav>
+            
+            {/* Mobile Auth Button */}
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+              <AuthButton />
+            </div>
+          </div>
         </div>
       )}
     </header>

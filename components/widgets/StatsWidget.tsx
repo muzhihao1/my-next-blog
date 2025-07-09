@@ -41,8 +41,11 @@ export default function StatsWidget({ compact = false, initialStats }: StatsWidg
     try {
       const response = await fetch('/api/statistics')
       if (response.ok) {
-        const data = await response.json()
-        setStats(data)
+        const result = await response.json()
+        // API 返回的数据在 result.data 中
+        if (result.success && result.data) {
+          setStats(result.data)
+        }
       }
     } catch (error) {
       console.error('Failed to fetch statistics:', error)
