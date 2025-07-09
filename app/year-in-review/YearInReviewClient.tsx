@@ -270,7 +270,7 @@ export default function YearInReviewClient({ yearStats, year }: YearInReviewClie
             </div>
             <div className="mt-8">
               <Link
-                href="/posts"
+                href="/blog"
                 className="inline-block bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors"
               >
                 查看所有文章
