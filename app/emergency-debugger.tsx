@@ -66,6 +66,64 @@ export default function EmergencyDebugger() {
       console.log('\n🔗 测试所有链接:')
       const links = document.querySelectorAll('a[href]')
       
+      // 深入调查覆盖问题
+      const investigateOverlay = () => {
+        console.log('\n🔍 开始深入调查覆盖问题...')
+        
+        // 获取一个被覆盖的链接作为测试目标
+        const testLink = document.querySelector('a[href="/"]')
+        if (!testLink) return
+        
+        const linkRect = testLink.getBoundingClientRect()
+        const centerX = linkRect.left + linkRect.width / 2
+        const centerY = linkRect.top + linkRect.height / 2
+        
+        // 使用elementsFromPoint获取所有层级的元素
+        const elements = document.elementsFromPoint(centerX, centerY)
+        console.log(`📊 链接中心点下共有 ${elements.length} 个元素:`)
+        
+        elements.forEach((el, index) => {
+          const styles = window.getComputedStyle(el)
+          console.log(`  ${index + 1}. ${el.tagName}${el.id ? '#' + el.id : ''}${el.className ? '.' + el.className : ''}`, {
+            position: styles.position,
+            zIndex: styles.zIndex,
+            pointerEvents: styles.pointerEvents,
+            opacity: styles.opacity,
+            width: el.getBoundingClientRect().width,
+            height: el.getBoundingClientRect().height
+          })
+        })
+        
+        // 检查伪元素
+        console.log('\n🎭 检查伪元素:')
+        elements.forEach(el => {
+          const beforeStyles = window.getComputedStyle(el, '::before')
+          const afterStyles = window.getComputedStyle(el, '::after')
+          
+          if (beforeStyles.content !== 'none' && beforeStyles.content !== '""') {
+            console.log(`${el.tagName}::before`, {
+              content: beforeStyles.content,
+              position: beforeStyles.position,
+              pointerEvents: beforeStyles.pointerEvents,
+              width: beforeStyles.width,
+              height: beforeStyles.height
+            })
+          }
+          
+          if (afterStyles.content !== 'none' && afterStyles.content !== '""') {
+            console.log(`${el.tagName}::after`, {
+              content: afterStyles.content,
+              position: afterStyles.position,
+              pointerEvents: afterStyles.pointerEvents,
+              width: afterStyles.width,
+              height: afterStyles.height
+            })
+          }
+        })
+      }
+      
+      investigateOverlay()
+      
       links.forEach((link, index) => {
         const a = link as HTMLAnchorElement
         
