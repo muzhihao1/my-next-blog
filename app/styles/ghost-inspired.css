@@ -1,0 +1,254 @@
+/* Ghost Blog 风格的排版改进 */
+
+/* 1. 更大的基础字体和更好的阅读体验 */
+.ghost-article {
+  /* 正文字体大小提升到 21px，行高 1.7 */
+  font-size: 21px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.003em;
+}
+
+/* 2. 优化的标题层级 */
+.ghost-article h1 {
+  font-size: 48px;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 3rem 0 2rem;
+  color: #0a0a0a;
+}
+
+.ghost-article h2 {
+  font-size: 36px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  margin: 3rem 0 1.5rem;
+  color: #0a0a0a;
+}
+
+.ghost-article h3 {
+  font-size: 28px;
+  line-height: 1.3;
+  font-weight: 600;
+  margin: 2.5rem 0 1rem;
+  color: #0a0a0a;
+}
+
+/* 3. 段落间距 */
+.ghost-article p {
+  margin-bottom: 1.8rem;
+  color: #3a3a3a;
+}
+
+/* 4. 引用样式 */
+.ghost-article blockquote {
+  font-size: 26px;
+  line-height: 1.6;
+  font-style: italic;
+  margin: 3rem 0;
+  padding: 0 0 0 2rem;
+  border-left: 3px solid #0a0a0a;
+  color: #5a5a5a;
+}
+
+/* 5. 链接样式 */
+.ghost-article a {
+  color: #15171a;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.ghost-article a:hover {
+  color: #0066cc;
+  text-decoration-color: #0066cc;
+}
+
+/* 6. 列表样式 */
+.ghost-article ul,
+.ghost-article ol {
+  margin: 2rem 0;
+  padding-left: 1.5rem;
+}
+
+.ghost-article li {
+  margin-bottom: 0.8rem;
+  line-height: 1.7;
+}
+
+/* 7. 代码块样式 */
+.ghost-article code {
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  background: #f4f4f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+.ghost-article pre {
+  background: #1a1a1a;
+  color: #e0e0e0;
+  padding: 2rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 2.5rem 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* 8. 图片样式 */
+.ghost-article img {
+  max-width: 100%;
+  height: auto;
+  margin: 3rem auto;
+  display: block;
+  border-radius: 6px;
+}
+
+/* 9. 分隔线 */
+.ghost-article hr {
+  border: none;
+  height: 1px;
+  background: #e1e1e1;
+  margin: 4rem 0;
+}
+
+/* 10. 文章元数据样式 */
+.ghost-meta {
+  font-size: 16px;
+  color: #757575;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.ghost-author {
+  font-size: 17px;
+  font-weight: 500;
+  color: #15171a;
+}
+
+/* 11. 响应式设计 */
+@media (max-width: 768px) {
+  .ghost-article {
+    font-size: 18px;
+    line-height: 1.65;
+  }
+  
+  .ghost-article h1 {
+    font-size: 36px;
+  }
+  
+  .ghost-article h2 {
+    font-size: 28px;
+  }
+  
+  .ghost-article h3 {
+    font-size: 22px;
+  }
+  
+  .ghost-article blockquote {
+    font-size: 22px;
+  }
+}
+
+/* 12. 内容宽度限制 */
+.ghost-content-width {
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 13. 文章标题区域 */
+.ghost-article-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.ghost-article-title {
+  font-size: 54px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 1rem 0 2rem;
+  color: #0a0a0a;
+}
+
+.ghost-article-excerpt {
+  font-size: 24px;
+  line-height: 1.5;
+  color: #5a5a5a;
+  font-weight: 400;
+  margin: 2rem auto;
+  max-width: 620px;
+}
+
+/* 14. 简洁的悬浮效果 */
+.ghost-article a:hover {
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 102, 204, 0.1) 50%);
+  background-size: 100% 200%;
+  background-position: 0 100%;
+  transition: background-position 0.2s ease;
+}
+
+/* 15. 强调文本 */
+.ghost-article strong {
+  font-weight: 600;
+  color: #0a0a0a;
+}
+
+.ghost-article em {
+  font-style: italic;
+  color: #3a3a3a;
+}
+
+/* 16. 表格样式 */
+.ghost-article table {
+  width: 100%;
+  margin: 2.5rem 0;
+  border-collapse: collapse;
+  font-size: 18px;
+}
+
+.ghost-article th,
+.ghost-article td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.ghost-article th {
+  font-weight: 600;
+  color: #0a0a0a;
+}
+
+/* 17. 脚注样式 */
+.ghost-article .footnote {
+  font-size: 16px;
+  color: #757575;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e1e1e1;
+}
+
+/* 18. 简化的交互反馈 */
+.ghost-article ::selection {
+  background: rgba(0, 102, 204, 0.2);
+  color: #0a0a0a;
+}
+
+/* 19. 平滑滚动 */
+.ghost-smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* 20. 移除不必要的装饰 */
+.ghost-minimal {
+  /* 移除过多的阴影和边框 */
+  box-shadow: none !important;
+  border: none !important;
+}

@@ -44,17 +44,36 @@ export function Footer() {
                 {category}
               </h4>
               <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      {...(link.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  // Use regular anchor tag for XML files and external links
+                  const isXmlFile = link.href.endsWith('.xml')
+                  const isExternal = link.href.startsWith('http') || link.href.startsWith('mailto')
+                  
+                  if (isXmlFile || isExternal) {
+                    return (
+                      <li key={link.name}>
+                        <a
+                          href={link.href}
+                          className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                        >
+                          {link.name}
+                        </a>
+                      </li>
+                    )
+                  }
+                  
+                  return (
+                    <li key={link.name}>
+                      <Link
+                        href={link.href}
+                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           ))}
