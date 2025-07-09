@@ -6,9 +6,18 @@ import { SEO, generateWebsiteStructuredData } from '@/components/seo/SEO'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
-// import EmergencyDebugger from './emergency-debugger'
-import { LinkFixProvider } from './link-fix-provider'
-// import LinkClickDebugger from './link-click-debugger'
+// 历史版本 - 保留作为参考
+// import { LinkFixProvider } from './link-fix-provider'
+// import { LinkFixProviderV3 } from './link-fix-provider-v3'
+// import { LinkFixProviderV4 } from './link-fix-provider-v4'
+// import { LinkFixProviderV5 } from './link-fix-provider-v5'
+import { LinkFixProviderFinal } from './link-fix-provider-final'
+// 诊断工具 - 需要时取消注释
+// import { LinkFixProviderV2 } from './link-fix-provider-v2'
+// import ComponentIsolationTester from '@/components/debug/ComponentIsolationTester'
+// import EnhancedEventScanner from '@/components/debug/EnhancedEventScanner'
+// import ThirdPartyDetector from '@/components/debug/ThirdPartyDetector'
+// import NextjsPortalInvestigator from '@/components/debug/NextjsPortalInvestigator'
 // 临时移除所有诊断工具
 // import GlobalListenerChecker from './global-listener-checker'
 // import DeepDiagnostics from './deep-diagnostics'
@@ -106,16 +115,12 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkFixProvider />
-        {/* <EmergencyDebugger /> */}
-        {/* <LinkClickDebugger /> */}
-        {/* 临时移除所有诊断工具
-        <GlobalListenerChecker />
-        <DeepDiagnostics />
-        <PreventDefaultTracker />
-        <OverlapInvestigator />
-        <EventFlowTracer />
-        <LinkFixFinder />
+        <LinkFixProviderFinal />
+        {/* 诊断工具 - 需要时取消注释
+        <ThirdPartyDetector />
+        <NextjsPortalInvestigator />
+        <ComponentIsolationTester />
+        <EnhancedEventScanner />
         */}
         <ThemeProvider>
           <AuthProvider>

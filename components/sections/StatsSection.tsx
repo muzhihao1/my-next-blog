@@ -15,6 +15,7 @@ interface StatItem {
 export default function StatsSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [animatedValues, setAnimatedValues] = useState<number[]>([0, 0, 0, 0])
+  const [hasAnimated, setHasAnimated] = useState(false)
 
   const stats: StatItem[] = [
     {
@@ -82,7 +83,7 @@ export default function StatsSection() {
   }, [])
 
   useEffect(() => {
-    if (isVisible) {
+    if (isVisible && !hasAnimated) {
       const targetValues = stats.map(stat => stat.value)
       const duration = 2000
       const steps = 60
@@ -99,13 +100,13 @@ export default function StatsSection() {
         if (currentStep >= steps) {
           clearInterval(interval)
           setAnimatedValues(targetValues)
+          setHasAnimated(true)
         }
       }, stepDuration)
 
       return () => clearInterval(interval)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isVisible])
+  }, [isVisible, hasAnimated, stats])
 
   return (
     <section id="stats-section" className="py-20 px-4 sm:px-6 lg:px-8">
