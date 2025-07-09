@@ -6,7 +6,7 @@ import { SEO, generateWebsiteStructuredData } from '@/components/seo/SEO'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SkipLink } from '@/components/a11y/AriaLabels'
 import { ThemeProvider } from '@/lib/theme/ThemeContext'
-import LinkDebugger from './link-debugger'
+import LinkOverride from './link-override'
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
 
@@ -97,7 +97,7 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkDebugger />
+        <LinkOverride />
         <ThemeProvider>
           <AuthProvider>
             {/* 跳转链接 - 提升可访问性 */}
