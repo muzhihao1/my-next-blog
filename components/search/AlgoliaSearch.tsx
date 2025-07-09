@@ -45,9 +45,7 @@ export function AlgoliaSearch({ className = '', placeholder = '搜索文章...' 
 
   // 检查 Algolia 是否配置
   useEffect(() => {
-    if (!isAlgoliaConfigured()) {
-      console.warn('Algolia search is not configured')
-    }
+    // Warning is handled in getSearchClient()
   }, [])
 
   // 执行搜索

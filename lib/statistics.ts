@@ -83,7 +83,7 @@ function countOccurrences(items: string[]): Record<string, number> {
  * @async
  * @returns {Promise<BlogStatistics['posts']>} 文章统计数据
  */
-async function getPostStatistics(): Promise<BlogStatistics['posts']> {
+export async function getPostStatistics({ limit = 10, period = 'all' }: { limit?: number; period?: string } = {}): Promise<BlogStatistics['posts']> {
   try {
     const posts = await getAllPosts()
     
@@ -360,4 +360,92 @@ export async function getCachedStatistics(): Promise<BlogStatistics> {
 export function clearStatisticsCache(): void {
   cachedStats = null
   cacheTime = 0
+}
+
+/**
+ * 获取网站统计数据（包含所有类型内容的汇总）
+ * @async
+ * @param {Object} options - 选项
+ * @param {number} options.limit - 返回的最大项目数
+ * @param {string} options.period - 时间段筛选
+ * @returns {Promise<Object>} 网站统计数据
+ */
+export async function getSiteStatistics({ limit = 10, period = 'all' }: { limit?: number; period?: string } = {}) {
+  const stats = await getCachedStatistics()
+  
+  // 获取最受欢迎的文章（按假定的浏览量排序）
+  const posts = await getAllPosts()
+  const popularPosts = posts
+    .slice(0, limit)
+    .map(post => ({
+      title: post.title,
+      slug: post.slug,
+      views: Math.floor(Math.random() * 1000) + 100, // 模拟浏览量数据
+      date: post.date
+    }))
+  
+  // 标签分布
+  const tagDistribution = Object.entries(stats.posts.tags)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, limit)
+    .reduce((acc, [tag, count]) => {
+      acc[tag] = count
+      return acc
+    }, {} as Record<string, number>)
+  
+  // 根据时间段筛选数据
+  let filteredPosts = posts
+  if (period !== 'all') {
+    const now = new Date()
+    const startDate = new Date()
+    
+    switch (period) {
+      case 'day':
+        startDate.setDate(now.getDate() - 1)
+        break
+      case 'week':
+        startDate.setDate(now.getDate() - 7)
+        break
+      case 'month':
+        startDate.setMonth(now.getMonth() - 1)
+        break
+      case 'year':
+        startDate.setFullYear(now.getFullYear() - 1)
+        break
+    }
+    
+    filteredPosts = posts.filter(post => new Date(post.date) >= startDate)
+  }
+  
+  return {
+    totalPosts: filteredPosts.length,
+    totalViews: filteredPosts.length * 500, // 模拟总浏览量
+    totalTags: Object.keys(stats.posts.tags).length,
+    popularPosts,
+    tagDistribution,
+    viewsTrend: {
+      period,
+      data: generateViewsTrend(period)
+    },
+    ...stats
+  }
+}
+
+/**
+ * 生成浏览量趋势数据
+ * @param {string} period - 时间段
+ * @returns {Array} 趋势数据
+ */
+function generateViewsTrend(period: string) {
+  const dataPoints = period === 'day' ? 24 : period === 'week' ? 7 : period === 'month' ? 30 : 12
+  const trend = []
+  
+  for (let i = 0; i < dataPoints; i++) {
+    trend.push({
+      label: period === 'day' ? `${i}:00` : period === 'week' ? `Day ${i + 1}` : period === 'month' ? `${i + 1}` : `Month ${i + 1}`,
+      views: Math.floor(Math.random() * 500) + 100
+    })
+  }
+  
+  return trend
 }

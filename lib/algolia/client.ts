@@ -15,9 +15,14 @@ const ALGOLIA_INDEX_NAME = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME || 'posts'
  * 创建搜索客户端（只读）
  * 用于前端搜索功能
  */
+let hasLoggedWarning = false
+
 export function getSearchClient(): SearchClient | null {
   if (!ALGOLIA_APP_ID || !ALGOLIA_SEARCH_KEY) {
-    console.warn('Algolia search client not configured')
+    if (!hasLoggedWarning && typeof window !== 'undefined') {
+      console.info('Algolia search not configured - search functionality disabled')
+      hasLoggedWarning = true
+    }
     return null
   }
 
@@ -30,7 +35,7 @@ export function getSearchClient(): SearchClient | null {
  */
 export function getAdminClient(): SearchClient | null {
   if (!ALGOLIA_APP_ID || !ALGOLIA_ADMIN_KEY) {
-    console.warn('Algolia admin client not configured')
+    // Admin client warnings are less important for end users
     return null
   }
 
