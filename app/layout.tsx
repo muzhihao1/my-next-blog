@@ -15,7 +15,7 @@ import { ThemeProvider } from '@/lib/theme/ThemeContext'
 // import { LinkFixProviderUltimate } from './link-fix-provider-ultimate'
 // import { LinkFixProviderBrowserSpecific } from './link-fix-provider-browser-specific'
 // import { LinkFixProviderWebKit } from './link-fix-provider-webkit'
-import { LinkFixProviderMinimal } from './link-fix-provider-minimal'
+// import { LinkFixProviderMinimal } from './link-fix-provider-minimal'
 // 诊断工具 - 需要时取消注释
 // import { LinkFixProviderV2 } from './link-fix-provider-v2'
 // import ComponentIsolationTester from '@/components/debug/ComponentIsolationTester'
@@ -120,7 +120,6 @@ export default function RootLayout({
         <SEO structuredData={websiteStructuredData} />
       </head>
       <body>
-        <LinkFixProviderMinimal />
         {/* 诊断工具 - 需要时取消注释
         <ThirdPartyDetector />
         <NextjsPortalInvestigator />
