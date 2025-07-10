@@ -4,15 +4,19 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true
   },
+  
   // 临时忽略 ESLint 错误
   eslint: {
     ignoreDuringBuilds: true
   },
+  
   // 移除静态导出配置，因为与 API 路由不兼容
   // output: 'export',
+  
   images: {
     // 在 Vercel 上可以使用图片优化
     // unoptimized: true,
+    
     // 配置图片优化和域名白名单
     remotePatterns: [
       {
@@ -28,8 +32,10 @@ const nextConfig = {
         hostname: 'prod-files-secure.s3.us-west-2.amazonaws.com',
       },
     ],
+    
     // 配置图片格式
     formats: ['image/avif', 'image/webp'],
+    
     // 配置图片设备尺寸
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
