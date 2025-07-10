@@ -3,6 +3,7 @@
 在 Vercel 项目设置中添加以下环境变量：
 
 ## Notion 相关（已配置）
+
 - ✅ `NOTION_TOKEN` - ntn_S73526150797bgCeqUOXSUW5i...
 - ✅ `NOTION_DATABASE_ID` - 21f1b64000a7808c8b4fc4ef924cf...
 - ✅ `NOTION_PROJECTS_DB` - 2291b64000a78173a212e31b95422...
@@ -11,6 +12,7 @@
 - ✅ `CACHE_TTL` - 3600000
 
 ## Supabase 相关（需要添加）
+
 从你的 `.env.local` 文件复制以下值：
 
 - `NEXT_PUBLIC_SUPABASE_URL` - https://xelyobfvfjqeuysfzpcf.supabase.co
@@ -18,6 +20,7 @@
 - `SUPABASE_SERVICE_ROLE_KEY` - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhlbHlvYmZ2ZmpxZXV5c2Z6cGNmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTkzMjY2OSwiZXhwIjoyMDY3NTA4NjY5fQ.OXzwliV3w4xCfUxBL8AgaNLpHJRbVaZFZp-fqZXw3bk
 
 ## Algolia 相关（搜索功能）
+
 - `NEXT_PUBLIC_ALGOLIA_APP_ID` - XOXMNX38GJ
 - `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` - 42590dd8b12630b137b8bf8ce7b54e5d
 - `ALGOLIA_ADMIN_API_KEY` - dc752596a6a64bf8aa486b429a7fd174

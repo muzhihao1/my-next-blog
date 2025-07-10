@@ -5,13 +5,17 @@
 ## 📋 迁移前准备
 
 ### 1. 确保 Notion 集成已配置
+
 在开始迁移之前，请确保：
+
 - ✅ 已完成 `NOTION_SETUP.md` 中的所有配置步骤
 - ✅ 环境变量已正确设置
 - ✅ Notion 数据库已创建并配置了所有必需属性
 
 ### 2. 备份现有内容
+
 建议在迁移前备份现有的文章内容：
+
 ```bash
 # 备份当前的文章页面
 cp -r app/posts app/posts.backup
@@ -24,18 +28,19 @@ cp app/page.tsx app/page.tsx.backup
 
 当前博客有 4 篇文章需要迁移：
 
-| 原 ID | 文章标题 | 建议 Slug | 分类 |
-|-------|----------|-----------|------|
-| 1 | 战胜拖延的策略：从'冷启动'到'热启动' | `overcome-procrastination` | Productivity |
-| 2 | 理解 React 18 的并发特性 | `react-18-concurrent-features` | Technology |
-| 3 | 构建高效的个人知识管理系统 | `personal-knowledge-management` | Productivity |
-| 4 | 设计系统的思考：从组件到体验 | `design-system-thinking` | Design |
+| 原 ID | 文章标题                             | 建议 Slug                       | 分类         |
+| ----- | ------------------------------------ | ------------------------------- | ------------ |
+| 1     | 战胜拖延的策略：从'冷启动'到'热启动' | `overcome-procrastination`      | Productivity |
+| 2     | 理解 React 18 的并发特性             | `react-18-concurrent-features`  | Technology   |
+| 3     | 构建高效的个人知识管理系统           | `personal-knowledge-management` | Productivity |
+| 4     | 设计系统的思考：从组件到体验         | `design-system-thinking`        | Design       |
 
 ### 第二步：在 Notion 中创建文章
 
 对于每篇文章，在 Notion 数据库中添加新记录：
 
 #### 文章 1：战胜拖延的策略
+
 ```
 Title: 战胜拖延的策略：从'冷启动'到'热启动'
 Slug: overcome-procrastination
@@ -71,6 +76,7 @@ Tags: 生产力, 拖延, 效率, 心理学
 ### 1. 分解任务，让它变得不那么吓人
 
 与其想着"我要写一份完整的报告"，不如把任务分解为：
+
 - 列出报告的大纲
 - 写出引言的第一段
 - 收集三个关键数据
@@ -78,6 +84,7 @@ Tags: 生产力, 拖延, 效率, 心理学
 ### 2. 创造仪式感，建立启动信号
 
 我发现建立一个简单的"启动仪式"非常有效。比如：
+
 - 泡一杯特定的茶
 - 播放专门的工作音乐
 - 整理桌面，准备好所需工具
@@ -105,10 +112,11 @@ Tags: 生产力, 拖延, 效率, 心理学
 
 战胜拖延的关键不是依靠意志力，而是通过巧妙的策略降低任务的启动成本。当我们把任务从"冷启动"转变为"热启动"，行动就会变得自然而然。
 
-记住：*开始永远比完美更重要。*
+记住：_开始永远比完美更重要。_
 ```
 
 #### 文章 2：React 18 并发特性
+
 ```
 Title: 理解 React 18 的并发特性
 Slug: react-18-concurrent-features
@@ -123,6 +131,7 @@ Tags: React, JavaScript, 前端, 并发, 性能优化
 ```
 
 #### 文章 3：个人知识管理系统
+
 ```
 Title: 构建高效的个人知识管理系统
 Slug: personal-knowledge-management
@@ -137,6 +146,7 @@ Tags: 知识管理, 生产力, Notion, 笔记, 学习方法
 ```
 
 #### 文章 4：设计系统思考
+
 ```
 Title: 设计系统的思考：从组件到体验
 Slug: design-system-thinking
@@ -155,18 +165,20 @@ Tags: 设计系统, UI/UX, 组件, 用户体验
 将现有的 HTML 内容转换为 Notion 支持的格式：
 
 #### HTML 到 Notion 块的转换规则
+
 - `<h2>` → 标题 2 (Heading 2)
 - `<h3>` → 标题 3 (Heading 3)
 - `<p>` → 段落 (Paragraph)
 - `<ul>/<li>` → 无序列表 (Bulleted list)
 - `<ol>/<li>` → 有序列表 (Numbered list)
 - `<strong>` → **粗体**
-- `<em>` → *斜体*
+- `<em>` → _斜体_
 - `<code>` → 内联代码
 - `<pre><code>` → 代码块 (Code block)
 - `<blockquote>` → 引用 (Quote)
 
 #### 实用转换技巧
+
 1. **批量转换**：可以先粘贴 HTML，然后在 Notion 中进行格式调整
 2. **保持结构**：确保标题层级和段落结构清晰
 3. **代码高亮**：为代码块选择适当的语言（JavaScript, CSS, etc.）
@@ -182,10 +194,11 @@ Tags: 设计系统, UI/UX, 组件, 用户体验
    - ✅ 发布状态已启用
 
 2. **测试本地环境**
+
    ```bash
    # 启动开发服务器
    npm run dev
-   
+
    # 访问 http://localhost:3000
    # 确认文章列表显示正常
    # 逐一检查每篇文章页面
@@ -217,35 +230,36 @@ rm app/page.tsx.backup
 为了保持 SEO 和书签的连续性，可以设置从旧 URL 到新 URL 的重定向：
 
 ### 在 next.config.js 中添加重定向
+
 ```javascript
 const nextConfig = {
   // ... 其他配置
-  
+
   async redirects() {
     return [
       {
-        source: '/posts/1',
-        destination: '/posts/overcome-procrastination',
+        source: "/posts/1",
+        destination: "/posts/overcome-procrastination",
         permanent: true,
       },
       {
-        source: '/posts/2',
-        destination: '/posts/react-18-concurrent-features',
+        source: "/posts/2",
+        destination: "/posts/react-18-concurrent-features",
         permanent: true,
       },
       {
-        source: '/posts/3',
-        destination: '/posts/personal-knowledge-management',
+        source: "/posts/3",
+        destination: "/posts/personal-knowledge-management",
         permanent: true,
       },
       {
-        source: '/posts/4',
-        destination: '/posts/design-system-thinking',
+        source: "/posts/4",
+        destination: "/posts/design-system-thinking",
         permanent: true,
       },
-    ]
+    ];
   },
-}
+};
 ```
 
 ## 📈 SEO 优化建议
@@ -269,6 +283,7 @@ const nextConfig = {
 迁移完成后的测试项目：
 
 ### 功能测试
+
 - [ ] 首页显示所有已发布文章
 - [ ] 文章页面正确显示内容
 - [ ] 作者信息和日期格式正确
@@ -277,12 +292,14 @@ const nextConfig = {
 - [ ] 导航链接正确
 
 ### 性能测试
+
 - [ ] 页面加载速度正常
 - [ ] 静态导出生成成功
 - [ ] 缓存机制工作正常
 - [ ] 移动端显示正常
 
 ### API 测试
+
 - [ ] Notion API 连接正常
 - [ ] 错误处理机制工作
 - [ ] 后备方案可用

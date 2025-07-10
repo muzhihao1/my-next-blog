@@ -13,13 +13,13 @@
 
 将根目录下的文档文件移至 `docs/archive/` 文件夹：
 
-| 原位置（根目录） | 新位置 | 说明 |
-|-----------------|--------|------|
-| NOTION_SETUP.md | docs/archive/NOTION_SETUP.md | 旧版 Notion 设置指南，已被 docs/notion-setup.md 替代 |
-| MIGRATION.md | docs/archive/MIGRATION.md | 迁移指南，保留作为历史参考 |
-| BLOG_GUIDE.md | docs/archive/BLOG_GUIDE.md | 旧版博客指南，已被 docs/blogger-guide.md 替代 |
-| 功能实现对比报告.md | docs/archive/功能实现对比报告.md | 开发过程中的功能对比文档 |
-| 并行开发任务分配.md | docs/archive/并行开发任务分配.md | 开发任务分配记录 |
+| 原位置（根目录）    | 新位置                           | 说明                                                 |
+| ------------------- | -------------------------------- | ---------------------------------------------------- |
+| NOTION_SETUP.md     | docs/archive/NOTION_SETUP.md     | 旧版 Notion 设置指南，已被 docs/notion-setup.md 替代 |
+| MIGRATION.md        | docs/archive/MIGRATION.md        | 迁移指南，保留作为历史参考                           |
+| BLOG_GUIDE.md       | docs/archive/BLOG_GUIDE.md       | 旧版博客指南，已被 docs/blogger-guide.md 替代        |
+| 功能实现对比报告.md | docs/archive/功能实现对比报告.md | 开发过程中的功能对比文档                             |
+| 并行开发任务分配.md | docs/archive/并行开发任务分配.md | 开发任务分配记录                                     |
 
 ### 2. 新增文档
 
@@ -32,12 +32,14 @@
 ### 3. 文档索引更新
 
 更新了 `docs/README.md`，添加了：
+
 - 博主使用指南的突出位置（标记为重要）
 - 文件结构说明的链接
 
 ## 📁 整理后的结构
 
 ### 根目录（更清爽）
+
 ```
 my-blog/
 ├── README.md           # 项目介绍
@@ -53,6 +55,7 @@ my-blog/
 ```
 
 ### 文档目录（更有序）
+
 ```
 docs/
 ├── README.md               # 文档索引

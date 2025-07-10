@@ -28,6 +28,7 @@
 ## 技术架构
 
 ### 依赖关系
+
 ```
 Frontend Components
     ↓
@@ -59,27 +60,28 @@ hooks/
 
 ```tsx
 // app/posts/[slug]/page.tsx
-import { RealtimeComments } from '@/components/realtime'
-import { getCommentsByPostId } from '@/lib/comments'
+import { RealtimeComments } from "@/components/realtime";
+import { getCommentsByPostId } from "@/lib/comments";
 
-export default async function PostPage({ params }: { params: { slug: string } }) {
-  const post = await getPostBySlug(params.slug)
-  const comments = await getCommentsByPostId(post.id)
-  
+export default async function PostPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const post = await getPostBySlug(params.slug);
+  const comments = await getCommentsByPostId(post.id);
+
   return (
     <article>
       {/* 文章内容 */}
       <div className="prose">{post.content}</div>
-      
+
       {/* 实时评论 */}
       <div className="mt-12">
-        <RealtimeComments 
-          postId={post.id}
-          initialComments={comments}
-        />
+        <RealtimeComments postId={post.id} initialComments={comments} />
       </div>
     </article>
-  )
+  );
 }
 ```
 
@@ -87,20 +89,17 @@ export default async function PostPage({ params }: { params: { slug: string } })
 
 ```tsx
 // components/layout/BlogHeader.tsx
-import { OnlineUsers } from '@/components/realtime'
+import { OnlineUsers } from "@/components/realtime";
 
 export function BlogHeader() {
   return (
     <header className="flex justify-between items-center">
       <h1>我的博客</h1>
-      
+
       {/* 显示在线用户 */}
-      <OnlineUsers 
-        showDetails={true}
-        maxDisplay={5}
-      />
+      <OnlineUsers showDetails={true} maxDisplay={5} />
     </header>
-  )
+  );
 }
 ```
 
@@ -108,37 +107,36 @@ export function BlogHeader() {
 
 ```tsx
 // components/custom/LiveChat.tsx
-'use client'
+"use client";
 
-import { useRealtime, useRealtimeEvent } from '@/hooks/useRealtime'
-import { REALTIME_CHANNELS, REALTIME_EVENTS } from '@/lib/realtime/config'
+import { useRealtime, useRealtimeEvent } from "@/hooks/useRealtime";
+import { REALTIME_CHANNELS, REALTIME_EVENTS } from "@/lib/realtime/config";
 
 export function LiveChat() {
   const { publish, isConnected } = useRealtime({
-    channel: REALTIME_CHANNELS.COMMENTS
-  })
-  
+    channel: REALTIME_CHANNELS.COMMENTS,
+  });
+
   // 监听新消息
   useRealtimeEvent(REALTIME_EVENTS.COMMENT_CREATED, (comment) => {
-    console.log('New comment:', comment)
+    console.log("New comment:", comment);
     // 更新 UI
-  })
-  
+  });
+
   // 发送消息
   const sendMessage = async (text: string) => {
-    await publish(
-      REALTIME_CHANNELS.COMMENTS,
-      REALTIME_EVENTS.COMMENT_CREATED,
-      { content: text, timestamp: Date.now() }
-    )
-  }
-  
+    await publish(REALTIME_CHANNELS.COMMENTS, REALTIME_EVENTS.COMMENT_CREATED, {
+      content: text,
+      timestamp: Date.now(),
+    });
+  };
+
   return (
     <div>
-      {isConnected ? '已连接' : '连接中...'}
+      {isConnected ? "已连接" : "连接中..."}
       {/* Chat UI */}
     </div>
-  )
+  );
 }
 ```
 
@@ -146,20 +144,21 @@ export function LiveChat() {
 
 ```tsx
 // 在任何服务端或客户端代码中
-import { getEventManager } from '@/lib/realtime/event-manager'
+import { getEventManager } from "@/lib/realtime/event-manager";
 
 // 发送通知给特定用户
 await getEventManager().sendNotification(userId, {
-  type: 'comment',
-  title: '新评论',
-  message: '有人回复了你的评论',
-  link: `/posts/${postSlug}#comment-${commentId}`
-})
+  type: "comment",
+  title: "新评论",
+  message: "有人回复了你的评论",
+  link: `/posts/${postSlug}#comment-${commentId}`,
+});
 ```
 
 ## 功能特性
 
 ### 实时评论系统
+
 - ✅ 实时同步评论（WebSocket）
 - ✅ 显示谁正在输入
 - ✅ 评论的 CRUD 操作
@@ -168,6 +167,7 @@ await getEventManager().sendNotification(userId, {
 - ✅ 登录后才能评论
 
 ### 在线用户显示
+
 - ✅ 实时在线状态
 - ✅ 1分钟内活跃判定
 - ✅ 用户头像和名称
@@ -176,6 +176,7 @@ await getEventManager().sendNotification(userId, {
 - ✅ 悬浮提示详情
 
 ### 通知中心
+
 - ✅ 实时通知推送
 - ✅ 未读计数徽章
 - ✅ Toast 弹出提示
@@ -186,18 +187,21 @@ await getEventManager().sendNotification(userId, {
 ## 性能优化
 
 ### 1. 连接管理
+
 - 单例模式复用 WebSocket 连接
 - 自动重连机制（指数退避）
 - 离线消息队列
 - 心跳检测
 
 ### 2. 事件优化
+
 - 防抖输入状态（1秒）
 - 批量事件处理
 - 优先级队列
 - 内存泄漏防护
 
 ### 3. UI 优化
+
 - 虚拟滚动（大量评论）
 - 懒加载用户头像
 - 动画性能优化
@@ -206,6 +210,7 @@ await getEventManager().sendNotification(userId, {
 ## 测试覆盖
 
 已实现 `OnlineUsers` 组件的完整单元测试：
+
 - ✅ 基础渲染测试
 - ✅ 在线用户显示
 - ✅ 头像和数量限制
@@ -216,32 +221,35 @@ await getEventManager().sendNotification(userId, {
 ## 配置选项
 
 ### RealtimeComments Props
+
 ```typescript
 interface RealtimeCommentsProps {
-  postId: string              // 文章 ID
-  initialComments: Comment[]  // 初始评论列表
-  onCommentAdded?: Function   // 评论添加回调
-  onCommentUpdated?: Function // 评论更新回调
-  onCommentDeleted?: Function // 评论删除回调
+  postId: string; // 文章 ID
+  initialComments: Comment[]; // 初始评论列表
+  onCommentAdded?: Function; // 评论添加回调
+  onCommentUpdated?: Function; // 评论更新回调
+  onCommentDeleted?: Function; // 评论删除回调
 }
 ```
 
 ### OnlineUsers Props
+
 ```typescript
 interface OnlineUsersProps {
-  channelName?: string   // 频道名称
-  showDetails?: boolean  // 显示详情模式
-  maxDisplay?: number    // 最多显示数量
-  className?: string     // 自定义样式
+  channelName?: string; // 频道名称
+  showDetails?: boolean; // 显示详情模式
+  maxDisplay?: number; // 最多显示数量
+  className?: string; // 自定义样式
 }
 ```
 
 ### NotificationCenter Props
+
 ```typescript
 interface NotificationCenterProps {
-  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
-  maxNotifications?: number  // 最多显示通知数
-  autoHideDuration?: number  // 自动隐藏时间(ms)
+  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  maxNotifications?: number; // 最多显示通知数
+  autoHideDuration?: number; // 自动隐藏时间(ms)
 }
 ```
 
@@ -255,12 +263,14 @@ interface NotificationCenterProps {
 ## 后续优化
 
 ### 短期计划
+
 1. 添加消息已读状态
 2. 支持图片/文件上传
 3. 表情回应功能
 4. @提及功能
 
 ### 长期规划
+
 1. 私信系统
 2. 群组聊天
 3. 视频通话集成
@@ -269,21 +279,24 @@ interface NotificationCenterProps {
 ## 故障排除
 
 ### WebSocket 连接失败
+
 ```javascript
 // 检查 Supabase 配置
-console.log(process.env.NEXT_PUBLIC_SUPABASE_URL)
-console.log(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+console.log(process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 // 检查网络状态
-navigator.onLine // 应该为 true
+navigator.onLine; // 应该为 true
 ```
 
 ### 消息不同步
+
 1. 检查频道订阅是否成功
 2. 确认事件名称是否匹配
 3. 查看浏览器控制台错误
 
 ### 性能问题
+
 1. 减少同时订阅的频道数
 2. 使用防抖/节流优化
 3. 清理不用的事件监听器

@@ -3,11 +3,13 @@
 ## 评论系统迁移（2025年1月10日）
 
 ### 迁移目的
+
 为评论系统添加软删除功能，保持评论线程的完整性。
 
 ### 执行步骤
 
 1. **登录 Supabase Dashboard**
+
    ```
    https://supabase.com/dashboard/project/xelyobfvfjqeuysfzpcf
    ```
@@ -52,11 +54,11 @@ FROM information_schema.columns
 WHERE table_name = 'comments' AND column_name = 'is_deleted';
 
 -- 检查视图是否创建
-SELECT * FROM information_schema.views 
+SELECT * FROM information_schema.views
 WHERE table_name = 'active_comments';
 
 -- 检查函数是否创建
-SELECT routine_name FROM information_schema.routines 
+SELECT routine_name FROM information_schema.routines
 WHERE routine_name = 'soft_delete_comment';
 ```
 

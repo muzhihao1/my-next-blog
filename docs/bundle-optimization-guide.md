@@ -29,6 +29,7 @@ ANALYZE=true npm run build
 ### 1. 代码分割优化
 
 #### 动态导入大型组件
+
 ```typescript
 // ❌ 不好的做法
 import HeavyComponent from '@/components/HeavyComponent'
@@ -42,36 +43,40 @@ const HeavyComponent = dynamic(() => import('@/components/HeavyComponent'), {
 ```
 
 #### 路由级别代码分割
+
 Next.js已自动处理，但可以进一步优化：
 
 ```typescript
 // 对于大型页面组件，使用动态导入
-const ComplexPage = dynamic(() => import('./ComplexPage'))
+const ComplexPage = dynamic(() => import("./ComplexPage"));
 ```
 
 ### 2. 依赖优化
 
 #### 按需导入
+
 ```typescript
 // ❌ 导入整个库
-import _ from 'lodash'
+import _ from "lodash";
 
 // ✅ 只导入需要的函数
-import debounce from 'lodash/debounce'
+import debounce from "lodash/debounce";
 // 或
-import { debounce } from 'lodash-es'
+import { debounce } from "lodash-es";
 ```
 
 #### 使用轻量替代品
-| 原始库 | 轻量替代 | 大小对比 |
-|--------|----------|----------|
-| moment.js (280KB) | date-fns (75KB) | -73% |
-| lodash (71KB) | lodash-es + tree-shaking | -80% |
-| axios (53KB) | native fetch | -100% |
+
+| 原始库            | 轻量替代                 | 大小对比 |
+| ----------------- | ------------------------ | -------- |
+| moment.js (280KB) | date-fns (75KB)          | -73%     |
+| lodash (71KB)     | lodash-es + tree-shaking | -80%     |
+| axios (53KB)      | native fetch             | -100%    |
 
 ### 3. 图片优化
 
 #### 使用Next.js Image组件
+
 ```typescript
 import Image from 'next/image'
 
@@ -87,6 +92,7 @@ import Image from 'next/image'
 ```
 
 #### 响应式图片
+
 ```typescript
 <Image
   src="/hero.jpg"
@@ -101,39 +107,42 @@ import Image from 'next/image'
 ### 4. 字体优化
 
 #### 使用next/font
+
 ```typescript
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
 
 const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap', // 防止FOIT
+  subsets: ["latin"],
+  display: "swap", // 防止FOIT
   preload: true,
-  fallback: ['system-ui', 'arial']
-})
+  fallback: ["system-ui", "arial"],
+});
 ```
 
 ### 5. React优化
 
 #### 使用React.memo
+
 ```typescript
 // 对于纯展示组件
-export default React.memo(ExpensiveComponent)
+export default React.memo(ExpensiveComponent);
 
 // 自定义比较函数
 export default React.memo(Component, (prevProps, nextProps) => {
-  return prevProps.id === nextProps.id
-})
+  return prevProps.id === nextProps.id;
+});
 ```
 
 #### 使用useMemo和useCallback
+
 ```typescript
 const expensiveValue = useMemo(() => {
-  return computeExpensiveValue(a, b)
-}, [a, b])
+  return computeExpensiveValue(a, b);
+}, [a, b]);
 
 const memoizedCallback = useCallback(() => {
-  doSomething(a, b)
-}, [a, b])
+  doSomething(a, b);
+}, [a, b]);
 ```
 
 ## 三、具体优化建议
@@ -144,9 +153,9 @@ const memoizedCallback = useCallback(() => {
 // 延迟加载评论组件
 const CommentSection = dynamic(
   () => import('@/components/comments/CommentSection'),
-  { 
+  {
     loading: () => <CommentSkeleton />,
-    ssr: false 
+    ssr: false
   }
 )
 
@@ -162,10 +171,10 @@ useEffect(() => {
     },
     { threshold: 0.1 }
   )
-  
+
   const target = document.querySelector('#comments-trigger')
   if (target) observer.observe(target)
-  
+
   return () => observer.disconnect()
 }, [])
 ```
@@ -174,29 +183,29 @@ useEffect(() => {
 
 ```typescript
 // 按需加载语言支持
-import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
-import js from 'react-syntax-highlighter/dist/esm/languages/hljs/javascript'
-import ts from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript'
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import js from "react-syntax-highlighter/dist/esm/languages/hljs/javascript";
+import ts from "react-syntax-highlighter/dist/esm/languages/hljs/typescript";
 
-SyntaxHighlighter.registerLanguage('javascript', js)
-SyntaxHighlighter.registerLanguage('typescript', ts)
+SyntaxHighlighter.registerLanguage("javascript", js);
+SyntaxHighlighter.registerLanguage("typescript", ts);
 ```
 
 ### 3. Supabase SDK优化
 
 ```typescript
 // 创建单例实例
-let supabaseClient: SupabaseClient | null = null
+let supabaseClient: SupabaseClient | null = null;
 
 export function getSupabaseClient() {
   if (!supabaseClient) {
-    supabaseClient = createClient(url, key)
+    supabaseClient = createClient(url, key);
   }
-  return supabaseClient
+  return supabaseClient;
 }
 
 // 按需导入功能
-const { auth } = getSupabaseClient()
+const { auth } = getSupabaseClient();
 ```
 
 ## 四、监控和度量
@@ -206,8 +215,8 @@ const { auth } = getSupabaseClient()
 ```typescript
 // 在 _app.tsx 中添加
 export function reportWebVitals(metric: NextWebVitalsMetric) {
-  if (metric.label === 'web-vital') {
-    console.log(metric) // 发送到分析服务
+  if (metric.label === "web-vital") {
+    console.log(metric); // 发送到分析服务
   }
 }
 ```
@@ -215,6 +224,7 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 ### 2. Bundle大小预算
 
 在 `package.json` 中设置：
+
 ```json
 {
   "bundlesize": [
@@ -252,22 +262,22 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 module.exports = {
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      config.optimization.minimize = true
+      config.optimization.minimize = true;
       config.optimization.minimizer.push(
         new TerserPlugin({
           terserOptions: {
             compress: {
               drop_console: true,
               drop_debugger: true,
-              pure_funcs: ['console.log'],
+              pure_funcs: ["console.log"],
             },
           },
-        })
-      )
+        }),
+      );
     }
-    return config
-  }
-}
+    return config;
+  },
+};
 ```
 
 ### 2. 模块解析优化
@@ -276,31 +286,35 @@ module.exports = {
 config.resolve.alias = {
   ...config.resolve.alias,
   // 避免重复打包
-  'react': path.resolve('./node_modules/react'),
-  'react-dom': path.resolve('./node_modules/react-dom'),
-}
+  react: path.resolve("./node_modules/react"),
+  "react-dom": path.resolve("./node_modules/react-dom"),
+};
 ```
 
 ## 六、检查清单
 
 ### 初始优化
+
 - [ ] 安装并运行bundle analyzer
 - [ ] 识别最大的依赖包
 - [ ] 检查重复的依赖
 - [ ] 审查未使用的导入
 
 ### 代码层面
+
 - [ ] 实现动态导入
 - [ ] 优化图片加载
 - [ ] 配置字体优化
 - [ ] 添加React优化
 
 ### 构建配置
+
 - [ ] 配置webpack优化
 - [ ] 设置bundle预算
 - [ ] 启用压缩
 
 ### 监控
+
 - [ ] 设置性能监控
 - [ ] 配置CI检查
 - [ ] 定期审查bundle大小
@@ -308,16 +322,19 @@ config.resolve.alias = {
 ## 七、预期效果
 
 ### 优化前（估计）
+
 - Main bundle: ~200KB
 - Vendor bundle: ~300KB
 - 总大小: ~500KB
 
 ### 优化后（目标）
+
 - Main bundle: ~80KB (-60%)
 - Vendor chunks: ~200KB (-33%)
 - 总大小: ~280KB (-44%)
 
 ### 性能提升
+
 - First Load JS: -40%
 - LCP: -30%
 - TTI: -25%
@@ -332,16 +349,19 @@ config.resolve.alias = {
 ## 九、后续建议
 
 ### 短期（1周）
+
 1. 完成基础bundle分析
 2. 实施动态导入
 3. 优化大型依赖
 
 ### 中期（2周）
+
 1. 实现高级代码分割
 2. 配置CDN
 3. 优化构建流程
 
 ### 长期（1月）
+
 1. 建立性能基准
 2. 自动化性能测试
 3. 持续优化迭代
@@ -349,6 +369,7 @@ config.resolve.alias = {
 ---
 
 **相关资源**：
+
 - [Next.js优化文档](https://nextjs.org/docs/app/building-your-application/optimizing)
 - [Web.dev性能指南](https://web.dev/performance/)
 - [Bundle Phobia](https://bundlephobia.com/) - 检查npm包大小

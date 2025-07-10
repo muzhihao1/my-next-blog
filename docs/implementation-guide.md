@@ -13,12 +13,15 @@
 ## 🚀 立即测试改进效果
 
 ### 方法 1：查看现有文章（已应用样式）
+
 ```bash
 npm run dev
 ```
+
 访问 http://localhost:3000/posts/[任意文章]
 
 改进效果：
+
 - ✅ 字体大小从 16px → 20px
 - ✅ 行高从 1.5 → 1.7
 - ✅ 内容宽度限制在 740px
@@ -38,14 +41,14 @@ npm run dev
 ## 📋 进一步优化建议
 
 ### 1. 简化首页文章列表
+
 ```tsx
 // 在首页组件中添加 Ghost 风格类
-<div className="ghost-content-width">
-  {/* 文章列表 */}
-</div>
+<div className="ghost-content-width">{/* 文章列表 */}</div>
 ```
 
 ### 2. 优化文章卡片
+
 ```css
 /* 添加到 quick-ghost-fix.css */
 .article-card {
@@ -58,6 +61,7 @@ npm run dev
 ```
 
 ### 3. 精简导航栏
+
 ```tsx
 // 简化 Header 组件
 <header className="fixed top-0 w-full bg-white/80 backdrop-blur-sm z-50">
@@ -71,6 +75,7 @@ npm run dev
 ## 🎯 关键性能指标
 
 改进后预期提升：
+
 - **首次内容绘制 (FCP)**: -20%
 - **最大内容绘制 (LCP)**: -15%
 - **累积布局偏移 (CLS)**: -50%
@@ -79,6 +84,7 @@ npm run dev
 ## 🔧 调试和微调
 
 ### 如果字体太大
+
 ```css
 /* 在 quick-ghost-fix.css 中调整 */
 .prose-blog {
@@ -87,13 +93,19 @@ npm run dev
 ```
 
 ### 如果需要保留某些功能
+
 ```css
 /* 选择性显示组件 */
-.table-of-contents { display: block !important; }
-.social-share { display: flex !important; }
+.table-of-contents {
+  display: block !important;
+}
+.social-share {
+  display: flex !important;
+}
 ```
 
 ### 恢复原始样式
+
 ```bash
 # 注释掉 globals.css 中的导入
 # @import './styles/quick-ghost-fix.css';
@@ -110,6 +122,7 @@ npm run dev
 ## 🎨 可选的视觉增强
 
 ### 1. 添加阅读进度条
+
 ```css
 .reading-progress {
   height: 2px !important;
@@ -118,6 +131,7 @@ npm run dev
 ```
 
 ### 2. 优化选中文本样式
+
 ```css
 ::selection {
   background: rgba(0, 0, 0, 0.1) !important;
@@ -126,6 +140,7 @@ npm run dev
 ```
 
 ### 3. 添加平滑滚动
+
 ```css
 html {
   scroll-behavior: smooth !important;
@@ -135,6 +150,7 @@ html {
 ## 📊 A/B 测试建议
 
 可以创建两个版本进行对比：
+
 1. **版本 A**: 现有布局 + 快速样式修复
 2. **版本 B**: 完整 Ghost 风格模板
 

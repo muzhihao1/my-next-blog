@@ -5,6 +5,7 @@
 ## 📡 功能概述
 
 博客支持三种订阅格式：
+
 - **RSS 2.0** - 最广泛支持的标准格式 (`/rss.xml`)
 - **Atom 1.0** - 现代化的XML订阅格式 (`/atom.xml`)
 - **JSON Feed 1.1** - 面向开发者的JSON格式 (`/feed.json`)
@@ -60,6 +61,7 @@ NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 ### 数据来源
 
 所有Feed数据来自 `getAllPosts()` 函数，包含：
+
 - 文章标题
 - 文章链接
 - 发布日期
@@ -78,6 +80,7 @@ NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 ### 在页面中显示
 
 订阅链接已集成在：
+
 - `/app/subscribe/page.tsx` - 专门的订阅页面
 - 页面头部的 `<link>` 标签（自动发现）
 
@@ -104,7 +107,7 @@ NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 修改 `.slice(0, 20)` 中的数字：
 
 ```typescript
-posts.slice(0, 50) // 包含最新50篇文章
+posts.slice(0, 50); // 包含最新50篇文章
 ```
 
 ### 添加全文内容
@@ -120,6 +123,7 @@ posts.slice(0, 50) // 包含最新50篇文章
 ### 验证Feed格式
 
 使用在线验证工具：
+
 - RSS/Atom: https://validator.w3.org/feed/
 - JSON Feed: https://validator.jsonfeed.org/
 
@@ -147,6 +151,7 @@ curl http://localhost:3000/feed.json
 ### Feed为空
 
 检查：
+
 1. Notion API配置是否正确
 2. 是否有已发布的文章
 3. 查看服务器日志中的错误信息
@@ -154,15 +159,17 @@ curl http://localhost:3000/feed.json
 ### 编码问题
 
 确保：
+
 1. 所有内容正确转义XML特殊字符
 2. 响应头设置正确的charset=utf-8
 
 ### 更新延迟
 
 由于缓存设置，更新可能延迟最多1小时。可以：
+
 1. 清除CDN缓存
 2. 使用查询参数绕过缓存：`/rss.xml?t=时间戳`
 
 ---
 
-*更新日期：2025-01-07*
+_更新日期：2025-01-07_

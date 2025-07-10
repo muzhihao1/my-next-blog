@@ -17,28 +17,29 @@
 
 #### 必需字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 标题 | Title | Title | 文章标题 | "Next.js 15 深度解析" |
-| 发布状态 | Checkbox | Published | 是否发布 | ✓ |
-| 发布日期 | Date | Date | 文章发布日期 | 2025-01-07 |
-| 作者姓名 | Text | AuthorName | 作者名称 | "Zhihao Mu" |
-| 分类 | Select | Category | 文章分类 | "Technology" |
-| 标签 | Multi-select | Tags | 文章标签 | ["React", "Web开发"] |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明         | 示例                  |
+| -------- | --------------- | -------------- | ------------ | --------------------- |
+| 标题     | Title           | Title          | 文章标题     | "Next.js 15 深度解析" |
+| 发布状态 | Checkbox        | Published      | 是否发布     | ✓                     |
+| 发布日期 | Date            | Date           | 文章发布日期 | 2025-01-07            |
+| 作者姓名 | Text            | AuthorName     | 作者名称     | "Zhihao Mu"           |
+| 分类     | Select          | Category       | 文章分类     | "Technology"          |
+| 标签     | Multi-select    | Tags           | 文章标签     | ["React", "Web开发"]  |
 
 #### 可选字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| URL别名 | Text | Slug | 自定义URL路径 | "nextjs-15-deep-dive" |
-| 摘要 | Text | Excerpt | 文章摘要 | "深入探讨 Next.js 15 的新特性..." |
-| 阅读时间 | Text | ReadTime | 预计阅读时间 | "8 min read" |
-| 作者头像 | URL | AuthorAvatar | 作者头像URL | https://example.com/avatar.jpg |
-| 封面图 | Files & media | Cover | 文章封面图 | 上传图片 |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明          | 示例                              |
+| -------- | --------------- | -------------- | ------------- | --------------------------------- |
+| URL别名  | Text            | Slug           | 自定义URL路径 | "nextjs-15-deep-dive"             |
+| 摘要     | Text            | Excerpt        | 文章摘要      | "深入探讨 Next.js 15 的新特性..." |
+| 阅读时间 | Text            | ReadTime       | 预计阅读时间  | "8 min read"                      |
+| 作者头像 | URL             | AuthorAvatar   | 作者头像URL   | https://example.com/avatar.jpg    |
+| 封面图   | Files & media   | Cover          | 文章封面图    | 上传图片                          |
 
 #### 分类选项配置
 
 在 Category 字段中创建以下选项：
+
 - Technology（技术）
 - Design（设计）
 - Product（产品）
@@ -49,27 +50,28 @@
 
 #### 必需字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 书名 | Title | Title | 书籍标题 | "深入理解计算机系统" |
-| 作者 | Text | Author | 书籍作者 | "Randal E. Bryant" |
-| 状态 | Select | Status | 阅读状态 | "已读" |
-| 评分 | Number | Rating | 评分（1-5） | 5 |
-| 发布状态 | Checkbox | Published | 是否显示 | ✓ |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明        | 示例                 |
+| -------- | --------------- | -------------- | ----------- | -------------------- |
+| 书名     | Title           | Title          | 书籍标题    | "深入理解计算机系统" |
+| 作者     | Text            | Author         | 书籍作者    | "Randal E. Bryant"   |
+| 状态     | Select          | Status         | 阅读状态    | "已读"               |
+| 评分     | Number          | Rating         | 评分（1-5） | 5                    |
+| 发布状态 | Checkbox        | Published      | 是否显示    | ✓                    |
 
 #### 可选字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 封面 | Files & media | Cover | 书籍封面 | 上传图片 |
-| 标签 | Multi-select | Tags | 书籍标签 | ["计算机", "系统"] |
-| 阅读日期 | Date | ReadDate | 完成阅读日期 | 2025-01-01 |
-| 笔记 | Text | Notes | 读书笔记 | "这本书深入浅出..." |
-| 购买链接 | URL | PurchaseLink | 购买链接 | https://book.com/xxx |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明         | 示例                 |
+| -------- | --------------- | -------------- | ------------ | -------------------- |
+| 封面     | Files & media   | Cover          | 书籍封面     | 上传图片             |
+| 标签     | Multi-select    | Tags           | 书籍标签     | ["计算机", "系统"]   |
+| 阅读日期 | Date            | ReadDate       | 完成阅读日期 | 2025-01-01           |
+| 笔记     | Text            | Notes          | 读书笔记     | "这本书深入浅出..."  |
+| 购买链接 | URL             | PurchaseLink   | 购买链接     | https://book.com/xxx |
 
 #### 状态选项配置
 
 在 Status 字段中创建以下选项：
+
 - 想读 (Want to Read)
 - 在读 (Reading)
 - 已读 (Read)
@@ -79,50 +81,51 @@
 
 #### 必需字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 项目名称 | Title | Title | 项目标题 | "个人博客系统" |
-| 描述 | Text | Description | 项目描述 | "基于 Next.js 的现代博客" |
-| 状态 | Select | Status | 项目状态 | "已完成" |
-| 发布状态 | Checkbox | Published | 是否展示 | ✓ |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明     | 示例                      |
+| -------- | --------------- | -------------- | -------- | ------------------------- |
+| 项目名称 | Title           | Title          | 项目标题 | "个人博客系统"            |
+| 描述     | Text            | Description    | 项目描述 | "基于 Next.js 的现代博客" |
+| 状态     | Select          | Status         | 项目状态 | "已完成"                  |
+| 发布状态 | Checkbox        | Published      | 是否展示 | ✓                         |
 
 #### 可选字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 技术栈 | Multi-select | TechStack | 使用的技术 | ["Next.js", "TypeScript"] |
-| 链接 | URL | Link | 项目链接 | https://github.com/xxx |
-| 演示链接 | URL | DemoLink | 在线演示 | https://demo.com |
-| 封面图 | Files & media | Cover | 项目截图 | 上传图片 |
-| 开始日期 | Date | StartDate | 开始时间 | 2024-12-01 |
-| 完成日期 | Date | EndDate | 完成时间 | 2025-01-07 |
-| URL别名 | Text | Slug | 自定义URL | "personal-blog" |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明       | 示例                      |
+| -------- | --------------- | -------------- | ---------- | ------------------------- |
+| 技术栈   | Multi-select    | TechStack      | 使用的技术 | ["Next.js", "TypeScript"] |
+| 链接     | URL             | Link           | 项目链接   | https://github.com/xxx    |
+| 演示链接 | URL             | DemoLink       | 在线演示   | https://demo.com          |
+| 封面图   | Files & media   | Cover          | 项目截图   | 上传图片                  |
+| 开始日期 | Date            | StartDate      | 开始时间   | 2024-12-01                |
+| 完成日期 | Date            | EndDate        | 完成时间   | 2025-01-07                |
+| URL别名  | Text            | Slug           | 自定义URL  | "personal-blog"           |
 
 ### 4. 工具数据库 (Tools Database)
 
 #### 必需字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 工具名称 | Title | Title | 工具名称 | "Visual Studio Code" |
-| 分类 | Select | Category | 工具分类 | "开发工具" |
-| 描述 | Text | Description | 工具描述 | "强大的代码编辑器" |
-| 发布状态 | Checkbox | Published | 是否展示 | ✓ |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明     | 示例                 |
+| -------- | --------------- | -------------- | -------- | -------------------- |
+| 工具名称 | Title           | Title          | 工具名称 | "Visual Studio Code" |
+| 分类     | Select          | Category       | 工具分类 | "开发工具"           |
+| 描述     | Text            | Description    | 工具描述 | "强大的代码编辑器"   |
+| 发布状态 | Checkbox        | Published      | 是否展示 | ✓                    |
 
 #### 可选字段
 
-| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明 | 示例 |
-|---------|---------------|--------------|------|------|
-| 链接 | URL | Link | 官网链接 | https://code.visualstudio.com |
-| 价格 | Select | Pricing | 价格类型 | "免费" |
-| 图标 | Files & media | Icon | 工具图标 | 上传图片 |
-| 标签 | Multi-select | Tags | 工具标签 | ["编辑器", "开源"] |
-| 平台 | Multi-select | Platforms | 支持平台 | ["macOS", "Windows", "Linux"] |
-| URL别名 | Text | Slug | 自定义URL | "visual-studio-code" |
+| 字段名称 | Notion 属性类型 | 属性名（英文） | 说明      | 示例                          |
+| -------- | --------------- | -------------- | --------- | ----------------------------- |
+| 链接     | URL             | Link           | 官网链接  | https://code.visualstudio.com |
+| 价格     | Select          | Pricing        | 价格类型  | "免费"                        |
+| 图标     | Files & media   | Icon           | 工具图标  | 上传图片                      |
+| 标签     | Multi-select    | Tags           | 工具标签  | ["编辑器", "开源"]            |
+| 平台     | Multi-select    | Platforms      | 支持平台  | ["macOS", "Windows", "Linux"] |
+| URL别名  | Text            | Slug           | 自定义URL | "visual-studio-code"          |
 
 #### 分类选项配置
 
 在 Category 字段中创建以下选项：
+
 - 开发工具 (Development)
 - 设计工具 (Design)
 - 生产力工具 (Productivity)
@@ -150,6 +153,7 @@
 ### 3. 获取数据库 ID
 
 数据库 URL 格式：
+
 ```
 https://www.notion.so/workspace/[DATABASE_ID]?v=[VIEW_ID]
 ```
@@ -183,32 +187,31 @@ NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 
 ```javascript
 // test-notion-connection.js
-const { Client } = require("@notionhq/client")
+const { Client } = require("@notionhq/client");
 
 const notion = new Client({
   auth: process.env.NOTION_TOKEN,
-})
+});
 
 async function testConnection() {
   try {
     // 测试获取用户信息
-    const users = await notion.users.list({})
-    console.log("✅ API 连接成功！")
-    console.log(`找到 ${users.results.length} 个用户`)
-    
+    const users = await notion.users.list({});
+    console.log("✅ API 连接成功！");
+    console.log(`找到 ${users.results.length} 个用户`);
+
     // 测试查询数据库
     const database = await notion.databases.retrieve({
-      database_id: process.env.NOTION_DATABASE_ID
-    })
-    console.log("✅ 数据库连接成功！")
-    console.log(`数据库名称: ${database.title[0]?.plain_text}`)
-    
+      database_id: process.env.NOTION_DATABASE_ID,
+    });
+    console.log("✅ 数据库连接成功！");
+    console.log(`数据库名称: ${database.title[0]?.plain_text}`);
   } catch (error) {
-    console.error("❌ 连接失败:", error.message)
+    console.error("❌ 连接失败:", error.message);
   }
 }
 
-testConnection()
+testConnection();
 ```
 
 ### 使用 cURL 测试
@@ -237,7 +240,7 @@ curl -X GET 'https://api.notion.com/v1/databases/YOUR_DATABASE_ID' \
 
 - **封面图推荐尺寸**: 1200x630px（社交分享优化）
 - **支持格式**: JPG, PNG, WebP
-- **存储方式**: 
+- **存储方式**:
   - 直接上传到 Notion（推荐）
   - 使用外部图床链接
 
@@ -273,6 +276,7 @@ curl -X GET 'https://api.notion.com/v1/databases/YOUR_DATABASE_ID' \
 ### 4. 数据未显示
 
 **检查清单**:
+
 - [ ] Published 字段是否勾选
 - [ ] 日期字段是否正确填写
 - [ ] 必需字段是否都已填写
@@ -288,12 +292,13 @@ curl -X GET 'https://api.notion.com/v1/databases/YOUR_DATABASE_ID' \
 
 ```javascript
 // 缓存配置
-const CACHE_TTL = process.env.CACHE_TTL || 3600000 // 1小时
+const CACHE_TTL = process.env.CACHE_TTL || 3600000; // 1小时
 ```
 
 ### 3. Webhook 集成（高级）
 
 可以配置 Notion Webhook 实现实时更新：
+
 - 内容更改时自动触发构建
 - 减少 API 调用次数
 
@@ -336,4 +341,4 @@ const CACHE_TTL = process.env.CACHE_TTL || 3600000 // 1小时
 
 ---
 
-*最后更新: 2025-01-07*
+_最后更新: 2025-01-07_

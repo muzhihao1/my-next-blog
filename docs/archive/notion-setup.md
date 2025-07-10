@@ -19,7 +19,6 @@
    - **Name**: 输入集成名称，如 "My Blog Integration"
    - **Associated workspace**: 选择你的工作空间
    - **Type**: 选择 "Internal"
-   
 3. **提交并获取 Token**
    - 点击 "Submit" 创建集成
    - 复制生成的 "Internal Integration Token"（以 `secret_` 开头）
@@ -30,21 +29,21 @@
 
 创建一个包含以下属性的数据库：
 
-| 属性名称 | 类型 | 说明 |
-|---------|------|------|
-| Title | Title | 文章标题 |
-| Status | Select | 状态：Published, Draft |
-| Date | Date | 发布日期 |
-| Tags | Multi-select | 标签 |
-| Summary | Text | 摘要 |
-| Content | Rich text | 文章内容 |
-| Cover | Files & media | 封面图片 |
-| Slug | Rich text | URL路径（可选）|
+| 属性名称 | 类型          | 说明                   |
+| -------- | ------------- | ---------------------- |
+| Title    | Title         | 文章标题               |
+| Status   | Select        | 状态：Published, Draft |
+| Date     | Date          | 发布日期               |
+| Tags     | Multi-select  | 标签                   |
+| Summary  | Text          | 摘要                   |
+| Content  | Rich text     | 文章内容               |
+| Cover    | Files & media | 封面图片               |
+| Slug     | Rich text     | URL路径（可选）        |
 
 #### 2.2 其他数据库（可选）
 
 - **书籍数据库**: 包含 Title, Author, Status, Rating, Cover 等字段
-- **项目数据库**: 包含 Title, Description, Tech Stack, Status, Link 等字段  
+- **项目数据库**: 包含 Title, Description, Tech Stack, Status, Link 等字段
 - **工具数据库**: 包含 Title, Category, Description, Link 等字段
 
 ### 3. 获取数据库 ID
@@ -116,6 +115,7 @@ curl http://localhost:3000/api/posts
 ```
 
 测试脚本会检查：
+
 - ✅ API Token 是否有效
 - ✅ 数据库访问权限
 - ✅ 数据库结构是否正确
@@ -151,6 +151,7 @@ curl http://localhost:3000/api/posts
 ### 调试技巧
 
 1. **检查 API 响应**
+
    ```bash
    # 测试 Notion API 连接
    curl -H "Authorization: Bearer $NOTION_TOKEN" \
@@ -179,4 +180,4 @@ curl http://localhost:3000/api/posts
 - ✅ 显示实时的书籍和项目信息
 - ✅ 生成动态的统计数据
 
-如果遇到问题，请检查控制台日志或联系技术支持。 
+如果遇到问题，请检查控制台日志或联系技术支持。

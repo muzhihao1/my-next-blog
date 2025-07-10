@@ -22,14 +22,16 @@
 ## 🎨 主要改进点
 
 ### 排版优化
-| 属性 | 改进前 | 改进后 | 提升 |
-|------|--------|--------|------|
-| 字体大小 | 16px | 20-21px | +25% |
-| 行高 | 1.5 | 1.7 | +13% |
-| 段落间距 | 1rem | 1.8rem | +80% |
-| 内容宽度 | 全宽 | 740px | 最佳阅读宽度 |
+
+| 属性     | 改进前 | 改进后  | 提升         |
+| -------- | ------ | ------- | ------------ |
+| 字体大小 | 16px   | 20-21px | +25%         |
+| 行高     | 1.5    | 1.7     | +13%         |
+| 段落间距 | 1rem   | 1.8rem  | +80%         |
+| 内容宽度 | 全宽   | 740px   | 最佳阅读宽度 |
 
 ### 视觉简化
+
 - ✅ 移除侧边栏目录
 - ✅ 精简元数据显示
 - ✅ 减少交互按钮
@@ -39,6 +41,7 @@
 ## 🚀 如何使用
 
 ### 1. 查看改进效果
+
 ```bash
 # 启动开发服务器
 npm run dev
@@ -51,7 +54,9 @@ http://localhost:3000/posts/[任意文章]
 ```
 
 ### 2. 调整样式参数
+
 如需微调，编辑 `app/styles/quick-ghost-fix.css`：
+
 ```css
 .prose-blog {
   font-size: 19px !important; /* 调整字体大小 */
@@ -60,22 +65,25 @@ http://localhost:3000/posts/[任意文章]
 ```
 
 ### 3. 切换布局风格
+
 ```tsx
 // 使用 Ghost 风格模板
 // 将 ghost-style-page.tsx 重命名为 page.tsx
 
 // 或在现有页面添加条件渲染
-const useGhostStyle = true // 通过配置控制
+const useGhostStyle = true; // 通过配置控制
 ```
 
 ## 📊 性能提升
 
 ### 加载性能
+
 - 移除多余组件减少 JS bundle 大小
 - 简化 CSS 减少渲染时间
 - 更少的 DOM 节点提升性能
 
 ### 阅读体验
+
 - 更大的字体减少眼睛疲劳
 - 优化的行高提升扫读速度
 - 限制宽度改善长文阅读
@@ -83,24 +91,31 @@ const useGhostStyle = true // 通过配置控制
 ## 🔧 进阶定制
 
 ### 1. 主题切换
+
 ```tsx
 // 添加主题切换按钮
-const [theme, setTheme] = useState<'default' | 'ghost'>('ghost')
+const [theme, setTheme] = useState<"default" | "ghost">("ghost");
 ```
 
 ### 2. 响应式优化
+
 ```css
 /* 平板适配 */
 @media (min-width: 768px) and (max-width: 1024px) {
-  .prose-blog { font-size: 19px !important; }
+  .prose-blog {
+    font-size: 19px !important;
+  }
 }
 ```
 
 ### 3. 动画增强
+
 ```css
 /* 平滑过渡 */
 .prose-blog * {
-  transition: color 0.3s ease, background 0.3s ease;
+  transition:
+    color 0.3s ease,
+    background 0.3s ease;
 }
 ```
 
@@ -124,6 +139,7 @@ const [theme, setTheme] = useState<'default' | 'ghost'>('ghost')
 ## 📈 预期效果
 
 根据 Ghost 官方数据和业界经验：
+
 - **阅读完成率**: +20-30%
 - **平均停留时间**: +40-50%
 - **分享率**: +15-20%
@@ -149,6 +165,7 @@ const [theme, setTheme] = useState<'default' | 'ghost'>('ghost')
 ## 🙏 致谢
 
 感谢 Ghost 团队提供的优秀设计理念，让我们认识到：
+
 > "好的设计不是让用户注意到设计本身，而是让用户专注于内容。"
 
 ---

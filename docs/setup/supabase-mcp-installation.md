@@ -7,11 +7,13 @@ Supabase MCP 已成功安装到你的 Claude Desktop 中。
 ## 配置详情
 
 ### 1. 配置文件位置
+
 ```
 ~/Library/Application Support/Claude/claude_desktop_config.json
 ```
 
 ### 2. 添加的配置
+
 ```json
 "supabase": {
   "command": "npx",
@@ -24,6 +26,7 @@ Supabase MCP 已成功安装到你的 Claude Desktop 中。
 ```
 
 ### 3. 使用的包
+
 - 包名：`@supabase/mcp-server-supabase`
 - 这是 Supabase 官方提供的 MCP 服务器
 
@@ -67,6 +70,7 @@ Supabase MCP 已成功安装到你的 Claude Desktop 中。
 如果遇到问题：
 
 1. **检查日志**
+
    ```bash
    # 查看 Claude Desktop 日志
    tail -f ~/Library/Logs/Claude/claude.log

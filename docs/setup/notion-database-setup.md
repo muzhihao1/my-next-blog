@@ -17,19 +17,19 @@
 
 **环境变量**: `NOTION_DATABASE_ID`
 
-| 字段名 | 属性类型 | 必填 | 说明 | 示例 |
-|--------|----------|------|------|------|
-| Title | Title | ✅ | 文章标题 | "使用 Next.js 15 构建现代博客" |
-| Slug | Rich Text | ✅ | URL 路径标识 | "build-modern-blog-nextjs-15" |
-| Category | Select | ✅ | 文章分类 | 技术分享 / 产品思考 / 生活随笔 |
-| Excerpt | Rich Text | ✅ | 文章摘要（150字以内） | "探索 Next.js 15 的新特性..." |
-| Date | Date | ✅ | 发布日期 | 2025-01-08 |
-| ReadTime | Number | ❌ | 预计阅读时间（分钟） | 5 |
-| AuthorName | Rich Text | ✅ | 作者姓名 | "Siloam Liao" |
-| AuthorAvatar | Files | ❌ | 作者头像 | avatar.jpg |
-| Published | Checkbox | ✅ | 是否发布 | ✅ |
-| Tags | Multi-select | ❌ | 文章标签 | Next.js, React, TypeScript |
-| Cover | Files | ❌ | 封面图片 | cover.jpg |
+| 字段名       | 属性类型     | 必填 | 说明                  | 示例                           |
+| ------------ | ------------ | ---- | --------------------- | ------------------------------ |
+| Title        | Title        | ✅   | 文章标题              | "使用 Next.js 15 构建现代博客" |
+| Slug         | Rich Text    | ✅   | URL 路径标识          | "build-modern-blog-nextjs-15"  |
+| Category     | Select       | ✅   | 文章分类              | 技术分享 / 产品思考 / 生活随笔 |
+| Excerpt      | Rich Text    | ✅   | 文章摘要（150字以内） | "探索 Next.js 15 的新特性..."  |
+| Date         | Date         | ✅   | 发布日期              | 2025-01-08                     |
+| ReadTime     | Number       | ❌   | 预计阅读时间（分钟）  | 5                              |
+| AuthorName   | Rich Text    | ✅   | 作者姓名              | "Siloam Liao"                  |
+| AuthorAvatar | Files        | ❌   | 作者头像              | avatar.jpg                     |
+| Published    | Checkbox     | ✅   | 是否发布              | ✅                             |
+| Tags         | Multi-select | ❌   | 文章标签              | Next.js, React, TypeScript     |
+| Cover        | Files        | ❌   | 封面图片              | cover.jpg                      |
 
 **页面内容**: 使用 Notion 页面内容区域编写文章正文，支持 Markdown 格式。
 
@@ -37,22 +37,22 @@
 
 **环境变量**: `NOTION_BOOKS_DB`
 
-| 字段名 | 属性类型 | 必填 | 说明 | 示例 |
-|--------|----------|------|------|------|
-| Title | Title | ✅ | 书名 | "深入浅出 TypeScript" |
-| Author | Rich Text | ✅ | 作者 | "张三" |
-| ISBN | Rich Text | ❌ | ISBN 编号 | "978-7-111-12345-6" |
-| Category | Select | ✅ | 图书分类 | 技术 / 管理 / 心理 / 文学 |
-| Status | Select | ✅ | 阅读状态 | 已读 / 在读 / 想读 |
-| Rating | Number | ❌ | 评分（1-5） | 4.5 |
-| StartDate | Date | ❌ | 开始阅读日期 | 2024-12-01 |
-| FinishDate | Date | ❌ | 完成阅读日期 | 2024-12-20 |
-| Cover | Files | ❌ | 封面图片 | book-cover.jpg |
-| Takeaways | Rich Text | ❌ | 核心收获（简短总结） | "学会了 TypeScript 高级类型..." |
-| Tags | Multi-select | ❌ | 标签 | TypeScript, 前端开发 |
-| PublishYear | Number | ❌ | 出版年份 | 2024 |
-| Pages | Number | ❌ | 页数 | 380 |
-| Language | Select | ❌ | 语言 | 中文 / English |
+| 字段名      | 属性类型     | 必填 | 说明                 | 示例                            |
+| ----------- | ------------ | ---- | -------------------- | ------------------------------- |
+| Title       | Title        | ✅   | 书名                 | "深入浅出 TypeScript"           |
+| Author      | Rich Text    | ✅   | 作者                 | "张三"                          |
+| ISBN        | Rich Text    | ❌   | ISBN 编号            | "978-7-111-12345-6"             |
+| Category    | Select       | ✅   | 图书分类             | 技术 / 管理 / 心理 / 文学       |
+| Status      | Select       | ✅   | 阅读状态             | 已读 / 在读 / 想读              |
+| Rating      | Number       | ❌   | 评分（1-5）          | 4.5                             |
+| StartDate   | Date         | ❌   | 开始阅读日期         | 2024-12-01                      |
+| FinishDate  | Date         | ❌   | 完成阅读日期         | 2024-12-20                      |
+| Cover       | Files        | ❌   | 封面图片             | book-cover.jpg                  |
+| Takeaways   | Rich Text    | ❌   | 核心收获（简短总结） | "学会了 TypeScript 高级类型..." |
+| Tags        | Multi-select | ❌   | 标签                 | TypeScript, 前端开发            |
+| PublishYear | Number       | ❌   | 出版年份             | 2024                            |
+| Pages       | Number       | ❌   | 页数                 | 380                             |
+| Language    | Select       | ❌   | 语言                 | 中文 / English                  |
 
 **页面内容**: 使用 Notion 页面内容区域记录详细的读书笔记。
 
@@ -60,22 +60,22 @@
 
 **环境变量**: `NOTION_TOOLS_DB`
 
-| 字段名 | 属性类型 | 必填 | 说明 | 示例 |
-|--------|----------|------|------|------|
-| Name | Title | ✅ | 工具名称 | "VS Code" |
-| Slug | Rich Text | ✅ | URL 路径标识 | "vs-code" |
-| Category | Select | ✅ | 工具分类 | 开发工具 / 设计工具 / 效率工具 / AI工具 |
-| Description | Rich Text | ✅ | 简短描述 | "微软开发的免费代码编辑器" |
-| Rating | Number | ✅ | 评分（1-5） | 5 |
-| Price | Select | ✅ | 价格类型 | 免费 / 付费 / 免费增值 / 订阅制 |
-| Website | URL | ✅ | 官网链接 | https://code.visualstudio.com |
-| Pros | Rich Text | ❌ | 优点（多行） | "插件生态丰富\n性能优秀\n跨平台" |
-| Cons | Rich Text | ❌ | 缺点（多行） | "占用内存较大\n启动速度一般" |
-| UseCases | Rich Text | ❌ | 使用场景 | "前端开发、后端开发、文档编写" |
-| Alternatives | Rich Text | ❌ | 替代方案 | "Sublime Text, Atom, WebStorm" |
-| Tags | Multi-select | ❌ | 标签 | 编辑器, Microsoft, 开源 |
-| Featured | Checkbox | ❌ | 是否精选 | ✅ |
-| Published | Checkbox | ✅ | 是否发布 | ✅ |
+| 字段名       | 属性类型     | 必填 | 说明         | 示例                                    |
+| ------------ | ------------ | ---- | ------------ | --------------------------------------- |
+| Name         | Title        | ✅   | 工具名称     | "VS Code"                               |
+| Slug         | Rich Text    | ✅   | URL 路径标识 | "vs-code"                               |
+| Category     | Select       | ✅   | 工具分类     | 开发工具 / 设计工具 / 效率工具 / AI工具 |
+| Description  | Rich Text    | ✅   | 简短描述     | "微软开发的免费代码编辑器"              |
+| Rating       | Number       | ✅   | 评分（1-5）  | 5                                       |
+| Price        | Select       | ✅   | 价格类型     | 免费 / 付费 / 免费增值 / 订阅制         |
+| Website      | URL          | ✅   | 官网链接     | https://code.visualstudio.com           |
+| Pros         | Rich Text    | ❌   | 优点（多行） | "插件生态丰富\n性能优秀\n跨平台"        |
+| Cons         | Rich Text    | ❌   | 缺点（多行） | "占用内存较大\n启动速度一般"            |
+| UseCases     | Rich Text    | ❌   | 使用场景     | "前端开发、后端开发、文档编写"          |
+| Alternatives | Rich Text    | ❌   | 替代方案     | "Sublime Text, Atom, WebStorm"          |
+| Tags         | Multi-select | ❌   | 标签         | 编辑器, Microsoft, 开源                 |
+| Featured     | Checkbox     | ❌   | 是否精选     | ✅                                      |
+| Published    | Checkbox     | ✅   | 是否发布     | ✅                                      |
 
 **页面内容**: 使用 Notion 页面内容区域编写详细的工具评测。
 
@@ -83,25 +83,25 @@
 
 **环境变量**: `NOTION_PROJECTS_DB`
 
-| 字段名 | 属性类型 | 必填 | 说明 | 示例 |
-|--------|----------|------|------|------|
-| Title | Title | ✅ | 项目名称 | "个人博客系统 v2.0" |
-| Slug | Rich Text | ✅ | URL 路径标识 | "personal-blog-v2" |
-| Description | Rich Text | ✅ | 项目简介 | "基于 Next.js 15 的现代化博客" |
-| Category | Select | ✅ | 项目类型 | Web应用 / 移动应用 / 开源项目 / 工具库 |
-| Status | Select | ✅ | 项目状态 | 已完成 / 开发中 / 维护中 / 已归档 |
-| Featured | Checkbox | ❌ | 是否精选 | ✅ |
-| TechStack | Multi-select | ✅ | 技术栈 | Next.js, TypeScript, Tailwind |
-| Tags | Multi-select | ❌ | 项目标签 | 全栈, React, 个人项目 |
-| Thumbnail | Files | ❌ | 项目缩略图 | thumbnail.png |
-| Screenshots | Files | ❌ | 项目截图（多张） | [screen1.png, screen2.png] |
-| DemoUrl | URL | ❌ | 演示链接 | https://blog.example.com |
-| GithubUrl | URL | ❌ | GitHub 链接 | https://github.com/user/repo |
-| StartDate | Date | ❌ | 开始日期 | 2024-10-01 |
-| EndDate | Date | ❌ | 结束日期 | 2024-12-31 |
-| Users | Number | ❌ | 用户数量 | 1000 |
-| Performance | Number | ❌ | 性能评分 | 95 |
-| Achievement | Rich Text | ❌ | 主要成就 | "获得 1000+ GitHub Stars" |
+| 字段名      | 属性类型     | 必填 | 说明             | 示例                                   |
+| ----------- | ------------ | ---- | ---------------- | -------------------------------------- |
+| Title       | Title        | ✅   | 项目名称         | "个人博客系统 v2.0"                    |
+| Slug        | Rich Text    | ✅   | URL 路径标识     | "personal-blog-v2"                     |
+| Description | Rich Text    | ✅   | 项目简介         | "基于 Next.js 15 的现代化博客"         |
+| Category    | Select       | ✅   | 项目类型         | Web应用 / 移动应用 / 开源项目 / 工具库 |
+| Status      | Select       | ✅   | 项目状态         | 已完成 / 开发中 / 维护中 / 已归档      |
+| Featured    | Checkbox     | ❌   | 是否精选         | ✅                                     |
+| TechStack   | Multi-select | ✅   | 技术栈           | Next.js, TypeScript, Tailwind          |
+| Tags        | Multi-select | ❌   | 项目标签         | 全栈, React, 个人项目                  |
+| Thumbnail   | Files        | ❌   | 项目缩略图       | thumbnail.png                          |
+| Screenshots | Files        | ❌   | 项目截图（多张） | [screen1.png, screen2.png]             |
+| DemoUrl     | URL          | ❌   | 演示链接         | https://blog.example.com               |
+| GithubUrl   | URL          | ❌   | GitHub 链接      | https://github.com/user/repo           |
+| StartDate   | Date         | ❌   | 开始日期         | 2024-10-01                             |
+| EndDate     | Date         | ❌   | 结束日期         | 2024-12-31                             |
+| Users       | Number       | ❌   | 用户数量         | 1000                                   |
+| Performance | Number       | ❌   | 性能评分         | 95                                     |
+| Achievement | Rich Text    | ❌   | 主要成就         | "获得 1000+ GitHub Stars"              |
 
 **页面内容**: 使用 Notion 页面内容区域编写详细的项目介绍、技术架构、开发心得等。
 
@@ -134,6 +134,7 @@
    - 确保有 "Read" 权限
 
 3. 配置环境变量：
+
 ```bash
 # .env.local
 NOTION_TOKEN=your_integration_token

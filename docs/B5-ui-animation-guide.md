@@ -23,16 +23,14 @@ npm install framer-motion
 ### 基础使用
 
 ```tsx
-import { AnimatedContainer, AnimatedText } from '@/lib/animation'
+import { AnimatedContainer, AnimatedText } from "@/lib/animation";
 
 export function MyComponent() {
   return (
     <AnimatedContainer animation="fadeInUp">
-      <AnimatedText type="typewriter">
-        欢迎来到我的博客！
-      </AnimatedText>
+      <AnimatedText type="typewriter">欢迎来到我的博客！</AnimatedText>
     </AnimatedContainer>
-  )
+  );
 }
 ```
 
@@ -42,16 +40,17 @@ export function MyComponent() {
 
 ```tsx
 <AnimatedContainer
-  animation="fadeInUp"    // 动画类型
-  delay={0.2}             // 延迟时间
-  threshold={0.1}         // 触发阈值
-  triggerOnce={true}      // 只触发一次
+  animation="fadeInUp" // 动画类型
+  delay={0.2} // 延迟时间
+  threshold={0.1} // 触发阈值
+  triggerOnce={true} // 只触发一次
 >
   {children}
 </AnimatedContainer>
 ```
 
 支持的动画类型：
+
 - `fadeIn` - 淡入
 - `fadeInUp` - 从下往上淡入
 - `scaleIn` - 缩放淡入
@@ -61,15 +60,16 @@ export function MyComponent() {
 
 ```tsx
 <AnimatedText
-  type="typewriter"       // 动画类型
-  delay={0.5}            // 延迟时间
-  as="h1"                // HTML 标签
+  type="typewriter" // 动画类型
+  delay={0.5} // 延迟时间
+  as="h1" // HTML 标签
 >
   动画文本内容
 </AnimatedText>
 ```
 
 支持的动画类型：
+
 - `fadeIn` - 简单淡入
 - `typewriter` - 打字机效果
 - `wordByWord` - 逐词显示
@@ -79,7 +79,7 @@ export function MyComponent() {
 
 ```tsx
 <AnimatedButton
-  variant="ripple"        // 动画变体
+  variant="ripple" // 动画变体
   onClick={handleClick}
   className="px-4 py-2 bg-blue-500 text-white rounded"
 >
@@ -88,6 +88,7 @@ export function MyComponent() {
 ```
 
 支持的变体：
+
 - `scale` - 缩放效果
 - `glow` - 发光效果
 - `slide` - 滑动背景
@@ -97,7 +98,7 @@ export function MyComponent() {
 
 ```tsx
 <AnimatedCard
-  variant="tilt"          // 动画变体
+  variant="tilt" // 动画变体
   className="p-4 bg-white rounded-lg shadow"
 >
   <h3>卡片标题</h3>
@@ -106,6 +107,7 @@ export function MyComponent() {
 ```
 
 支持的变体：
+
 - `lift` - 悬浮效果
 - `tilt` - 倾斜效果
 - `glow` - 发光效果
@@ -183,8 +185,8 @@ export function MyComponent() {
 
 ```tsx
 function MyComponent() {
-  const { ref, controls } = useScrollAnimation(0.1, true)
-  
+  const { ref, controls } = useScrollAnimation(0.1, true);
+
   return (
     <motion.div
       ref={ref}
@@ -194,7 +196,7 @@ function MyComponent() {
     >
       滚动时显示的内容
     </motion.div>
-  )
+  );
 }
 ```
 
@@ -202,13 +204,14 @@ function MyComponent() {
 
 ```tsx
 function MyComponent() {
-  const { shouldReduceMotion, toggleReducedMotion } = useReducedMotionPreference()
-  
+  const { shouldReduceMotion, toggleReducedMotion } =
+    useReducedMotionPreference();
+
   if (shouldReduceMotion) {
-    return <div>静态内容</div>
+    return <div>静态内容</div>;
   }
-  
-  return <AnimatedContainer>动画内容</AnimatedContainer>
+
+  return <AnimatedContainer>动画内容</AnimatedContainer>;
 }
 ```
 
@@ -216,14 +219,9 @@ function MyComponent() {
 
 ```tsx
 function ParallaxImage() {
-  const offset = useParallax(0.5)
-  
-  return (
-    <motion.img
-      style={{ y: offset }}
-      src="/image.jpg"
-    />
-  )
+  const offset = useParallax(0.5);
+
+  return <motion.img style={{ y: offset }} src="/image.jpg" />;
 }
 ```
 
@@ -231,8 +229,8 @@ function ParallaxImage() {
 
 ```tsx
 function Page() {
-  const { controls, isLoaded } = usePageLoadAnimation()
-  
+  const { controls, isLoaded } = usePageLoadAnimation();
+
   return (
     <motion.div
       animate={controls}
@@ -241,7 +239,7 @@ function Page() {
     >
       页面内容
     </motion.div>
-  )
+  );
 }
 ```
 
@@ -253,37 +251,37 @@ function Page() {
 
 ```tsx
 // 在组件中
-const { shouldReduceMotion } = useReducedMotionPreference()
+const { shouldReduceMotion } = useReducedMotionPreference();
 
 // 全局配置
-animationConfig.respectReducedMotion = true
+animationConfig.respectReducedMotion = true;
 ```
 
 ### 2. 性能监控
 
 ```tsx
 // 获取性能优化配置
-const config = getDeviceOptimizedConfig()
+const config = getDeviceOptimizedConfig();
 
 // 使用防抖动画
-const debouncedAnimate = debounceAnimation(animate, 300)
+const debouncedAnimate = debounceAnimation(animate, 300);
 
 // 使用节流动画
-const throttledScroll = throttleAnimation(handleScroll, 100)
+const throttledScroll = throttleAnimation(handleScroll, 100);
 ```
 
 ### 3. 动画队列
 
 ```tsx
-const queue = new AnimationQueue()
+const queue = new AnimationQueue();
 
 // 添加动画到队列
 queue.add(async () => {
-  await animateElement1()
-})
+  await animateElement1();
+});
 queue.add(async () => {
-  await animateElement2()
-})
+  await animateElement2();
+});
 ```
 
 ### 4. GPU 加速
@@ -327,37 +325,37 @@ const animConfig = useResponsiveAnimation()
 
 ```tsx
 // 在测试环境禁用动画
-if (process.env.NODE_ENV === 'test') {
-  animationConfig.enabled = false
+if (process.env.NODE_ENV === "test") {
+  animationConfig.enabled = false;
 }
 ```
 
 ## 示例：创建自定义动画组件
 
 ```tsx
-import { motion } from 'framer-motion'
-import { useScrollAnimation } from '@/lib/animation'
+import { motion } from "framer-motion";
+import { useScrollAnimation } from "@/lib/animation";
 
 export function CustomAnimatedSection({ children }) {
-  const { ref, controls } = useScrollAnimation()
-  
+  const { ref, controls } = useScrollAnimation();
+
   const variants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       scale: 0.8,
       rotate: -5,
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       scale: 1,
       rotate: 0,
       transition: {
         duration: 0.5,
         ease: "easeOut",
-      }
+      },
     },
-  }
-  
+  };
+
   return (
     <motion.section
       ref={ref}
@@ -368,29 +366,35 @@ export function CustomAnimatedSection({ children }) {
     >
       {children}
     </motion.section>
-  )
+  );
 }
 ```
 
 ## 常见问题
 
 ### Q: 动画不流畅怎么办？
+
 A: 检查以下几点：
+
 1. 使用 `transform` 和 `opacity` 而非 `width/height`
 2. 启用 GPU 加速
 3. 减少同时运行的动画数量
 4. 在低端设备上简化动画
 
 ### Q: 如何禁用所有动画？
+
 A: 设置全局配置：
+
 ```tsx
-animationConfig.enabled = false
+animationConfig.enabled = false;
 ```
 
 ### Q: 如何自定义动画时长？
+
 A: 修改常量配置：
+
 ```tsx
-import { duration } from '@/lib/animation/constants'
+import { duration } from "@/lib/animation/constants";
 // 使用 duration.fast, duration.normal, duration.slow
 ```
 

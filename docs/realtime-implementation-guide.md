@@ -2,11 +2,12 @@
 
 **创建日期**：2025年1月10日  
 **任务**：A2. 实时交互后端  
-**负责人**：终端A  
+**负责人**：终端A
 
 ## 一、概述
 
 实时功能基于 Supabase Realtime 构建，提供以下核心功能：
+
 - 🔄 实时评论更新
 - 👥 在线用户状态
 - 🔔 实时通知系统
@@ -45,26 +46,26 @@ import { useRealtimeComments } from '@/lib/realtime'
 
 function CommentSection({ postId }) {
   const { typingUsers, updateTypingStatus } = useRealtimeComments(
-    postId, 
+    postId,
     'post'
   )
-  
+
   // 监听评论事件
   useEffect(() => {
     const handleNewComment = (e) => {
       // 添加新评论到列表
       addComment(e.detail)
     }
-    
+
     window.addEventListener('comment:created', handleNewComment)
     return () => window.removeEventListener('comment:created', handleNewComment)
   }, [])
-  
+
   // 用户输入时
   const handleInput = () => {
     updateTypingStatus(true)
   }
-  
+
   return (
     <div>
       {typingUsers.length > 0 && (
@@ -84,7 +85,7 @@ import { useOnlinePresence } from '@/lib/realtime'
 
 function OnlineUsers() {
   const { onlineUsers, totalOnline } = useOnlinePresence()
-  
+
   return (
     <div>
       <h3>在线用户 ({totalOnline})</h3>
@@ -110,23 +111,23 @@ function OnlineUsers() {
 import { useRealtimeNotifications } from '@/lib/realtime'
 
 function NotificationCenter() {
-  const { 
-    notifications, 
-    unreadCount, 
+  const {
+    notifications,
+    unreadCount,
     markAsRead,
-    markAllAsRead 
+    markAllAsRead
   } = useRealtimeNotifications()
-  
+
   return (
     <div>
       <div className="flex justify-between">
         <h3>通知 ({unreadCount})</h3>
         <button onClick={markAllAsRead}>全部标记已读</button>
       </div>
-      
+
       <div className="space-y-2">
         {notifications.map(notif => (
-          <div 
+          <div
             key={notif.id}
             onClick={() => markAsRead(notif.id)}
             className={`p-4 ${notif.read ? 'opacity-60' : 'bg-blue-50'}`}
@@ -161,11 +162,11 @@ export default function RootLayout({ children }) {
       maxConcurrentChannels: 5,
     }
   })
-  
+
   if (error) {
     console.error('Realtime initialization failed:', error)
   }
-  
+
   return (
     <html>
       <body>
@@ -200,34 +201,29 @@ scripts/supabase-migration-notifications.sql
 ### 1. 自定义事件
 
 ```typescript
-import { onRealtimeEvent, emitRealtimeEvent } from '@/lib/realtime'
+import { onRealtimeEvent, emitRealtimeEvent } from "@/lib/realtime";
 
 // 监听自定义事件
-const unsubscribe = onRealtimeEvent('custom:event', (data) => {
-  console.log('Received custom event:', data)
-})
+const unsubscribe = onRealtimeEvent("custom:event", (data) => {
+  console.log("Received custom event:", data);
+});
 
 // 发送自定义事件
-await emitRealtimeEvent(
-  REALTIME_CHANNELS.ANALYTICS,
-  'custom:event',
-  { action: 'button_click', value: 123 }
-)
+await emitRealtimeEvent(REALTIME_CHANNELS.ANALYTICS, "custom:event", {
+  action: "button_click",
+  value: 123,
+});
 ```
 
 ### 2. 事件过滤和优先级
 
 ```typescript
 // 带过滤器的订阅
-eventManager.subscribe(
-  REALTIME_EVENTS.COMMENT_CREATED,
-  handleComment,
-  {
-    filter: (data) => data.contentType === 'post',
-    priority: 10, // 高优先级
-    once: true    // 只触发一次
-  }
-)
+eventManager.subscribe(REALTIME_EVENTS.COMMENT_CREATED, handleComment, {
+  filter: (data) => data.contentType === "post",
+  priority: 10, // 高优先级
+  once: true, // 只触发一次
+});
 ```
 
 ### 3. 批量操作
@@ -236,15 +232,15 @@ eventManager.subscribe(
 // 批量发送通知
 await notificationManager.sendBatch([
   {
-    userId: 'user1',
+    userId: "user1",
     notification: {
-      type: 'comment',
-      title: '新评论',
-      message: '有人评论了你的文章'
-    }
+      type: "comment",
+      title: "新评论",
+      message: "有人评论了你的文章",
+    },
   },
   // ... 更多通知
-])
+]);
 ```
 
 ## 六、性能优化
@@ -260,8 +256,8 @@ await notificationManager.sendBatch([
 ```typescript
 // 输入状态节流（5秒自动停止）
 const handleTyping = throttle(() => {
-  updateTypingStatus(true)
-}, 1000)
+  updateTypingStatus(true);
+}, 1000);
 ```
 
 ### 3. 内存管理
@@ -277,11 +273,11 @@ const handleTyping = throttle(() => {
 ```typescript
 const channel = await client.subscribe(REALTIME_CHANNELS.COMMENTS, {
   onError: (error) => {
-    console.error('Connection error:', error)
+    console.error("Connection error:", error);
     // 显示错误提示
-    showErrorToast('连接失败，正在重试...')
-  }
-})
+    showErrorToast("连接失败，正在重试...");
+  },
+});
 ```
 
 ### 2. 降级策略
@@ -310,17 +306,17 @@ const channel = await client.subscribe(REALTIME_CHANNELS.COMMENTS, {
 
 ```typescript
 // 测试事件管理器
-describe('EventManager', () => {
-  it('should handle event subscription', async () => {
-    const handler = jest.fn()
-    const unsubscribe = eventManager.subscribe('test:event', handler)
-    
-    await eventManager.publish('test:channel', 'test:event', { data: 123 })
-    
-    expect(handler).toHaveBeenCalledWith({ data: 123 })
-    unsubscribe()
-  })
-})
+describe("EventManager", () => {
+  it("should handle event subscription", async () => {
+    const handler = jest.fn();
+    const unsubscribe = eventManager.subscribe("test:event", handler);
+
+    await eventManager.publish("test:channel", "test:event", { data: 123 });
+
+    expect(handler).toHaveBeenCalledWith({ data: 123 });
+    unsubscribe();
+  });
+});
 ```
 
 ### 2. 集成测试
@@ -348,9 +344,10 @@ describe('EventManager', () => {
 ### Q1: 如何处理大量在线用户？
 
 使用分页和虚拟滚动：
+
 ```typescript
-const pageSize = 50
-const visibleUsers = onlineUsers.slice(0, pageSize)
+const pageSize = 50;
+const visibleUsers = onlineUsers.slice(0, pageSize);
 ```
 
 ### Q2: 如何优化通知性能？
@@ -363,7 +360,7 @@ const visibleUsers = onlineUsers.slice(0, pageSize)
 
 ```typescript
 // 启用调试日志
-window.localStorage.setItem('supabase.auth.debug', 'true')
+window.localStorage.setItem("supabase.auth.debug", "true");
 ```
 
 ---

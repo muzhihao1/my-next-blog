@@ -1,12 +1,15 @@
 # API集成测试指南
 
 ## 概述
+
 本文档说明如何运行和验证API集成测试，确保认证系统和评论系统正常工作。
 
 ## 测试准备
 
 ### 1. 环境配置
+
 确保 `.env.local` 包含以下变量：
+
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://xelyobfvfjqeuysfzpcf.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your_anon_key>
@@ -14,28 +17,34 @@ SUPABASE_SERVICE_ROLE_KEY=<your_service_role_key>
 ```
 
 ### 2. 启动开发服务器
+
 ```bash
 npm run dev
 ```
+
 确保服务器在 http://localhost:3000 运行
 
 ### 3. 数据库准备
+
 - 确保已执行初始化脚本
 - 确保已执行评论系统迁移脚本
 
 ## 运行测试
 
 ### 运行所有API测试
+
 ```bash
 npm run test:api
 ```
 
 ### 单独运行认证测试
+
 ```bash
 npm run test:api:auth
 ```
 
 ### 单独运行评论测试
+
 ```bash
 npm run test:api:comments
 ```
@@ -43,6 +52,7 @@ npm run test:api:comments
 ## 测试内容
 
 ### 认证系统测试（5个测试）
+
 1. **获取用户状态**：验证未登录状态返回
 2. **登录重定向**：验证GitHub OAuth重定向
 3. **登出功能**：验证登出端点响应
@@ -50,6 +60,7 @@ npm run test:api:comments
 5. **中间件测试**：验证会话刷新中间件
 
 ### 评论系统测试（6个测试）
+
 1. **获取评论列表**：验证分页查询功能
 2. **创建评论权限**：验证未认证用户被拒绝
 3. **更新评论权限**：验证权限控制
@@ -60,6 +71,7 @@ npm run test:api:comments
 ## 测试结果解读
 
 ### 成功示例
+
 ```
 ✅ 测试通过：未登录状态返回正确
 响应状态: 200
@@ -67,6 +79,7 @@ npm run test:api:comments
 ```
 
 ### 失败示例
+
 ```
 ❌ 测试失败：期望返回 user: null
 响应状态: 500
@@ -74,6 +87,7 @@ npm run test:api:comments
 ```
 
 ### 总体报告
+
 ```
 🎯 总体测试报告
 ==========================================
@@ -89,22 +103,28 @@ npm run test:api:comments
 ## 常见问题
 
 ### 1. 连接被拒绝
+
 **问题**：`ECONNREFUSED ::1:3000`
 **解决**：
+
 - 确保开发服务器正在运行
 - 检查端口是否被占用
 - 尝试使用 `http://127.0.0.1:3000`
 
 ### 2. 认证失败
+
 **问题**：所有需要认证的测试失败
 **解决**：
+
 - 检查Supabase配置
 - 验证环境变量正确
 - 确保GitHub OAuth已配置
 
 ### 3. 数据库错误
+
 **问题**：评论API返回数据库错误
 **解决**：
+
 - 检查数据库迁移是否执行
 - 验证RLS策略配置
 - 查看Supabase日志
@@ -112,18 +132,22 @@ npm run test:api:comments
 ## 集成测试最佳实践
 
 ### 1. 测试隔离
+
 - 每个测试应独立运行
 - 不依赖其他测试的状态
 - 使用测试专用的数据
 
 ### 2. 测试覆盖
+
 - 正常流程测试
 - 错误处理测试
 - 边界条件测试
 - 权限验证测试
 
 ### 3. 持续集成
+
 建议在CI/CD流程中加入：
+
 ```yaml
 - name: Run API Tests
   run: |
@@ -136,6 +160,7 @@ npm run test:api:comments
 ## 下一步
 
 ### 完整的端到端测试
+
 1. **登录流程测试**
    - 模拟完整的GitHub OAuth流程
    - 验证用户会话创建
@@ -151,6 +176,7 @@ npm run test:api:comments
    - 缓存效果验证
 
 ### 生产环境测试
+
 1. 部署到Vercel预览环境
 2. 使用预览URL运行测试
 3. 验证生产环境配置
@@ -158,11 +184,13 @@ npm run test:api:comments
 ## 测试维护
 
 ### 定期更新
+
 - API变更时更新测试
 - 添加新功能时补充测试
 - 修复bug后添加回归测试
 
 ### 测试文档
+
 - 记录测试用例设计
 - 更新测试数据要求
 - 维护问题解决方案

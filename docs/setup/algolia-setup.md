@@ -12,17 +12,21 @@
 ## 快速开始
 
 ### 第1步：注册 Algolia（2分钟）
+
 1. 访问 https://www.algolia.com
 2. 点击 "Start Free" 选择免费套餐
 3. 使用 Google/GitHub 快速注册
 
 ### 第2步：创建应用（1分钟）
+
 1. 登录后点击 "Create Application"
 2. 名称填写：`my-blog`
 3. 选择免费套餐和 Asia-Pacific 区域
 
 ### 第3步：获取密钥（1分钟）
+
 进入应用后，点击左侧 "API Keys"，复制以下三个值：
+
 - **Application ID**（页面顶部）
 - **Search-Only API Key**（Public API keys 部分）
 - **Admin API Key**（Admin API keys 部分，⚠️保密）
@@ -30,7 +34,9 @@
 ### 第4步：配置环境变量（1分钟）
 
 #### 本地开发
+
 编辑 `.env.local` 添加：
+
 ```env
 # Algolia 配置
 NEXT_PUBLIC_ALGOLIA_APP_ID=你复制的Application_ID
@@ -40,6 +46,7 @@ NEXT_PUBLIC_ALGOLIA_INDEX_NAME=posts
 ```
 
 #### Vercel 生产环境
+
 1. 进入 Vercel Dashboard → Settings → Environment Variables
 2. 添加相同的4个环境变量
 
@@ -74,6 +81,7 @@ npm run build-search-index
 ### 中文搜索优化
 
 在索引设置中启用中文支持：
+
 - Language: Chinese
 - Remove stop words: Chinese
 - Query languages: Chinese
@@ -81,6 +89,7 @@ npm run build-search-index
 ## 功能特性
 
 ### 搜索功能
+
 - 实时搜索（输入即搜）
 - 搜索结果高亮
 - 按类型筛选（文章、项目、书籍、工具）
@@ -88,11 +97,13 @@ npm run build-search-index
 - 搜索历史记录
 
 ### 性能优化
+
 - 防抖搜索（300ms延迟）
 - 搜索结果缓存
 - 智能预加载
 
 ### 用户体验
+
 - 键盘快捷键（⌘K 或 Ctrl+K）
 - ESC 关闭搜索
 - 响应式设计
@@ -104,18 +115,21 @@ npm run build-search-index
 
 **Q: 搜索没有结果？**
 A: 检查以下几点：
+
 1. 环境变量是否正确配置
 2. 是否运行了 `npm run build-search-index`
 3. Algolia Dashboard 中是否有数据
 
 **Q: 搜索框不显示？**
 A: 确保：
+
 1. `NEXT_PUBLIC_ALGOLIA_APP_ID` 已设置
 2. `NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY` 已设置
 3. 组件已正确导入
 
 **Q: 中文搜索不准确？**
 A: 在 Algolia Dashboard 中：
+
 1. 设置 Language 为 Chinese
 2. 启用中文分词
 3. 调整 typo tolerance
@@ -124,11 +138,11 @@ A: 在 Algolia Dashboard 中：
 
 ```javascript
 // 检查配置
-console.log('Algolia配置:', {
+console.log("Algolia配置:", {
   appId: process.env.NEXT_PUBLIC_ALGOLIA_APP_ID,
   indexName: process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME,
-  isConfigured: isAlgoliaConfigured()
-})
+  isConfigured: isAlgoliaConfigured(),
+});
 ```
 
 ## 高级配置
@@ -139,12 +153,12 @@ console.log('Algolia配置:', {
 
 ```typescript
 const searchParams = {
-  hitsPerPage: 20,           // 每页结果数
-  attributesToHighlight: ['title', 'content'],
-  highlightPreTag: '<mark>',
-  highlightPostTag: '</mark>',
-  facetFilters: filters,     // 自定义筛选
-}
+  hitsPerPage: 20, // 每页结果数
+  attributesToHighlight: ["title", "content"],
+  highlightPreTag: "<mark>",
+  highlightPostTag: "</mark>",
+  facetFilters: filters, // 自定义筛选
+};
 ```
 
 ### 同步策略

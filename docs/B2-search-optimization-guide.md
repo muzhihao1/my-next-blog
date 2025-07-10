@@ -6,6 +6,7 @@
 ## 功能概述
 
 增强型搜索系统提供了全面的搜索体验，包括：
+
 - 🔍 全文搜索与实时建议
 - 📝 搜索历史管理
 - 🎯 高级筛选器
@@ -18,15 +19,16 @@
 
 ```typescript
 export interface SearchHistoryItem {
-  id: string
-  query: string
-  timestamp: number
-  resultCount: number
-  type?: 'all' | 'post' | 'project' | 'book' | 'tool'
+  id: string;
+  query: string;
+  timestamp: number;
+  resultCount: number;
+  type?: "all" | "post" | "project" | "book" | "tool";
 }
 ```
 
 **功能特性：**
+
 - localStorage 持久化存储
 - 最多保存 10 条历史记录
 - 自动去重
@@ -36,21 +38,22 @@ export interface SearchHistoryItem {
 
 ```typescript
 export interface SearchFilters {
-  type?: 'all' | 'post' | 'project' | 'book' | 'tool'
-  category?: string
-  tags?: string[]
+  type?: "all" | "post" | "project" | "book" | "tool";
+  category?: string;
+  tags?: string[];
   dateRange?: {
-    start?: Date
-    end?: Date
-    preset?: 'today' | 'week' | 'month' | 'year' | 'all'
-  }
-  author?: string
-  status?: string
-  rating?: { min?: number; max?: number }
+    start?: Date;
+    end?: Date;
+    preset?: "today" | "week" | "month" | "year" | "all";
+  };
+  author?: string;
+  status?: string;
+  rating?: { min?: number; max?: number };
 }
 ```
 
 **搜索算法：**
+
 - 使用 Fuse.js 进行模糊匹配
 - 权重分配：标题(0.7) > 内容(0.3) > 标签(0.2) > 作者(0.1)
 - 支持多维度筛选和排序
@@ -58,6 +61,7 @@ export interface SearchFilters {
 ### 3. 增强搜索组件 (`components/features/EnhancedSearch.tsx`)
 
 **UI 特性：**
+
 - 响应式设计，移动端友好
 - 实时搜索建议
 - 搜索历史展示
@@ -109,16 +113,17 @@ export interface SearchFilters {
 
 ```typescript
 export interface EnhancedSearchItem extends SearchItem {
-  date?: Date | string      // 发布日期
-  rating?: number           // 评分（书籍/工具）
-  status?: string          // 状态（项目）
-  views?: number           // 浏览量
+  date?: Date | string; // 发布日期
+  rating?: number; // 评分（书籍/工具）
+  status?: string; // 状态（项目）
+  views?: number; // 浏览量
 }
 ```
 
 ### 数据源
 
 当前搜索数据来源于 fallback 数据：
+
 - `lib/fallback-posts.ts`：文章数据
 - `lib/fallback-projects.ts`：项目数据
 - `lib/fallback-books.ts`：书籍数据
@@ -127,6 +132,7 @@ export interface EnhancedSearchItem extends SearchItem {
 ## 测试覆盖
 
 已实现完整的单元测试（`components/features/__tests__/EnhancedSearch.test.tsx`）：
+
 - ✅ 基础渲染测试
 - ✅ 键盘快捷键测试
 - ✅ 搜索功能测试
@@ -137,12 +143,14 @@ export interface EnhancedSearchItem extends SearchItem {
 ## 后续优化计划
 
 ### 短期计划
+
 1. **标签多选筛选器**：支持选择多个标签进行筛选
 2. **评分范围筛选**：为书籍和工具添加评分筛选
 3. **搜索结果高亮**：高亮显示匹配的关键词
 4. **搜索分析**：记录热门搜索词
 
 ### 长期计划
+
 1. **Algolia 集成**：替换为更强大的搜索引擎
 2. **搜索建议优化**：基于用户行为的智能建议
 3. **搜索结果个性化**：根据用户偏好排序
@@ -154,10 +162,10 @@ export interface EnhancedSearchItem extends SearchItem {
 
 ```typescript
 // 旧代码
-import { Search } from '@/components/features/Search'
+import { Search } from "@/components/features/Search";
 
 // 新代码
-import { EnhancedSearch } from '@/components/features/EnhancedSearch'
+import { EnhancedSearch } from "@/components/features/EnhancedSearch";
 ```
 
 ### 2. 更新 Header 组件

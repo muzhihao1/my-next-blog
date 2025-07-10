@@ -25,7 +25,7 @@
 3. 配置集成信息：
    - **Name**: `My Blog Integration`（或自定义名称）
    - **Associated workspace**: 选择你的工作空间
-   - **Capabilities**: 
+   - **Capabilities**:
      - ✅ Read content
      - ✅ Update content（如需更新功能）
      - ✅ Insert content（如需创建功能）
@@ -161,6 +161,7 @@ npm run test:notion
 ```
 
 成功输出示例：
+
 ```
 ✓ Notion API 令牌已配置
 ✓ 成功连接到 Notion API
@@ -193,6 +194,7 @@ NOTION_TOOLS_DATABASE_ID=2291b640-00a7-8125...   # 工具推荐
 ### 1. 如何授权集成访问数据库？
 
 在每个数据库页面：
+
 1. 点击右上角 "..." 菜单
 2. 选择 "Connections"
 3. 搜索并添加你创建的集成
@@ -200,6 +202,7 @@ NOTION_TOOLS_DATABASE_ID=2291b640-00a7-8125...   # 工具推荐
 ### 2. 为什么看不到数据？
 
 检查：
+
 - 文章的 Status 字段是否设置为 "Published"
 - 集成是否已授权访问数据库
 - 环境变量是否正确配置
@@ -224,4 +227,4 @@ NOTION_TOOLS_DATABASE_ID=2291b640-00a7-8125...   # 工具推荐
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

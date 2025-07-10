@@ -74,10 +74,10 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=你的分类ID
 评论组件已创建在 `/components/features/Comments.tsx`。在文章页面使用：
 
 ```tsx
-import Comments from '@/components/features/Comments'
+import Comments from "@/components/features/Comments";
 
 // 在文章底部添加
-<Comments />
+<Comments />;
 ```
 
 ### 7. 自定义评论样式（可选）
@@ -128,6 +128,7 @@ import Comments from '@/components/features/Comments'
 ### Q: 评论没有显示怎么办？
 
 检查以下几点：
+
 1. 确认 Discussions 已启用
 2. 确认 Giscus App 已安装
 3. 检查环境变量配置
@@ -142,6 +143,7 @@ import Comments from '@/components/features/Comments'
 ### Q: 支持哪些 Markdown 功能？
 
 Giscus 支持 GitHub Flavored Markdown，包括：
+
 - 代码高亮
 - 表格
 - 任务列表
@@ -174,16 +176,19 @@ Giscus 支持 GitHub Flavored Markdown，包括：
 ## 隐私和合规
 
 ### 数据存储
+
 - 所有评论数据存储在 GitHub
 - 遵循 GitHub 的隐私政策
 - 用户需要 GitHub 账号才能评论
 
 ### GDPR 合规
+
 - 评论者的数据由 GitHub 管理
 - 提供明确的隐私政策链接
 - 用户可以随时删除自己的评论
 
 ### 内容政策
+
 - 遵循 GitHub 社区准则
 - 可以设置评论审核
 - 支持举报不当内容
@@ -195,8 +200,8 @@ Giscus 支持 GitHub Flavored Markdown，包括：
 在组件中添加调试信息：
 
 ```tsx
-<Comments 
-  emitMetadata="1"  // 显示元数据
+<Comments
+  emitMetadata="1" // 显示元数据
 />
 ```
 
@@ -216,4 +221,4 @@ Giscus 支持 GitHub Flavored Markdown，包括：
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

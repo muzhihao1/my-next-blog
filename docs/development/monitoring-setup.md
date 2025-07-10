@@ -40,7 +40,7 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 GA 组件已创建在 `/components/analytics/GoogleAnalytics.tsx`。在 `app/layout.tsx` 中添加：
 
 ```tsx
-import GoogleAnalytics from '@/components/analytics/GoogleAnalytics'
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 
 export default function RootLayout({ children }) {
   return (
@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
         {children}
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -59,16 +59,16 @@ export default function RootLayout({ children }) {
 使用预定义的事件函数：
 
 ```tsx
-import { analyticsEvents } from '@/components/analytics/GoogleAnalytics'
+import { analyticsEvents } from "@/components/analytics/GoogleAnalytics";
 
 // 跟踪文章浏览
-analyticsEvents.viewArticle(post.title)
+analyticsEvents.viewArticle(post.title);
 
 // 跟踪搜索
-analyticsEvents.useSearch(query)
+analyticsEvents.useSearch(query);
 
 // 跟踪订阅
-analyticsEvents.subscribeSuccess()
+analyticsEvents.subscribeSuccess();
 ```
 
 ### 6. 自定义事件
@@ -76,14 +76,15 @@ analyticsEvents.subscribeSuccess()
 创建自定义事件：
 
 ```tsx
-import { trackEvent } from '@/components/analytics/GoogleAnalytics'
+import { trackEvent } from "@/components/analytics/GoogleAnalytics";
 
-trackEvent('custom_action', 'category', 'label', value)
+trackEvent("custom_action", "category", "label", value);
 ```
 
 ### 7. 调试模式
 
 使用 GA4 调试器：
+
 1. 安装 [Google Analytics Debugger](https://chrome.google.com/webstore/detail/google-analytics-debugger/jnkmfdileelhofjcijamephohjechhna) 扩展
 2. 在控制台查看事件
 
@@ -117,17 +118,17 @@ NEXT_PUBLIC_VERCEL_ENV=production
 在 `app/layout.tsx` 或客户端组件中：
 
 ```tsx
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { initSentry } from '@/lib/monitoring/sentry'
+import { useEffect } from "react";
+import { initSentry } from "@/lib/monitoring/sentry";
 
 export default function ClientLayout({ children }) {
   useEffect(() => {
-    initSentry()
-  }, [])
+    initSentry();
+  }, []);
 
-  return <>{children}</>
+  return <>{children}</>;
 }
 ```
 
@@ -136,45 +137,47 @@ export default function ClientLayout({ children }) {
 创建错误边界组件：
 
 ```tsx
-'use client'
+"use client";
 
-import { Component, ReactNode } from 'react'
-import { reportError } from '@/lib/monitoring/sentry'
+import { Component, ReactNode } from "react";
+import { reportError } from "@/lib/monitoring/sentry";
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
+  children: ReactNode;
+  fallback?: ReactNode;
 }
 
 interface State {
-  hasError: boolean
+  hasError: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
-    this.state = { hasError: false }
+    super(props);
+    this.state = { hasError: false };
   }
 
   static getDerivedStateFromError(): State {
-    return { hasError: true }
+    return { hasError: true };
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
-    reportError(error, errorInfo)
+    reportError(error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="error-fallback">
-          <h2>出错了</h2>
-          <p>页面遇到了一些问题，请刷新重试。</p>
-        </div>
-      )
+      return (
+        this.props.fallback || (
+          <div className="error-fallback">
+            <h2>出错了</h2>
+            <p>页面遇到了一些问题，请刷新重试。</p>
+          </div>
+        )
+      );
     }
 
-    return this.props.children
+    return this.props.children;
   }
 }
 ```
@@ -186,10 +189,10 @@ export class ErrorBoundary extends Component<Props, State> {
 ```tsx
 export function reportWebVitals(metric: any) {
   // 发送到 GA
-  analyticsEvents.reportWebVitals(metric)
-  
+  analyticsEvents.reportWebVitals(metric);
+
   // 发送到 Sentry
-  reportWebVitals(metric)
+  reportWebVitals(metric);
 }
 ```
 
@@ -198,6 +201,7 @@ export function reportWebVitals(metric: any) {
 ### 1. 关键指标
 
 **用户行为**
+
 - 页面浏览量（PV）
 - 独立访客（UV）
 - 跳出率
@@ -205,12 +209,14 @@ export function reportWebVitals(metric: any) {
 - 用户流程
 
 **内容表现**
+
 - 热门文章
 - 阅读完成率
 - 分享率
 - 评论参与度
 
 **技术指标**
+
 - 页面加载时间
 - Core Web Vitals
 - 错误率
@@ -219,6 +225,7 @@ export function reportWebVitals(metric: any) {
 ### 2. 自定义报告
 
 在 GA4 中创建自定义报告：
+
 1. 进入"探索"
 2. 创建新探索
 3. 添加维度和指标
@@ -227,6 +234,7 @@ export function reportWebVitals(metric: any) {
 ### 3. 实时监控
 
 设置实时告警：
+
 - Sentry：错误率突增
 - GA4：流量异常
 - 性能：加载时间过长
@@ -239,25 +247,25 @@ export function reportWebVitals(metric: any) {
 
 ```tsx
 export function CookieConsent() {
-  const [consent, setConsent] = useState<boolean | null>(null)
+  const [consent, setConsent] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('cookie-consent')
+    const saved = localStorage.getItem("cookie-consent");
     if (saved) {
-      setConsent(saved === 'true')
+      setConsent(saved === "true");
     }
-  }, [])
+  }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'true')
-    setConsent(true)
+    localStorage.setItem("cookie-consent", "true");
+    setConsent(true);
     // 启用 GA
-    window.gtag('consent', 'update', {
-      'analytics_storage': 'granted'
-    })
-  }
+    window.gtag("consent", "update", {
+      analytics_storage: "granted",
+    });
+  };
 
-  if (consent !== null) return null
+  if (consent !== null) return null;
 
   return (
     <div className="cookie-banner">
@@ -265,24 +273,26 @@ export function CookieConsent() {
       <button onClick={handleAccept}>接受</button>
       <button onClick={() => setConsent(false)}>拒绝</button>
     </div>
-  )
+  );
 }
 ```
 
 ### 2. 数据匿名化
 
 GA4 配置：
+
 ```javascript
-gtag('config', 'GA_MEASUREMENT_ID', {
+gtag("config", "GA_MEASUREMENT_ID", {
   anonymize_ip: true,
   allow_google_signals: false,
-  allow_ad_personalization_signals: false
-})
+  allow_ad_personalization_signals: false,
+});
 ```
 
 ### 3. 用户权利
 
 提供数据删除选项：
+
 - GA4：用户可以通过浏览器设置禁用
 - Sentry：提供用户标识删除接口
 
@@ -294,36 +304,37 @@ gtag('config', 'GA_MEASUREMENT_ID', {
 
 ```tsx
 const loadAnalytics = () => {
-  const script = document.createElement('script')
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`
-  script.async = true
-  document.head.appendChild(script)
-}
+  const script = document.createElement("script");
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
+  script.async = true;
+  document.head.appendChild(script);
+};
 ```
 
 ### 2. 批量发送
 
 减少网络请求：
+
 ```javascript
 // 批量发送事件
-const eventQueue = []
+const eventQueue = [];
 const flushEvents = debounce(() => {
-  eventQueue.forEach(event => trackEvent(...event))
-  eventQueue.length = 0
-}, 1000)
+  eventQueue.forEach((event) => trackEvent(...event));
+  eventQueue.length = 0;
+}, 1000);
 ```
 
 ### 3. 采样率
 
 对于高流量网站：
+
 ```javascript
 // Sentry 采样
-tracesSampleRate: 0.1, // 10% 采样
-
-// GA 采样
-gtag('config', 'GA_ID', {
-  sample_rate: 10 // 10% 采样
-})
+tracesSampleRate: (0.1, // 10% 采样
+  // GA 采样
+  gtag("config", "GA_ID", {
+    sample_rate: 10, // 10% 采样
+  }));
 ```
 
 ## 故障排除
@@ -354,20 +365,23 @@ gtag('config', 'GA_ID', {
 ## 定期维护
 
 ### 每周任务
+
 - 检查错误趋势
 - 分析用户行为
 - 优化慢速页面
 
 ### 每月任务
+
 - 生成分析报告
 - 更新监控规则
 - 清理无用数据
 
 ### 每季度任务
+
 - 审查隐私政策
 - 更新监控策略
 - 性能基准测试
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

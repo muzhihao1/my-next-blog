@@ -39,6 +39,7 @@ NEXT_PUBLIC_CONVERTKIT_FORM_ID=your_form_id_here
 ```
 
 **安全说明**：
+
 - 新的实现使用 ConvertKit 的公开表单端点
 - 不需要 API Key，避免了安全风险
 - 表单 ID 是公开的，可以安全地在客户端使用
@@ -48,19 +49,21 @@ NEXT_PUBLIC_CONVERTKIT_FORM_ID=your_form_id_here
 订阅组件已经创建在 `/components/features/SubscribeForm.tsx`，支持两种模式：
 
 #### 完整模式（文章底部）
+
 ```tsx
-import SubscribeForm from '@/components/features/SubscribeForm'
+import SubscribeForm from "@/components/features/SubscribeForm";
 
 // 在文章底部使用
-<SubscribeForm />
+<SubscribeForm />;
 ```
 
 #### 紧凑模式（侧边栏）
+
 ```tsx
-import SubscribeForm from '@/components/features/SubscribeForm'
+import SubscribeForm from "@/components/features/SubscribeForm";
 
 // 在侧边栏使用
-<SubscribeForm compact />
+<SubscribeForm compact />;
 ```
 
 ### 6. 自定义订阅确认邮件
@@ -107,6 +110,7 @@ P.S. 如果您想取消订阅，可以点击邮件底部的取消订阅链接。
 ### 8. 监控和分析
 
 ConvertKit 提供了详细的分析功能：
+
 - 订阅者增长趋势
 - 邮件打开率
 - 点击率
@@ -119,6 +123,7 @@ ConvertKit 提供了详细的分析功能：
 ### 1. 当前实现的安全性
 
 当前实现使用 ConvertKit 的公开表单提交端点：
+
 - 不需要 API Key，避免了密钥暴露风险
 - 使用 `https://app.convertkit.com/forms/{formId}/subscriptions` 端点
 - 这是 ConvertKit 官方支持的安全方式
@@ -126,6 +131,7 @@ ConvertKit 提供了详细的分析功能：
 ### 2. 可选的增强方案
 
 如果需要更多控制（如自定义标签、段等），可以考虑：
+
 - 使用 Netlify Functions 或 Vercel Functions
 - 使用第三方表单服务（如 Formspree）
 - 自建简单的订阅服务
@@ -133,6 +139,7 @@ ConvertKit 提供了详细的分析功能：
 ### 2. 实施速率限制
 
 防止恶意订阅：
+
 - 限制每个 IP 的订阅频率
 - 实施 reCAPTCHA 验证
 - 添加蜜罐字段防止机器人
@@ -140,6 +147,7 @@ ConvertKit 提供了详细的分析功能：
 ### 3. GDPR 合规
 
 确保订阅流程符合 GDPR 要求：
+
 - 明确说明数据用途
 - 提供隐私政策链接
 - 实施双重确认（double opt-in）
@@ -158,26 +166,33 @@ ConvertKit 提供了详细的分析功能：
 ## 常见问题
 
 ### Q: 订阅失败怎么办？
+
 A: 检查以下几点：
+
 1. API Key 和 Form ID 是否正确
 2. ConvertKit 账号是否激活
 3. 是否达到免费账号限制
 4. 网络连接是否正常
 
 ### Q: 如何迁移到其他邮件服务？
+
 A: 订阅组件设计为易于替换：
+
 1. 修改 `SubscribeForm.tsx` 中的 API 调用
 2. 更新环境变量
 3. 调整返回数据处理逻辑
 
 支持的替代服务：
+
 - Mailchimp
 - SendGrid
 - EmailOctopus
 - Buttondown
 
 ### Q: 如何导出订阅者列表？
+
 A: 在 ConvertKit 后台：
+
 1. 进入 **Subscribers**
 2. 点击 **Export**
 3. 选择格式（CSV 或 JSON）
@@ -185,4 +200,4 @@ A: 在 ConvertKit 后台：
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

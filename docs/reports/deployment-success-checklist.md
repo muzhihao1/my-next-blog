@@ -11,6 +11,7 @@
 ## 🔍 验证步骤
 
 ### 1. 检查 Vercel 部署状态
+
 访问 [Vercel Dashboard](https://vercel.com/dashboard) 查看部署进度。
 
 ### 2. 验证关键页面
@@ -18,7 +19,7 @@
 部署成功后，请检查以下页面是否正常显示：
 
 - [ ] **首页**: https://my-next-blog-cjh9.vercel.app
-- [ ] **博客列表**: https://my-next-blog-cjh9.vercel.app/blog  
+- [ ] **博客列表**: https://my-next-blog-cjh9.vercel.app/blog
 - [ ] **项目展示**: https://my-next-blog-cjh9.vercel.app/projects
 - [ ] **工具推荐**: https://my-next-blog-cjh9.vercel.app/tools
 - [ ] **书架**: https://my-next-blog-cjh9.vercel.app/bookshelf
@@ -35,22 +36,26 @@
 ## 🐛 如果遇到问题
 
 ### 数据未显示？
+
 1. 确认 Notion Integration 有权访问所有数据库
 2. 检查数据库中是否有状态为 "Published" 的内容
 3. 查看 Vercel 函数日志了解详细错误
 
 ### 页面 404？
+
 1. 等待几分钟让 CDN 更新
 2. 尝试清除浏览器缓存
 3. 检查 Vercel 构建日志
 
 ### 样式问题？
+
 1. 强制刷新页面（Ctrl+Shift+R）
 2. 检查浏览器控制台错误
 
 ## 📊 性能检查
 
 使用 [PageSpeed Insights](https://pagespeed.web.dev/) 测试网站性能：
+
 - 目标：移动端 > 90 分
 - 目标：桌面端 > 95 分
 
@@ -75,4 +80,4 @@
 
 ---
 
-*部署日期：2025-01-07*
+_部署日期：2025-01-07_

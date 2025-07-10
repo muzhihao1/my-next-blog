@@ -9,7 +9,9 @@
 ## 清理内容
 
 ### 1. Ghost 迁移相关文件
+
 已移动到 `/archive/ghost-migration/`：
+
 - `ghost_all_30_articles.json`
 - `ghost_articles_extracted.json`
 - `browser-extract-ghost.js`
@@ -21,7 +23,9 @@
 - `temp_comments.txt`
 
 ### 2. 测试和演示页面
+
 已删除以下测试页面：
+
 - `/app/debug/`
 - `/app/demo/`
 - `/app/link-test/`
@@ -31,23 +35,30 @@
 - `/app/test/`
 
 ### 3. 根目录重复文件
+
 已移动到 `/archive/root-backup/`：
+
 - 根目录下的 `app/`、`components/`、`lib/`、`contexts/` 文件夹
 - 根目录下的 `next.config.js`、`package.json`、`package-lock.json`
 - 根目录下的 `node_modules/`
 
 ### 4. 备份文件
+
 已删除：
+
 - `middleware.backup.ts`
 - `middleware.ts.bak`
 
 ### 5. 一次性脚本
+
 已归档到 `/docs/scripts-archive/`：
+
 - `add-supabase-env.sh`
 
 ## 项目结构优化
 
 清理后的项目结构更加清晰：
+
 - 所有源代码都在 `my-blog/` 目录下
 - 归档文件保存在 `/archive/` 目录中，以备将来参考
 - 删除了所有测试和演示页面，减少了生产环境的冗余代码

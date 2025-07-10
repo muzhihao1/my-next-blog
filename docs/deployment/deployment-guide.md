@@ -125,7 +125,7 @@ psql $SUPABASE_DB_URL -f scripts/supabase-migration-recommendation.sql
 
 3. **创建存储桶**（如需要）
    ```sql
-   INSERT INTO storage.buckets (id, name, public) 
+   INSERT INTO storage.buckets (id, name, public)
    VALUES ('avatars', 'avatars', true);
    ```
 
@@ -157,6 +157,7 @@ npm i -g vercel
    - 添加所有必需的环境变量
 
 3. **部署设置**
+
    ```json
    {
      "buildCommand": "npm run build",
@@ -222,14 +223,17 @@ curl -I https://your-domain.com/api/health
 ### 1. 设置监控
 
 **Vercel Analytics**
+
 - 自动启用
 - 查看实时性能数据
 
 **自定义监控**
+
 - 访问 `/api/monitoring/metrics`
 - 查看性能报告
 
 **错误追踪**
+
 ```env
 SENTRY_DSN=your-sentry-dsn
 ```
@@ -237,16 +241,19 @@ SENTRY_DSN=your-sentry-dsn
 ### 2. 定期维护任务
 
 **每日**
+
 - 检查健康状态端点
 - 查看错误日志
 - 监控性能指标
 
 **每周**
+
 - 审查性能报告
 - 检查数据库大小
 - 更新依赖（如需要）
 
 **每月**
+
 - 清理旧数据
 - 优化数据库索引
 - 安全审计
@@ -283,7 +290,7 @@ vercel logs
 
 ```javascript
 // 检查连接字符串
-console.log(process.env.NEXT_PUBLIC_SUPABASE_URL)
+console.log(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
 // 验证 RLS 策略
 // Supabase Dashboard → Authentication → Policies
@@ -328,6 +335,7 @@ curl -w "@curl-format.txt" -o /dev/null -s https://your-domain.com/api/posts
    - 浏览器控制台
 
 2. **调试模式**
+
    ```env
    # 临时启用详细日志
    LOG_LEVEL=debug

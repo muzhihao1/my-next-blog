@@ -14,6 +14,7 @@
 ## 📖 文档分类
 
 ### 📁 setup/ - 配置指南
+
 - **[Algolia 搜索配置](./setup/algolia-setup.md)** - 搜索功能完整配置指南
 - **[Supabase API Keys 指南](./setup/supabase-api-keys-guide.md)** - Supabase 密钥配置
 - **[Supabase 设置指南](./setup/supabase-setup-guide.md)** - Supabase 项目配置
@@ -25,6 +26,7 @@
 - **[Giscus 评论设置](./setup/giscus-setup.md)** - GitHub 评论系统配置
 
 ### 📁 guides/ - 使用指南
+
 - **[博主使用指南](./guides/blogger-guide.md)** - 📝 内容创作者的完整操作手册
 - **[快速参考卡](./guides/quick-reference.md)** - 🎯 常用操作的快速查询
 - **[维护指南](./guides/maintenance-guide.md)** - 🔧 日常维护和故障排除
@@ -32,6 +34,7 @@
 - **[部署指南](./guides/deployment-guide.md)** - 生产环境部署指南
 
 ### 📁 development/ - 开发文档
+
 - **[API 设计规范](./development/api-standards.md)** - 接口设计标准
 - **[代码审查标准](./development/code-review-standards.md)** - 代码质量要求
 - **[监控系统设置](./development/monitoring-setup.md)** - 性能监控配置
@@ -39,6 +42,7 @@
 - **[B3.3 测试覆盖报告](./development/B3.3-testing-coverage-report.md)** - 测试实现情况
 
 ### 📁 功能实现指南
+
 - **[B2 搜索优化指南](./B2-search-optimization-guide.md)** - 搜索功能优化
 - **[B3 实时交互集成](./B3-realtime-integration-guide.md)** - 实时功能实现
 - **[B4 数据可视化指南](./B4-data-visualization-guide.md)** - 图表和数据展示
@@ -46,6 +50,7 @@
 - **[B6 个性化指南](./B6-personalization-guide.md)** - 主题和个性化功能
 
 ### 📁 reports/ - 项目报告
+
 - **[项目完成总结](./reports/project-completion-summary.md)** - 项目成果概览
 - **[项目最终完成报告](./project-final-completion-2025-01-11.md)** - 最终交付报告
 - **[部署验证报告](./reports/deployment-verification.md)** - 部署状态验证
@@ -53,12 +58,14 @@
 - **[终端A进度报告](./reports/terminal-a-progress-2025-01-10.md)** - 最新进度更新
 
 ### 📁 根目录核心文档
+
 - **[项目治理规范](./project-governance.md)** - 开发流程和规范
 - **[项目交付文档](./project-handover.md)** - 正式交付清单
 - **[文件结构说明](./file-structure.md)** - 项目目录结构
 - **[产品需求分析](./product-requirements-analysis.md)** - 需求实现对比
 
 ### 📁 archive/ - 归档文档
+
 包含历史版本、已完成的任务报告和过时的文档
 
 ## 🗂️ 文档结构
@@ -105,15 +112,18 @@ docs/
 ### 按用户角色
 
 **博主/内容创作者**：
+
 - [博主使用指南](./guides/blogger-guide.md)
 - [快速参考卡](./guides/quick-reference.md)
 
 **开发者**：
+
 - [快速启动指南](./guides/快速启动指南.md)
 - [API 设计规范](./development/api-standards.md)
 - [代码审查标准](./development/code-review-standards.md)
 
 **运维人员**：
+
 - [部署指南](./guides/deployment-guide.md)
 - [维护指南](./guides/maintenance-guide.md)
 - [监控系统设置](./development/monitoring-setup.md)
@@ -121,6 +131,7 @@ docs/
 ### 按任务类型
 
 **初始设置**：
+
 - [Algolia 搜索配置](./setup/algolia-setup.md)
 - [Supabase 配置](./setup/supabase-api-keys-guide.md)
 - [Notion 数据库配置](./setup/notion-database-setup.md)
@@ -128,10 +139,12 @@ docs/
 - [订阅功能设置](./setup/subscription-setup.md)
 
 **日常使用**：
+
 - [博主使用指南](./guides/blogger-guide.md)
 - [数据统计指南](./guides/data-statistics-guide.md)
 
 **问题解决**：
+
 - [维护指南](./guides/maintenance-guide.md)
 - [快速参考卡](./guides/quick-reference.md)
 
@@ -164,4 +177,4 @@ docs/
 
 ---
 
-*文档最后更新：2025-01-11*
+_文档最后更新：2025-01-11_

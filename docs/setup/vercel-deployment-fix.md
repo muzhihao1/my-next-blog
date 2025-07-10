@@ -18,14 +18,16 @@
    - 左侧菜单选择 **Environment Variables**
 
 3. **添加环境变量**
-   
+
    必需的变量：
+
    ```
    NOTION_TOKEN = secret_xxxxxxxxxx（你的 Notion Integration Token）
    NOTION_DATABASE_ID = 21f1b640-00a7-808c-8b4f-c4ef924cfb64
    ```
-   
+
    推荐配置的变量：
+
    ```
    NOTION_BOOKS_DB = 2291b640-00a7-81fa-88f4-f255c0f58e1a
    NOTION_PROJECTS_DB = 2291b640-00a7-8173-a212-e31b954226fc
@@ -42,7 +44,7 @@
 
 5. **重新部署**
    - 返回项目主页
-   - 点击 **Redeploy** 
+   - 点击 **Redeploy**
    - 等待部署完成
 
 ### 方法二：使用 Fallback 数据（临时方案）
@@ -50,12 +52,13 @@
 如果暂时无法配置 Notion，可以修改代码强制使用 fallback 数据：
 
 1. 修改 `/lib/notion.ts`，在 `validateEnv` 函数中添加条件：
+
    ```typescript
    function validateEnv() {
      // 在生产环境允许缺少环境变量
-     if (process.env.NODE_ENV === 'production' && !process.env.NOTION_TOKEN) {
-       console.warn('NOTION_TOKEN not set, using fallback data')
-       return false
+     if (process.env.NODE_ENV === "production" && !process.env.NOTION_TOKEN) {
+       console.warn("NOTION_TOKEN not set, using fallback data");
+       return false;
      }
      // ... 原有代码
    }
@@ -66,6 +69,7 @@
 ### 方法三：通过 vercel.json 配置
 
 创建 `vercel.json` 文件：
+
 ```json
 {
   "env": {
@@ -82,6 +86,7 @@
 ```
 
 然后使用 Vercel CLI 设置 secrets：
+
 ```bash
 vercel secrets add notion-token "your-token-here"
 vercel secrets add notion-database-id "your-database-id"
@@ -98,6 +103,7 @@ vercel secrets add notion-database-id "your-database-id"
 ## 🔍 验证部署
 
 部署成功后，访问以下页面验证：
+
 - 首页：https://your-domain.vercel.app
 - 博客列表：https://your-domain.vercel.app/blog
 - 标签页面：https://your-domain.vercel.app/tags/技术
@@ -111,4 +117,4 @@ vercel secrets add notion-database-id "your-database-id"
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

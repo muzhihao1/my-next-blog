@@ -5,11 +5,13 @@
 ### 1. 获取 Notion 数据
 
 #### 获取 Integration Token：
+
 1. 访问 https://www.notion.so/my-integrations
 2. 创建新的 Integration
 3. 复制 Token（格式：`secret_xxx...`）
 
 #### 获取数据库 ID：
+
 1. 打开 Notion 数据库页面
 2. 点击右上角 Share → Copy link
 3. 从链接中提取 ID：
@@ -32,21 +34,25 @@ NOTION_DATABASE_ID=你的32位数据库ID（不要包含URL）
 ### 3. 常见错误示例
 
 ❌ **错误示例 1** - 包含完整 URL：
+
 ```
 NOTION_DATABASE_ID=https://www.notion.so/workspace/21f1b64000a7808c8b4fc4ef924cfb64?v=xxx
 ```
 
 ❌ **错误示例 2** - 包含空格：
+
 ```
-NOTION_TOKEN= secret_xxx 
+NOTION_TOKEN= secret_xxx
 ```
 
 ❌ **错误示例 3** - 包含引号：
+
 ```
 NOTION_TOKEN="secret_xxx"
 ```
 
 ✅ **正确示例**：
+
 ```
 NOTION_TOKEN=secret_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890123456
 NOTION_DATABASE_ID=21f1b64000a7808c8b4fc4ef924cfb64
@@ -55,6 +61,7 @@ NOTION_DATABASE_ID=21f1b64000a7808c8b4fc4ef924cfb64
 ### 4. 验证配置
 
 配置完成后：
+
 1. 点击 Redeploy
 2. 等待部署完成
 3. 访问 `/deployment-status` 查看状态

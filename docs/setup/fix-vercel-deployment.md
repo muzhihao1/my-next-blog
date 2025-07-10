@@ -20,13 +20,15 @@ NOTION_DATABASE_ID=21f1b64000a7808c8b4fc4ef924cfb64
 #### ❌ 常见错误：
 
 1. **包含完整 URL**（错误）：
+
    ```
    NOTION_DATABASE_ID=https://www.notion.so/workspace/21f1b64000a7808c8b4fc4ef924cfb64?v=...
    ```
 
 2. **包含额外空格**（错误）：
+
    ```
-   NOTION_TOKEN= secret_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890123456 
+   NOTION_TOKEN= secret_AbCdEfGhIjKlMnOpQrStUvWxYz1234567890123456
    ```
 
 3. **包含引号**（错误）：
@@ -50,7 +52,6 @@ NOTION_DATABASE_ID=21f1b64000a7808c8b4fc4ef924cfb64
 2. 选择你的项目 `my-next-blog`
 3. 进入 Settings → Environment Variables
 4. 更新以下变量（确保没有额外的空格或引号）：
-
    - `NOTION_TOKEN`: 你的 Integration Token
    - `NOTION_DATABASE_ID`: 博客文章数据库 ID
    - `NOTION_PROJECTS_DB`: 项目数据库 ID（可选）
@@ -102,6 +103,7 @@ node scripts/test-notion-connection.js
 ### 查看详细错误日志
 
 在 Vercel Dashboard 中：
+
 1. 进入 Functions 标签
 2. 查看函数日志，寻找具体错误信息
 
@@ -115,7 +117,7 @@ node scripts/test-notion-connection.js
 
 ## 📝 环境变量检查清单
 
-- [ ] NOTION_TOKEN 以 `secret_` 开头
+- [ ] NOTION*TOKEN 以 `secret*` 开头
 - [ ] NOTION_TOKEN 长度为 50 个字符
 - [ ] 所有数据库 ID 都是 32 位十六进制字符（可能包含连字符）
 - [ ] 环境变量值前后没有空格

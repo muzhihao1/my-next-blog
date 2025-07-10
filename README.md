@@ -8,7 +8,7 @@
 ## ✨ 功能预览
 
 - 📱 移动端适配
-- 🌓 深色模式支持  
+- 🌓 深色模式支持
 - 🔍 全站搜索（Cmd/Ctrl + K）
 - 📊 访问统计（Google Analytics）
 - 💬 评论系统（Giscus）
@@ -19,6 +19,7 @@
 ## 🌟 核心特性
 
 ### 内容管理
+
 - 📝 **博客系统**: 支持 Markdown 渲染、文章分类和归档
 - 🚀 **项目展示**: 展示个人项目作品，支持分类筛选和技术栈标签
 - 📚 **书架系统**: 管理阅读书籍，支持阅读状态、多视图展示和阅读统计
@@ -26,14 +27,16 @@
 - 🔍 **全站搜索**: 基于 Fuse.js 的模糊搜索，支持快捷键（Cmd/Ctrl + K）
 
 ### 用户体验
+
 - 🌓 **深色模式**: 自动检测系统主题，支持手动切换
-- 📱 **响应式设计**: 完美适配移动端、平板和桌面设备  
+- 📱 **响应式设计**: 完美适配移动端、平板和桌面设备
 - ⚡ **性能优化**: 图片懒加载、组件按需加载、静态页面生成
 - 🎨 **现代化设计**: 简洁优雅的界面，流畅的动画效果
 
 ## 🚀 快速开始
 
 ### 环境要求
+
 - Node.js 18+
 - npm 或 yarn
 - Notion 账号（可选）
@@ -41,23 +44,27 @@
 ### 安装步骤
 
 1. **克隆项目**
+
 ```bash
 git clone https://github.com/muzhihao1/my-next-blog.git
 cd my-next-blog
 ```
 
 2. **安装依赖**
+
 ```bash
 npm install
 ```
 
 3. **配置环境变量**
-复制环境变量模板：
+   复制环境变量模板：
+
 ```bash
 cp .env.example .env.local
 ```
 
 编辑 `.env.local` 文件（如不配置将使用后备数据）：
+
 ```env
 # Notion API 配置
 NOTION_TOKEN=your_notion_integration_token
@@ -68,6 +75,7 @@ NOTION_TOOLS_DB=your_tools_database_id
 ```
 
 4. **启动开发服务器**
+
 ```bash
 npm run dev
 ```
@@ -118,6 +126,7 @@ my-blog/
 ## 📝 功能详解
 
 ### 博客系统
+
 - Markdown 内容渲染
 - 文章分类（Technology、Design、Productivity、Life）
 - 按年份归档
@@ -125,6 +134,7 @@ my-blog/
 - 文章标签系统
 
 ### 项目展示
+
 - 项目分类（网站应用、开源项目、设计作品等）
 - 技术栈标签展示
 - 项目详情页
@@ -132,6 +142,7 @@ my-blog/
 - 项目截图展示
 
 ### 书架系统
+
 - 阅读状态管理（在读、已读、想读）
 - 多种视图切换（网格视图/列表视图）
 - 筛选功能（按状态、分类）
@@ -141,6 +152,7 @@ my-blog/
 - 书籍元数据（作者、出版年份、页数、ISBN等）
 
 ### 工具推荐
+
 - 工具分类（开发、设计、效率、硬件、服务）
 - 详细使用评测
 - 使用场景说明
@@ -149,6 +161,7 @@ my-blog/
 - 标签系统
 
 ### 搜索功能
+
 - 全站内容搜索（文章、项目、书籍、工具）
 - 实时搜索建议
 - 模糊匹配
@@ -168,6 +181,7 @@ my-blog/
 ## 🚀 部署指南
 
 ### 构建项目
+
 ```bash
 npm run build
 ```
@@ -183,35 +197,43 @@ npm run build
 ### 其他部署选项
 
 #### 1. Vercel（推荐）
+
 ```bash
 npx vercel
 ```
 
 #### 2. Netlify
+
 - 构建命令: `npm run build`
 - 发布目录: `out`
 
 #### 3. GitHub Pages
+
 ```bash
 npm run build
 # 将 out 目录内容推送到 gh-pages 分支
 ```
 
 #### 4. 自托管
+
 - 运行 `npm run build`
 - 将 `out` 目录部署到任何静态文件服务器
 
 ## ⚙️ 配置说明
 
 ### Notion 数据库配置
+
 参考 `docs/notion-setup.md` 配置你的 Notion 数据库：
+
 - 文章数据库
 - 项目数据库
 - 书籍数据库
 - 工具数据库
 
 ### 主题定制
+
 编辑 `app/globals.css` 中的 CSS 变量：
+
 ```css
 :root {
   --color-primary: #2563eb;
@@ -222,6 +244,7 @@ npm run build
 ```
 
 ### 导航菜单
+
 编辑 `components/layout/Header.tsx` 中的 navigation 数组
 
 ## 🎯 性能优化
@@ -235,7 +258,7 @@ npm run build
 ## 📱 响应式断点
 
 - 移动端: < 640px
-- 平板: 640px - 1024px  
+- 平板: 640px - 1024px
 - 桌面: > 1024px
 
 ## 🤝 贡献指南

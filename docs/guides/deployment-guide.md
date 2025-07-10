@@ -27,17 +27,20 @@ cd my-next-blog
 ### 2. 本地开发环境配置
 
 1. 安装依赖
+
 ```bash
 npm install
 ```
 
 2. 配置环境变量
-复制 `.env.example` 文件为 `.env.local`：
+   复制 `.env.example` 文件为 `.env.local`：
+
 ```bash
 cp .env.example .env.local
 ```
 
 编辑 `.env.local` 文件，填入你的 Notion 配置：
+
 ```env
 # Notion Configuration
 NOTION_TOKEN=your_notion_integration_token
@@ -58,6 +61,7 @@ NEXT_PUBLIC_GISCUS_CATEGORY_ID=your_category_id
 ```
 
 3. 启动开发服务器
+
 ```bash
 npm run dev
 ```
@@ -77,16 +81,19 @@ npm run dev
 #### 方式二：使用 Vercel CLI
 
 1. 安装 Vercel CLI
+
 ```bash
 npm i -g vercel
 ```
 
 2. 登录 Vercel
+
 ```bash
 vercel login
 ```
 
 3. 部署项目
+
 ```bash
 vercel
 ```
@@ -94,18 +101,19 @@ vercel
 ### 4. 配置环境变量
 
 在 Vercel Dashboard 中：
+
 1. 进入项目设置
 2. 选择 "Environment Variables"
 3. 添加以下环境变量：
 
-| 变量名 | 说明 | 必需 |
-|--------|------|------|
-| NOTION_TOKEN | Notion Integration Token | ✅ |
-| NOTION_DATABASE_ID | 主数据库 ID | ✅ |
-| NOTION_PROJECTS_DB | 项目数据库 ID | ❌ |
-| NOTION_TOOLS_DB | 工具数据库 ID | ❌ |
-| NOTION_BOOKS_DB | 书籍数据库 ID | ❌ |
-| CACHE_TTL | 缓存时间（毫秒） | ❌ |
+| 变量名             | 说明                     | 必需 |
+| ------------------ | ------------------------ | ---- |
+| NOTION_TOKEN       | Notion Integration Token | ✅   |
+| NOTION_DATABASE_ID | 主数据库 ID              | ✅   |
+| NOTION_PROJECTS_DB | 项目数据库 ID            | ❌   |
+| NOTION_TOOLS_DB    | 工具数据库 ID            | ❌   |
+| NOTION_BOOKS_DB    | 书籍数据库 ID            | ❌   |
+| CACHE_TTL          | 缓存时间（毫秒）         | ❌   |
 
 ### 5. 自定义域名（可选）
 
@@ -116,10 +124,12 @@ vercel
 ## 🔄 更新部署
 
 ### 自动部署
+
 - 每次推送到 `main` 分支时，Vercel 会自动触发部署
 - 可以在 Vercel Dashboard 中查看部署状态
 
 ### 手动部署
+
 在 Vercel Dashboard 中点击 "Redeploy" 按钮
 
 ## 🐛 故障排查
@@ -144,13 +154,16 @@ vercel
 ## 📊 监控和分析
 
 ### Vercel Analytics
+
 - 在 Vercel Dashboard 中启用 Analytics
 - 可查看访问量、性能指标等
 
 ### Google Analytics
+
 配置 `NEXT_PUBLIC_GA_ID` 环境变量后自动启用
 
 ### 错误监控
+
 配置 Sentry 相关环境变量后自动启用错误追踪
 
 ## 🔒 安全注意事项
@@ -173,4 +186,4 @@ vercel
 
 ---
 
-*最后更新：2025-01-07*
+_最后更新：2025-01-07_

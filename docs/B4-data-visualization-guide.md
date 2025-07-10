@@ -9,6 +9,7 @@
 ### 1. 基础图表组件
 
 #### LineChart - 折线图
+
 ```typescript
 // 用于展示趋势数据
 import { LineChart } from '@/components/analytics/charts/LineChart'
@@ -30,6 +31,7 @@ import { LineChart } from '@/components/analytics/charts/LineChart'
 ```
 
 **特性：**
+
 - 支持自定义颜色和样式
 - 渐变填充区域
 - 响应式设计
@@ -37,6 +39,7 @@ import { LineChart } from '@/components/analytics/charts/LineChart'
 - 自适应坐标轴
 
 #### BarChart - 柱状图
+
 ```typescript
 // 用于对比数据
 import { BarChart } from '@/components/analytics/charts/BarChart'
@@ -55,6 +58,7 @@ import { BarChart } from '@/components/analytics/charts/BarChart'
 ```
 
 **特性：**
+
 - 垂直/水平方向切换
 - 数值标签显示
 - 自定义颜色数组
@@ -62,6 +66,7 @@ import { BarChart } from '@/components/analytics/charts/BarChart'
 - 动画过渡
 
 #### PieChart - 饼图
+
 ```typescript
 // 用于展示占比数据
 import { PieChart } from '@/components/analytics/charts/PieChart'
@@ -80,6 +85,7 @@ import { PieChart } from '@/components/analytics/charts/PieChart'
 ```
 
 **特性：**
+
 - 饼图/环形图切换
 - 鼠标悬停效果
 - 百分比显示
@@ -87,6 +93,7 @@ import { PieChart } from '@/components/analytics/charts/PieChart'
 - 平滑动画
 
 #### HeatMap - 热力图
+
 ```typescript
 // 用于展示密度数据
 import { HeatMap } from '@/components/analytics/charts/HeatMap'
@@ -108,6 +115,7 @@ import { HeatMap } from '@/components/analytics/charts/HeatMap'
 ```
 
 **特性：**
+
 - 自定义颜色梯度
 - 工具提示
 - 标签旋转
@@ -117,6 +125,7 @@ import { HeatMap } from '@/components/analytics/charts/HeatMap'
 ### 2. 综合分析组件
 
 #### AnalyticsDashboard - 分析仪表板
+
 ```typescript
 // 主分析面板
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
@@ -131,6 +140,7 @@ import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 ```
 
 **功能模块：**
+
 - 实时统计卡片（在线用户、总浏览量、独立访客、平均阅读时长）
 - 页面浏览趋势图
 - 设备分布饼图
@@ -141,6 +151,7 @@ import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 - 热门搜索词
 
 #### PostAnalytics - 文章分析
+
 ```typescript
 // 单篇文章分析
 import { PostAnalytics } from '@/components/analytics/PostAnalytics'
@@ -149,6 +160,7 @@ import { PostAnalytics } from '@/components/analytics/PostAnalytics'
 ```
 
 **展示内容：**
+
 - 核心指标（浏览量、独立访客、阅读时长、完读率）
 - 浏览趋势折线图
 - 流量来源分析
@@ -157,6 +169,7 @@ import { PostAnalytics } from '@/components/analytics/PostAnalytics'
 - 相关文章推荐
 
 #### RealtimeMonitor - 实时监控
+
 ```typescript
 // 实时活动监控
 import { RealtimeMonitor } from '@/components/analytics/RealtimeMonitor'
@@ -165,6 +178,7 @@ import { RealtimeMonitor } from '@/components/analytics/RealtimeMonitor'
 ```
 
 **监控内容：**
+
 - 实时事件流
 - 活跃用户列表
 - 页面活跃度热力图
@@ -172,6 +186,7 @@ import { RealtimeMonitor } from '@/components/analytics/RealtimeMonitor'
 - WebSocket实时更新
 
 #### UserActivityMap - 用户活动热力图
+
 ```typescript
 // 用户活动分析
 import { UserActivityMap } from '@/components/analytics/UserActivityMap'
@@ -180,6 +195,7 @@ import { UserActivityMap } from '@/components/analytics/UserActivityMap'
 ```
 
 **分析维度：**
+
 - 24小时 x 7天活动热力图
 - 最活跃时段识别
 - 工作日/周末对比
@@ -187,6 +203,7 @@ import { UserActivityMap } from '@/components/analytics/UserActivityMap'
 - 活动模式分析
 
 #### EngagementFunnel - 参与度漏斗
+
 ```typescript
 // 转化漏斗分析
 import { EngagementFunnel } from '@/components/analytics/EngagementFunnel'
@@ -203,6 +220,7 @@ import { EngagementFunnel } from '@/components/analytics/EngagementFunnel'
 ```
 
 **分析功能：**
+
 - 多阶段转化展示
 - 流失率计算
 - 总转化率统计
@@ -238,7 +256,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
     <>
       {/* 文章内容 */}
       <article>...</article>
-      
+
       {/* 仅管理员可见的分析数据 */}
       {isAdmin && (
         <div className="mt-12">
@@ -268,6 +286,7 @@ export default function MonitoringPage() {
 ## 数据接口
 
 ### 统计数据API
+
 ```typescript
 // POST /api/analytics/stats
 {
@@ -288,6 +307,7 @@ export default function MonitoringPage() {
 ```
 
 ### 实时数据API
+
 ```typescript
 // GET /api/analytics/realtime
 // Response
@@ -300,6 +320,7 @@ export default function MonitoringPage() {
 ```
 
 ### 文章分析API
+
 ```typescript
 // GET /api/analytics/posts/:postId
 // Response
@@ -318,18 +339,21 @@ export default function MonitoringPage() {
 ## 性能优化
 
 ### 1. Canvas渲染优化
+
 - 使用`requestAnimationFrame`控制动画帧率
 - 实现脏矩形重绘减少渲染开销
 - 离屏Canvas预渲染复杂图形
 - 根据设备性能自动降级动画
 
 ### 2. 数据加载优化
+
 - 实现数据分页和懒加载
 - 使用React Query缓存请求结果
 - WebSocket连接复用
 - 压缩传输数据格式
 
 ### 3. 响应式设计
+
 - 移动端自适应布局
 - 触摸手势支持
 - 高DPI屏幕适配
@@ -364,6 +388,7 @@ const { theme } = useTheme()
 ## 测试覆盖
 
 已实现的测试：
+
 - 单元测试：图表组件渲染和交互
 - 集成测试：数据加载和更新
 - 性能测试：大数据集渲染
@@ -372,6 +397,7 @@ const { theme } = useTheme()
 ## 后续扩展
 
 ### 计划中的功能
+
 1. 更多图表类型（散点图、雷达图、桑基图）
 2. 数据导出功能（PNG、SVG、CSV）
 3. 自定义仪表板布局
@@ -379,6 +405,7 @@ const { theme } = useTheme()
 5. 预测性分析
 
 ### 集成建议
+
 1. 与个性化推荐系统结合
 2. 添加数据订阅和报告功能
 3. 实现数据异常检测告警
@@ -414,13 +441,13 @@ export default function AnalyticsPage() {
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">数据分析中心</h1>
-        
+
         <div className="flex gap-4">
           <DateRangePicker
             value={timeRange}
             onChange={setTimeRange}
           />
-          
+
           <select
             value={granularity}
             onChange={(e) => setGranularity(e.target.value as TimeGranularity)}
@@ -433,7 +460,7 @@ export default function AnalyticsPage() {
           </select>
         </div>
       </div>
-      
+
       <AnalyticsDashboard
         timeRange={timeRange}
         granularity={granularity}
