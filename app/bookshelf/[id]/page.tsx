@@ -3,8 +3,7 @@
  * @module app/bookshelf/[id]/page
  */
 
-import { getBookById } from '@/lib/notion/books'
-import { fallbackBooks } from '@/lib/fallback-books'
+import { getBookById, getBooks } from '@/lib/notion/books'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -24,10 +23,17 @@ export const revalidate = 3600
  * @description 为静态生成提供所有可能的书籍 ID 路径
  */
 export async function generateStaticParams() {
-  // 使用后备数据
-  return fallbackBooks.map((book) => ({
-    id: book.id,
-  }))
+  try {
+    // 从 Notion 获取所有书籍
+    const books = await getBooks()
+    return books.map((book) => ({
+      id: book.id,
+    }))
+  } catch (error) {
+    console.error('Error generating static params for books:', error)
+    // 返回空数组，让页面在请求时动态生成
+    return []
+  }
 }
 
 /**
@@ -63,7 +69,7 @@ async function markdownToHtml(markdown: string) {
  */
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
-  const book = fallbackBooks.find(b => b.id === id)
+  const book = await getBookById(id)
   
   if (!book) {
     return {
@@ -101,8 +107,8 @@ export default async function BookDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  // 从后备数据中查找
-  const book = fallbackBooks.find(b => b.id === id)
+  // 从 Notion 获取书籍数据
+  const book = await getBookById(id)
   
   if (!book) {
     notFound()
