@@ -5,8 +5,8 @@
 /* Ghost Blog 风格快速改进 - 暂时注释掉以排查问题 */
 /* @import './styles/quick-ghost-fix.css'; */
 
-/* 安全的排版改进 */
-@import './styles/safe-typography.css';
+/* 安全的排版改进 - 文件已删除 */
+/* @import './styles/safe-typography.css'; */
 
 @layer base {
   /* 主题系统集成 - 默认值 */
