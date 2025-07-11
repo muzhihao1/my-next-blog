@@ -51,11 +51,40 @@ async function getToolData(slug: string): Promise<Tool | null> {
   return fallbackTools.find(tool => tool.slug === slug) || null
 }
 /** * Generate metadata for the tool page */
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params const tool = await getToolData(slug) if (!tool) { return { title: '工具不存在', description: '抱歉，找不到这个工具。' }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const tool = await getToolData(slug)
+  
+  if (!tool) {
+    return {
+      title: '工具不存在',
+      description: '抱歉，找不到这个工具。'
+    }
+  }
+  
+  return {
+    title: `${tool.name} - 工具推荐`,
+    description: tool.description,
+    openGraph: {
+      title: tool.name,
+      description: tool.description,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: tool.name,
+      description: tool.description,
+    },
+  }
 }
-return { title: `${tool.name} - 工具推荐`, description: tool.description, openGraph: { title: tool.name, description: tool.description, type: 'website', }, twitter: { card: 'summary', title: tool.name, description: tool.description, }, }
-}/** * Tool content component */
-async function ToolContent({ slug }: { slug: string }) { const tool = await getToolData(slug) if (!tool) { notFound() }
+
+/** * Tool content component */
+async function ToolContent({ slug }: { slug: string }) {
+  const tool = await getToolData(slug)
+  
+  if (!tool) {
+    notFound()
+  }
 const priceLabels = { free: '免费', freemium: '免费增值', paid: '付费', subscription: '订阅制' }
 const categoryLabels = { development: '开发工具', design: '设计工具', productivity: '效率工具', hardware: '硬件设备', service: '在线服务' }
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const structuredData = generateSoftwareApplicationStructuredData({ name: tool.name, description: tool.description, category: tool.category, applicationCategory: categoryLabels[tool.category], offers: tool.price !== 'free' ? { price: '0', priceCurrency: 'CNY' } : undefined, aggregateRating: { ratingValue: tool.rating, reviewCount: 1 }, url: `${baseUrl}/tools/${slug}` }) return ( <article className="max-w-4xl mx-auto">

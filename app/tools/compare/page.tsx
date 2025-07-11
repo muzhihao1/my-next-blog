@@ -19,29 +19,106 @@ from '@/lib/fallback-tools'
 
 import ToolCompareTable from '@/components/features/ToolCompareTable' 
 
-import ToolSelector from '@/components/features/ToolSelector' function ToolCompareContent() { const searchParams = useSearchParams() const [tools, setTools] = useState<Tool[]>([]) const [selectedTools, setSelectedTools] = useState<Tool[]>([]) const [isLoading, setIsLoading] = useState(true) // 从 URL 参数获取要对比的工具 useEffect(() => { const loadTools = async () => { setIsLoading(true) try { let allTools = await getTools() if (allTools.length === 0) { allTools = fallbackTools }
-setTools(allTools) // 从 URL 参数获取选中的工具 const toolIds = searchParams.get('tools')?.split(',') || []
-const selected = allTools.filter(tool => toolIds.includes(tool.id)) setSelectedTools(selected) }
-catch (error) { console.error('Failed to load tools:', error) setTools(fallbackTools) }
-finally { setIsLoading(false) }
-}
-loadTools() }, [searchParams]) // 更新 URL 参数 const updateUrlParams = (tools: Tool[]) => { const toolIds = tools.map((t: Tool) => t.id).join(',') const newUrl = toolIds ? `/tools/compare?tools=${toolIds}` : '/tools/compare' window.history.pushState({}, '', newUrl) }
-// 添加工具到对比 const addToolToCompare = (tool: Tool) => { if (selectedTools.length >= 4) { alert('最多只能同时对比 4 个工具') return }
-if (!selectedTools.find(t => t.id === tool.id)) { const newTools = [...selectedTools, tool]
-setSelectedTools(newTools) updateUrlParams(newTools) }
-}
-// 从对比中移除工具 const removeToolFromCompare = (toolId: string) => { const newTools = selectedTools.filter(t => t.id !== toolId) setSelectedTools(newTools) updateUrlParams(newTools) }
-// 清空对比 const clearCompare = () => { setSelectedTools([]) updateUrlParams([]) }
-// 分享对比结果 const shareCompare = async () => { const url = window.location.href if (navigator.share) { try { await navigator.share({ title: '工具对比结果', text: `我正在对比这些工具：${selectedTools.map((t: Tool) => t.name).join('、')}`, url: url }) }
-catch (error) { console.error('Share failed:', error) }
-}
-else { // 复制到剪贴板 navigator.clipboard.writeText(url) alert('对比链接已复制到剪贴板') }
-}
-if (isLoading) { return ( <div className="flex items-center justify-center min-h-screen">
-<div className="text-center">
-<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-<p className="mt-4 text-gray-600">加载中...</p> </div> </div> ) }
-return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+import ToolSelector from '@/components/features/ToolSelector'
+
+function ToolCompareContent() {
+  const searchParams = useSearchParams()
+  const [tools, setTools] = useState<Tool[]>([])
+  const [selectedTools, setSelectedTools] = useState<Tool[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // 从 URL 参数获取要对比的工具
+  useEffect(() => {
+    const loadTools = async () => {
+      setIsLoading(true)
+      try {
+        let allTools = await getTools()
+        if (allTools.length === 0) {
+          allTools = fallbackTools
+        }
+        setTools(allTools)
+        
+        // 从 URL 参数获取选中的工具
+        const toolIds = searchParams.get('tools')?.split(',') || []
+        const selected = allTools.filter(tool => toolIds.includes(tool.id))
+        setSelectedTools(selected)
+      } catch (error) {
+        console.error('Failed to load tools:', error)
+        setTools(fallbackTools)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadTools()
+  }, [searchParams])
+  
+  // 更新 URL 参数
+  const updateUrlParams = (tools: Tool[]) => {
+    const toolIds = tools.map((t: Tool) => t.id).join(',')
+    const newUrl = toolIds ? `/tools/compare?tools=${toolIds}` : '/tools/compare'
+    window.history.pushState({}, '', newUrl)
+  }
+  
+  // 添加工具到对比
+  const addToolToCompare = (tool: Tool) => {
+    if (selectedTools.length >= 4) {
+      alert('最多只能同时对比 4 个工具')
+      return
+    }
+    
+    if (!selectedTools.find(t => t.id === tool.id)) {
+      const newTools = [...selectedTools, tool]
+      setSelectedTools(newTools)
+      updateUrlParams(newTools)
+    }
+  }
+  
+  // 从对比中移除工具
+  const removeToolFromCompare = (toolId: string) => {
+    const newTools = selectedTools.filter(t => t.id !== toolId)
+    setSelectedTools(newTools)
+    updateUrlParams(newTools)
+  }
+  
+  // 清空对比
+  const clearCompare = () => {
+    setSelectedTools([])
+    updateUrlParams([])
+  }
+  
+  // 分享对比结果
+  const shareCompare = async () => {
+    const url = window.location.href
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: '工具对比结果',
+          text: `我正在对比这些工具：${selectedTools.map((t: Tool) => t.name).join('、')}`,
+          url: url
+        })
+      } catch (error) {
+        console.error('Share failed:', error)
+      }
+    } else {
+      // 复制到剪贴板
+      navigator.clipboard.writeText(url)
+      alert('对比链接已复制到剪贴板')
+    }
+  }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600">加载中...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto"> {/* 页头 */}
 <div className="mb-8">
 <Link href="/tools" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900:text-white mb-4 transition-colors" >

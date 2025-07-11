@@ -96,12 +96,48 @@ export async function generateStaticParams() {
 /** * 生成页面元数据 * @async * @function generateMetadata * @param {Object}
 props - 属性对象 * @param {Promise<{tag: string}>}
 props.params - 包含标签的参数 * @returns {Promise<Metadata>} 返回页面的元数据 */
-export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> { const { tag } = await params const decodedTag = decodeURIComponent(tag) return { title: `${decodedTag} - 标签`, description: `查看所有标记为"${decodedTag}"的文章和项目` }
+export async function generateMetadata({ params }: { params: Promise<{ tag: string }> }): Promise<Metadata> {
+  const { tag } = await params
+  const decodedTag = decodeURIComponent(tag)
+  
+  return {
+    title: `${decodedTag} - 标签`,
+    description: `查看所有标记为"${decodedTag}"的文章和项目`
+  }
 }/** * 标签详情页面组件 * @async * @function TagDetailPage * @param {Object}
 props - 组件属性 * @param {Promise<{tag: string}>}
 props.params - 包含标签的参数 * @returns {Promise<JSX.Element>} 渲染的标签详情页面 * @description 显示所有带有特定标签的文章和项目 */
-export default async function TagDetailPage({ params }: { params: Promise<{ tag: string }> }) { const { tag } = await params const decodedTag = decodeURIComponent(tag) // 获取所有文章和项目 const posts = await getPosts() || fallbackPosts const projects = await getProjects() || fallbackProjects // 筛选包含该标签的内容 const taggedPosts = posts.filter(post => post.tags?.some(t => createTagSlug(t) === tag || t === decodedTag) ) const taggedProjects = projects.filter(project => project.tags?.some(t => createTagSlug(t) === tag || t === decodedTag) ) const totalCount = taggedPosts.length + taggedProjects.length if (totalCount === 0) { notFound() }
-// 找到原始标签名称（用于显示） const originalTagName = [ ...taggedPosts.flatMap(p => p.tags || []), ...taggedProjects.flatMap(p => p.tags || []) ].find(t => createTagSlug(t) === tag || t === decodedTag) || decodedTag return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+export default async function TagDetailPage({ params }: { params: Promise<{ tag: string }> }) {
+  const { tag } = await params
+  const decodedTag = decodeURIComponent(tag)
+  
+  // 获取所有文章和项目
+  const posts = await getPosts() || fallbackPosts
+  const projects = await getProjects() || fallbackProjects
+  
+  // 筛选包含该标签的内容
+  const taggedPosts = posts.filter(post => 
+    post.tags?.some(t => createTagSlug(t) === tag || t === decodedTag)
+  )
+  
+  const taggedProjects = projects.filter(project => 
+    project.tags?.some(t => createTagSlug(t) === tag || t === decodedTag)
+  )
+  
+  const totalCount = taggedPosts.length + taggedProjects.length
+  
+  if (totalCount === 0) {
+    notFound()
+  }
+  
+  // 找到原始标签名称（用于显示）
+  const originalTagName = [
+    ...taggedPosts.flatMap(p => p.tags || []),
+    ...taggedProjects.flatMap(p => p.tags || [])
+  ].find(t => createTagSlug(t) === tag || t === decodedTag) || decodedTag
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto"> {/* 页面头部 */}
 <div className="mb-12 text-center">
 <h1 className="text-4xl font-bold text-gray-900 mb-4"> #{originalTagName} </h1>

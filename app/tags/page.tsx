@@ -45,11 +45,71 @@ interface TagInfo {
   color: string
 }
 /** * 标签索引页面组件 * @async * @function TagsPage * @returns {Promise<JSX.Element>} 渲染的标签索引页面 * @description 显示所有标签的统计信息和标签云 */
-export default async function TagsPage() { // 获取所有文章和项目 const posts = await getPosts() || fallbackPosts const projects = await getProjects() || fallbackProjects // 统计标签信息 const tagMap = new Map<string, TagInfo>() // 处理文章标签 posts.forEach(post => { post.tags?.forEach(tag => { const slug = createTagSlug(tag) const existing = tagMap.get(slug) if (existing) { existing.postCount++ existing.totalCount++ }
-else { tagMap.set(slug, { name: tag, slug, postCount: 1, projectCount: 0, totalCount: 1, color: getTagColor(slug) }) }
-}) }) // 处理项目标签 projects.forEach(project => { project.tags?.forEach(tag => { const slug = createTagSlug(tag) const existing = tagMap.get(slug) if (existing) { existing.projectCount++ existing.totalCount++ }
-else { tagMap.set(slug, { name: tag, slug, postCount: 0, projectCount: 1, totalCount: 1, color: getTagColor(slug) }) }
-}) }) // 转换为数组并排序 const tags = Array.from(tagMap.values()).sort((a, b) => b.totalCount - a.totalCount) // 准备标签云数据 const tagCloudData = tags.map(tag => ({ name: tag.name, slug: tag.slug, count: tag.totalCount, weight: Math.min(tag.totalCount / Math.max(...tags.map(t => t.totalCount)), 1) })) return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+export default async function TagsPage() {
+  // 获取所有文章和项目
+  const posts = await getPosts() || fallbackPosts
+  const projects = await getProjects() || fallbackProjects
+  
+  // 统计标签信息
+  const tagMap = new Map<string, TagInfo>()
+  
+  // 处理文章标签
+  posts.forEach(post => {
+    post.tags?.forEach(tag => {
+      const slug = createTagSlug(tag)
+      const existing = tagMap.get(slug)
+      
+      if (existing) {
+        existing.postCount++
+        existing.totalCount++
+      } else {
+        tagMap.set(slug, {
+          name: tag,
+          slug,
+          postCount: 1,
+          projectCount: 0,
+          totalCount: 1,
+          color: getTagColor(slug)
+        })
+      }
+    })
+  })
+  
+  // 处理项目标签
+  projects.forEach(project => {
+    project.tags?.forEach(tag => {
+      const slug = createTagSlug(tag)
+      const existing = tagMap.get(slug)
+      
+      if (existing) {
+        existing.projectCount++
+        existing.totalCount++
+      } else {
+        tagMap.set(slug, {
+          name: tag,
+          slug,
+          postCount: 0,
+          projectCount: 1,
+          totalCount: 1,
+          color: getTagColor(slug)
+        })
+      }
+    })
+  })
+  
+  // 转换为数组并排序
+  const tags = Array.from(tagMap.values()).sort((a, b) => b.totalCount - a.totalCount)
+  
+  // 准备标签云数据
+  const tagCloudData = tags.map(tag => ({
+    name: tag.name,
+    slug: tag.slug,
+    count: tag.totalCount,
+    weight: Math.min(tag.totalCount / Math.max(...tags.map(t => t.totalCount)), 1)
+  }))
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto"> {/* 页面标题 */}
 <div className="text-center mb-12">
 <h1 className="text-4xl font-bold text-gray-900 mb-4"> 标签 </h1>
