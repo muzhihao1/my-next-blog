@@ -152,9 +152,18 @@ d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0
 <ToolSelector tools={tools}
 selectedTools={selectedTools}
 onSelectTool={addToolToCompare}
-maxSelection={4}
-/> </div> </div> </div> ) }
-// 加载骨架屏 function LoadingSkeleton() { return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+        maxSelection={4}
+      />
+    </div>
+  </div>
+</div>
+  )
+}
+
+// 加载骨架屏
+function LoadingSkeleton() {
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto">
 <div className="animate-pulse">
 <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>

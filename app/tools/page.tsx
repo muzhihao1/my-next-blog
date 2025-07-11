@@ -8,14 +8,27 @@ from '@/lib/notion/tools'
 import { fallbackTools }
 from '@/lib/fallback-tools' 
 
-import type { Tool }
-from '@/types/tool' /** * Get tools data with fallback */
-async function getToolsData(): Promise<Tool[]> { try { const tools = await getTools() return tools.length > 0 ? tools : fallbackTools }
-catch (error) { console.error('Error loading tools:', error) return fallbackTools }
-}/** * Import client component */
-import ToolsList from '@/components/features/ToolsList' /** * Tools content component */
-async function ToolsContent() { const tools = await getToolsData() return <ToolsList tools={tools}
-/> }
+import type { Tool } from '@/types/tool'
+
+/** * Get tools data with fallback */
+async function getToolsData(): Promise<Tool[]> {
+  try {
+    const tools = await getTools()
+    return tools.length > 0 ? tools : fallbackTools
+  } catch (error) {
+    console.error('Error loading tools:', error)
+    return fallbackTools
+  }
+}
+
+/** * Import client component */
+import ToolsList from '@/components/features/ToolsList'
+
+/** * Tools content component */
+async function ToolsContent() {
+  const tools = await getToolsData()
+  return <ToolsList tools={tools} />
+}
 /** * Loading skeleton */
 function ToolsSkeleton() { return ( <div className="space-y-12"> {[1, 2, 3].map((section: number) => ( <section key={section}>
 <div className="h-8 w-32 bg-muted rounded mb-6 animate-pulse" />

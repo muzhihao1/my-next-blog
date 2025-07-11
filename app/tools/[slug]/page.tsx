@@ -85,9 +85,23 @@ async function ToolContent({ slug }: { slug: string }) {
   if (!tool) {
     notFound()
   }
-const priceLabels = { free: '免费', freemium: '免费增值', paid: '付费', subscription: '订阅制' }
-const categoryLabels = { development: '开发工具', design: '设计工具', productivity: '效率工具', hardware: '硬件设备', service: '在线服务' }
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const structuredData = generateSoftwareApplicationStructuredData({ name: tool.name, description: tool.description, category: tool.category, applicationCategory: categoryLabels[tool.category], offers: tool.price !== 'free' ? { price: '0', priceCurrency: 'CNY' } : undefined, aggregateRating: { ratingValue: tool.rating, reviewCount: 1 }, url: `${baseUrl}/tools/${slug}` }) return ( <article className="max-w-4xl mx-auto">
+  
+  const priceLabels = { free: '免费', freemium: '免费增值', paid: '付费', subscription: '订阅制' }
+  const categoryLabels = { development: '开发工具', design: '设计工具', productivity: '效率工具', hardware: '硬件设备', service: '在线服务' }
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  
+  const structuredData = generateSoftwareApplicationStructuredData({
+    name: tool.name,
+    description: tool.description,
+    category: tool.category,
+    applicationCategory: categoryLabels[tool.category],
+    offers: tool.price !== 'free' ? { price: '0', priceCurrency: 'CNY' } : undefined,
+    aggregateRating: { ratingValue: tool.rating, reviewCount: 1 },
+    url: `${baseUrl}/tools/${slug}`
+  })
+  
+  return (
+    <article className="max-w-4xl mx-auto">
 <StructuredData type="SoftwareApplication" data={structuredData}
 /> {/* Header */}
 <header className="mb-12 mt-8">
