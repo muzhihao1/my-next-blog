@@ -2,10 +2,22 @@
 import { ReactNode }
 from 'react' 
 
-import { cn }
-from '@/lib/utils' /** * 容器组件属性 * @interface ContainerProps * @property {ReactNode}
-children - 子元素 * @property {string} [className] - 额外的样式类 * @property {'sm' | 'md' | 'lg' | 'xl' | 'full'} [size] - 容器尺寸 * @property {boolean} [noPadding] - 是否移除内边距 */
-interface ContainerProps { children: ReactNode className?: string size?: 'sm' | 'md' | 'lg' | 'xl' | 'full' noPadding?: boolean }
+import { cn } from '@/lib/utils'
+
+/** 
+ * 容器组件属性 
+ * @interface ContainerProps 
+ * @property {ReactNode} children - 子元素 
+ * @property {string} [className] - 额外的样式类 
+ * @property {'sm' | 'md' | 'lg' | 'xl' | 'full'} [size] - 容器尺寸 
+ * @property {boolean} [noPadding] - 是否移除内边距 
+ */
+interface ContainerProps {
+  children: ReactNode
+  className?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
+  noPadding?: boolean
+}
 /** * 容器尺寸映射 */
 const sizeClasses = { sm: 'max-w-3xl', // 768px - 适合阅读内容 md: 'max-w-4xl', // 896px - 标准内容 lg: 'max-w-6xl', // 1152px - 宽内容 xl: 'max-w-7xl', // 1280px - 超宽内容 full: 'max-w-full' // 全宽 }
 /** * 统一容器组件 * @component * @param {ContainerProps}

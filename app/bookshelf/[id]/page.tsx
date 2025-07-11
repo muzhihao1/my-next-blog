@@ -18,28 +18,108 @@ import { StructuredData, generateBookStructuredData }
 from '@/components/seo/StructuredData' 
 
 import type { Metadata }
-from 'next' // ISR配置：每小时重新验证一次 export const revalidate = 3600 /** * 生成静态路径 * @async * @function generateStaticParams * @returns {Promise<Array<{id: string}>>} 返回所有书籍 ID 的数组 * @description 为静态生成提供所有可能的书籍 ID 路径 */
-export async function generateStaticParams() { try { // 从 Notion 获取所有书籍 const books = await getBooks() return books.map((book) => ({ id: book.id, })) }
-catch (error) { console.error('Error generating static params for books:', error) // 返回空数组，让页面在请求时动态生成 return []
+from 'next' 
+
+// ISR配置：每小时重新验证一次 
+export const revalidate = 3600 
+
+/** * 生成静态路径 * @async * @function generateStaticParams * @returns {Promise<Array<{id: string}>>} 返回所有书籍 ID 的数组 * @description 为静态生成提供所有可能的书籍 ID 路径 */
+export async function generateStaticParams() { 
+  try { 
+    // 从 Notion 获取所有书籍 
+    const books = await getBooks() 
+    return books.map((book) => ({ 
+      id: book.id, 
+    })) 
+  }
+  catch (error) { 
+    console.error('Error generating static params for books:', error) 
+    // 返回空数组，让页面在请求时动态生成 
+    return []
 }
-}/** * 将 Markdown 转换为 HTML * @async * @function markdownToHtml * @param {string}
+}
+
+/** * 将 Markdown 转换为 HTML * @async * @function markdownToHtml * @param {string}
 markdown - Markdown 格式的文本 * @returns {Promise<string>} 返回转换后的 HTML 字符串 * @description 使用 remark 处理器将 Markdown 内容转换为 HTML 格式 */
-async function markdownToHtml(markdown: string) { try { if (!markdown || typeof markdown !== 'string') { return '' }
-const result = await remark().use(html).process(markdown) return result.toString() }
-catch (error) { console.error('Error converting markdown to HTML:', error) // 返回原始文本作为后备方案 return `<p>${markdown.replace(/\n/g, '<br>')}</p>` }
-}/** * 生成页面元数据 * @async * @function generateMetadata * @param {Object}
+async function markdownToHtml(markdown: string) {
+  try {
+    if (!markdown || typeof markdown !== 'string') {
+      return ''
+    }
+    const result = await remark().use(html).process(markdown)
+    return result.toString()
+  }
+  catch (error) {
+    console.error('Error converting markdown to HTML:', error)
+    // 返回原始文本作为后备方案
+    return `<p>${markdown.replace(/\n/g, '<br>')}</p>`
+  }
+}
+
+/** * 生成页面元数据 * @async * @function generateMetadata * @param {Object}
 props - 属性对象 * @param {Promise<{id: string}>}
 props.params - 包含书籍 ID 的参数 * @returns {Promise<Metadata>} 返回页面的元数据 * @description 为书籍详情页面生成 SEO 优化的元数据，包括标题、描述和 Open Graph 标签 */
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> { const { id } = await params const book = await getBookById(id) if (!book) { return { title: '书籍不存在', description: '抱歉，找不到这本书。' }
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const book = await getBookById(id)
+  
+  if (!book) {
+    return {
+      title: '书籍不存在',
+      description: '抱歉，找不到这本书。'
+    }
+  }
+  
+  return {
+    title: `${book.title} - ${book.author}`,
+    description: `阅读笔记：${book.title}，作者：${book.author}`,
+    openGraph: {
+      title: book.title,
+      description: `阅读笔记：${book.title}，作者：${book.author}`,
+      type: 'book',
+    },
+  }
 }
-return { title: `${book.title} - ${book.author}`, description: `阅读笔记：${book.title}，作者：${book.author}`, openGraph: { title: book.title, description: `阅读笔记：${book.title}，作者：${book.author}`, type: 'book', }, }
-}/** * 书籍详情页面组件 * @async * @function BookDetailPage * @param {Object}
+
+/** * 书籍详情页面组件 * @async * @function BookDetailPage * @param {Object}
 props - 组件属性 * @param {Promise<{id: string}>}
 props.params - 包含书籍 ID 的参数 * @returns {Promise<JSX.Element>} 渲染的书籍详情页面 * @description 展示单本书籍的详细信息，包括封面、基本信息、评分、阅读笔记等。 * 支持 Markdown 格式的读书笔记，包含结构化数据以优化 SEO。 * @example * // 访问路由 /bookshelf/[id] */
-export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) { const { id } = await params // 从 Notion 获取书籍数据 const book = await getBookById(id) if (!book) { notFound() }
-const notesHtml = book.notes ? await markdownToHtml(book.notes) : '' const statusColors = { 'reading': 'bg-yellow-100 text-yellow-700', 'read': 'bg-green-100 text-green-700', 'want-to-read': 'bg-blue-100 text-blue-700' }
-const statusText = { 'reading': '在读', 'read': '已读', 'want-to-read': '想读' }
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const bookStructuredData = generateBookStructuredData({ title: book.title, author: book.author, isbn: book.isbn, description: book.notes || book.takeaways || '', datePublished: book.publishYear ? `${book.publishYear}-01-01` : undefined, url: `${baseUrl}/bookshelf/${id}` }) return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+export default async function BookDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  
+  // 从 Notion 获取书籍数据
+  const book = await getBookById(id)
+  
+  if (!book) {
+    notFound()
+  }
+  
+  const notesHtml = book.notes ? await markdownToHtml(book.notes) : ''
+  
+  const statusColors = {
+    'reading': 'bg-yellow-100 text-yellow-700',
+    'read': 'bg-green-100 text-green-700',
+    'want-to-read': 'bg-blue-100 text-blue-700'
+  }
+  
+  const statusText = {
+    'reading': '在读',
+    'read': '已读',
+    'want-to-read': '想读'
+  }
+  
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  const bookStructuredData = generateBookStructuredData({
+    title: book.title,
+    author: book.author,
+    isbn: book.isbn,
+    description: book.notes || book.takeaways || '',
+    datePublished: book.publishYear ? `${book.publishYear}-01-01` : undefined,
+    url: `${baseUrl}/bookshelf/${id}`
+  })
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-4xl mx-auto">
 <StructuredData type="Book" data={bookStructuredData}
 /> {/* 返回按钮 */}

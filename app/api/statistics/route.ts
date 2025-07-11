@@ -19,8 +19,15 @@ export async function GET(request: NextRequest) { try { const searchParams = req
 const type = searchParams.get('type') || 'site';
 const limit = parseInt(searchParams.get('limit') || '10', 10);
 const period = searchParams.get('period') || 'all';
-let data; if (type === 'posts') { // Get detailed post statistics data = await getPostStatistics({ limit, period }); }
-else { // Get general site statistics data = await getSiteStatistics({ limit, period }); }
+let data; 
+
+    if (type === 'posts') { 
+      // Get detailed post statistics 
+      data = await getPostStatistics({ limit, period }); 
+    } else { 
+      // Get general site statistics 
+      data = await getSiteStatistics({ limit, period }); 
+    }
 return NextResponse.json({ success: true, data, meta: { type, limit, period, timestamp: new Date().toISOString() }
 }); }
 catch (error) { console.error('Error fetching statistics:', error); return NextResponse.json( { success: false, error: { message: error instanceof Error ? error.message : 'Failed to fetch statistics', code: 'STATISTICS_ERROR' }
@@ -33,9 +40,44 @@ success Operation success status * @apiSuccess {string}
 message Success message * * @apiError {Object}
 error Error object * @apiError {string}
 error.message Error description */
-export async function POST(request: NextRequest) { try { const body = await request.json();
-const { event, data, sessionId } = body; if (!event) { return NextResponse.json( { success: false, error: { message: 'Event name is required', code: 'MISSING_EVENT' }
-}, { status: 400 } ); }
-// Here you would typically log the event to your analytics system // For now, we'll just acknowledge receipt console.log('Statistics event:', { event, data, sessionId }); return NextResponse.json({ success: true, message: 'Event tracked successfully' }); }
-catch (error) { console.error('Error tracking statistics:', error); return NextResponse.json( { success: false, error: { message: error instanceof Error ? error.message : 'Failed to track event', code: 'TRACKING_ERROR' }
-}, { status: 500 } ); } }
+export async function POST(request: NextRequest) { 
+  try { 
+    const body = await request.json();
+    const { event, data, sessionId } = body; 
+    
+    if (!event) { 
+      return NextResponse.json( 
+        { 
+          success: false, 
+          error: { 
+            message: 'Event name is required', 
+            code: 'MISSING_EVENT' 
+          }
+        }, 
+        { status: 400 } 
+      ); 
+    }
+    
+    // Here you would typically log the event to your analytics system 
+    // For now, we'll just acknowledge receipt 
+    console.log('Statistics event:', { event, data, sessionId }); 
+    
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Event tracked successfully' 
+    }); 
+  }
+  catch (error) { 
+    console.error('Error tracking statistics:', error); 
+    return NextResponse.json( 
+      { 
+        success: false, 
+        error: { 
+          message: error instanceof Error ? error.message : 'Failed to track event', 
+          code: 'TRACKING_ERROR' 
+        }
+      }, 
+      { status: 500 } 
+    ); 
+  } 
+}

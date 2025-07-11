@@ -5,8 +5,24 @@ from "@/lib/fallback-posts";
 import Link from "next/link";
 import { PageContainer }
 from "@/components/ui/Container";
-// ISR配置：每30分钟重新验证一次 export const revalidate = 1800 export default async function BlogPage() { const posts = await withFallback( () => getPublishedPosts(), getFallbackPosts() ) function getCategoryClass(category: string) { const categoryMap: { [key: string]: string } = { 'Technology': 'category-technology', 'Design': 'category-design', 'Productivity': 'category-productivity', 'Life': 'category-life' }
-return `category-badge ${categoryMap[category] || 'category-technology'}` }
+// ISR配置：每30分钟重新验证一次 
+export const revalidate = 1800 
+
+export default async function BlogPage() { 
+  const posts = await withFallback( 
+    () => getPublishedPosts(), 
+    getFallbackPosts() 
+  ) 
+  
+  function getCategoryClass(category: string) { 
+    const categoryMap: { [key: string]: string } = { 
+      'Technology': 'category-technology', 
+      'Design': 'category-design', 
+      'Productivity': 'category-productivity', 
+      'Life': 'category-life' 
+    }
+    return `category-badge ${categoryMap[category] || 'category-technology'}` 
+  }
 return ( <PageContainer size="xl"> {/* 页面标题 */}
 <div className="mb-12">
 <h1 className="text-4xl font-bold text-gray-900 mb-4"> 博客文章 </h1>

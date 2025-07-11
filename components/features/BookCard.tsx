@@ -1,20 +1,38 @@
-/** * 书籍卡片组件 * @module components/features/BookCard */ 'use client' import Link from 'next/link' 
+/** * 书籍卡片组件 * @module components/features/BookCard */
+'use client'
+
+import Link from 'next/link' 
 
 import { Book }
 from '@/types/bookshelf' 
 
-import { OptimizedImage }
-from '@/components/ui/OptimizedImage' /** * 书籍卡片组件的属性 * @interface BookCardProps * @property {Book}
-book - 书籍数据对象 * @property {'grid' | 'list'}
-view - 显示模式（网格或列表） */
-interface BookCardProps { book: Book view: 'grid' | 'list' }
+import { OptimizedImage } from '@/components/ui/OptimizedImage' 
+
+/** * 书籍卡片组件的属性 * @interface BookCardProps * @property {Book} book - 书籍数据对象 * @property {'grid' | 'list'} view - 显示模式（网格或列表） */
+interface BookCardProps {
+  book: Book
+  view: 'grid' | 'list'
+}
 /** * 书籍卡片组件 * @component * @param {BookCardProps}
 props - 组件属性 * @returns {JSX.Element} 渲染的书籍卡片 * @description 展示单本书籍信息的卡片组件，支持网格和列表两种视图模式。 * 包含书籍封面、标题、作者、评分、阅读状态等信息。 * @example * // 网格视图 * <BookCard book={bookData}
 view="grid" /> * * @example * // 列表视图 * <BookCard book={bookData}
 view="list" /> */
-export default function BookCard({ book, view }: BookCardProps) { const statusColors = { 'reading': 'bg-yellow-100/30 text-yellow-700', 'read': 'bg-green-100/30 text-green-700', 'want-to-read': 'bg-blue-100/30 text-blue-700' }
-const statusText = { 'reading': '在读', 'read': '已读', 'want-to-read': '想读' }
-if (view === 'list') { return ( <Link href={`/bookshelf/${book.id}`}
+export default function BookCard({ book, view }: BookCardProps) {
+  const statusColors = {
+    'reading': 'bg-yellow-100/30 text-yellow-700',
+    'read': 'bg-green-100/30 text-green-700',
+    'want-to-read': 'bg-blue-100/30 text-blue-700'
+  }
+  
+  const statusText = {
+    'reading': '在读',
+    'read': '已读',
+    'want-to-read': '想读'
+  }
+  
+  if (view === 'list') {
+    return (
+      <Link href={`/bookshelf/${book.id}`}
 className="block">
 <article className="flex gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500:border-blue-400 hover:bg-gray-50:bg-gray-800/50 transition-all duration-300">
 <OptimizedImage src={book.cover}

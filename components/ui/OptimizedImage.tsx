@@ -1,10 +1,20 @@
-'use client' import { useState }
-from 'react' 
+'use client'
 
-import Image from 'next/image' 
+import { useState } from 'react'
+import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
-import { cn }
-from '@/lib/utils' interface OptimizedImageProps { src: string alt: string width?: number height?: number className?: string priority?: boolean fill?: boolean sizes?: string onLoad?: () => void }
+interface OptimizedImageProps {
+  src: string
+  alt: string
+  width?: number
+  height?: number
+  className?: string
+  priority?: boolean
+  fill?: boolean
+  sizes?: string
+  onLoad?: () => void
+}
 export function OptimizedImage({ src, alt, width, height, className, priority = false, fill = false, sizes, onLoad }: OptimizedImageProps) { const [isLoading, setIsLoading] = useState(true) const [error, setError] = useState(false) const handleLoad = () => { setIsLoading(false) onLoad?.() }
 const handleError = () => { setError(true) setIsLoading(false) }
 // 默认占位图 const placeholderSrc = `data:image/svg+xml,%3Csvg width='${width || 400}' height='${height || 300}' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='system-ui' font-size='14' fill='%239ca3af'%3ELoading...%3C/text%3E%3C/svg%3E` if (error) { return ( <div className={cn( "bg-gray-100 flex items-center justify-center", className )}

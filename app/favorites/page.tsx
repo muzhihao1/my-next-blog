@@ -1,5 +1,7 @@
-/** * 收藏管理页面 * @module app/favorites/page */ 'use client' import { useState, useMemo }
-from 'react' 
+/** * 收藏管理页面 * @module app/favorites/page */
+'use client'
+
+import { useState, useMemo } from 'react' 
 
 import Link from 'next/link' 
 
@@ -10,14 +12,44 @@ from '@/lib/hooks/useFavorites'
 
 import FavoriteButton from '@/components/features/FavoriteButton' 
 
-import type { Metadata }
-from 'next' /** * 页面元数据 */ // export const metadata: Metadata = { // title: '我的收藏 - 博客', // description: '管理您收藏的文章、项目、书籍和工具' // }
+import type { Metadata } from 'next' 
+
+/** * 页面元数据 */ 
+// export const metadata: Metadata = { 
+//   title: '我的收藏 - 博客', 
+//   description: '管理您收藏的文章、项目、书籍和工具' 
+// }
+
 /** * 收藏项卡片组件 * @component * @param {Object}
 props - 组件属性 * @param {import('@/lib/hooks/useFavorites').FavoriteItem}
 props.item - 收藏项 * @param {() => void}
 props.onRemove - 移除回调 * @returns {JSX.Element} 渲染的收藏项卡片 */
-function FavoriteCard({ item, onRemove }: { item: import('@/lib/hooks/useFavorites').FavoriteItem onRemove: () => void }) { const typeConfig = { [FavoriteType.POST]: { label: '文章', href: `/posts/${item.slug}`, color: 'bg-blue-100 text-blue-700' }, [FavoriteType.PROJECT]: { label: '项目', href: `/projects/${item.slug}`, color: 'bg-green-100 text-green-700' }, [FavoriteType.BOOK]: { label: '书籍', href: `/bookshelf/${item.id}`, color: 'bg-purple-100 text-purple-700' }, [FavoriteType.TOOL]: { label: '工具', href: `/tools#${item.id}`, color: 'bg-orange-100 text-orange-700' }
-}
+function FavoriteCard({ item, onRemove }: { 
+  item: import('@/lib/hooks/useFavorites').FavoriteItem
+  onRemove: () => void 
+}) {
+  const typeConfig = {
+    [FavoriteType.POST]: {
+      label: '文章',
+      href: `/posts/${item.slug}`,
+      color: 'bg-blue-100 text-blue-700'
+    },
+    [FavoriteType.PROJECT]: {
+      label: '项目',
+      href: `/projects/${item.slug}`,
+      color: 'bg-green-100 text-green-700'
+    },
+    [FavoriteType.BOOK]: {
+      label: '书籍',
+      href: `/bookshelf/${item.id}`,
+      color: 'bg-purple-100 text-purple-700'
+    },
+    [FavoriteType.TOOL]: {
+      label: '工具',
+      href: `/tools#${item.id}`,
+      color: 'bg-orange-100 text-orange-700'
+    }
+  }
 const config = typeConfig[item.type]
 return ( <div className="relative group">
 <Link href={config.href}
@@ -41,11 +73,42 @@ slug={item.slug}
 size="small" showText={false}
 onToggle={() => onRemove()}
 /> </div> </div> ) }
-/** * 收藏管理页面组件 * @component * @returns {JSX.Element} 渲染的收藏管理页面 * @description 显示和管理用户的所有收藏内容，支持分类筛选、搜索和批量操作 */
-export default function FavoritesPage() { const { favorites, isLoading, clearFavorites, getFavoritesByType } = useFavorites() const [selectedType, setSelectedType] = useState<FavoriteType | 'all'>('all') const [searchQuery, setSearchQuery] = useState('') const [sortBy, setSortBy] = useState<'date' | 'title'>('date') // 筛选和排序收藏 const filteredFavorites = useMemo(() => { let filtered = selectedType === 'all' ? favorites : getFavoritesByType(selectedType as FavoriteType) // 搜索过滤 if (searchQuery) { const query = searchQuery.toLowerCase() filtered = filtered.filter(item => item.title.toLowerCase().includes(query) || item.description?.toLowerCase().includes(query) ) }
-// 排序 return filtered.sort((a, b) => { if (sortBy === 'date') { return b.favoriteDate.getTime() - a.favoriteDate.getTime() }
-else { return a.title.localeCompare(b.title) }
-}) }, [favorites, selectedType, searchQuery, sortBy, getFavoritesByType]) // 获取统计信息 const stats = useMemo(() => getFavoriteStats(favorites), [favorites]) if (isLoading) { return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+/** 
+ * 收藏管理页面组件 
+ * @component 
+ * @returns {JSX.Element} 渲染的收藏管理页面 
+ * @description 显示和管理用户的所有收藏内容，支持分类筛选、搜索和批量操作 
+ */
+export default function FavoritesPage() {
+  const { favorites, isLoading, clearFavorites, getFavoritesByType } = useFavorites()
+  const [selectedType, setSelectedType] = useState<FavoriteType | 'all'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [sortBy, setSortBy] = useState<'date' | 'title'>('date')
+  
+  // 筛选和排序收藏
+  const filteredFavorites = useMemo(() => {
+    let filtered = selectedType === 'all' 
+      ? favorites 
+      : getFavoritesByType(selectedType as FavoriteType)
+    
+    // 搜索过滤
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(item =>
+        item.title.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query)
+      )
+    }
+
+    // 排序
+    return filtered.sort((a, b) => {
+      if (sortBy === 'date') {
+        return b.favoriteDate.getTime() - a.favoriteDate.getTime()
+      } else {
+        return a.title.localeCompare(b.title)
+      }
+    })
+  }, [favorites, selectedType, searchQuery, sortBy, getFavoritesByType]) // 获取统计信息 const stats = useMemo(() => getFavoriteStats(favorites), [favorites]) if (isLoading) { return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto text-center">
 <div className="animate-pulse">
 <div className="h-8 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
