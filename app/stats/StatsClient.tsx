@@ -31,10 +31,26 @@ export default function StatsClient({ initialStats }: StatsClientProps) {
     }
     setLoading(false)
   }
-// 格式化数字 const formatNumber = (num: number) => { return num.toLocaleString('zh-CN') }
-// 计算百分比 const getPercentage = (value: number, total: number) => { if (total === 0) return 0 return Math.round((value / total) * 100) }
-// 获取前N项 const getTopItems = (items: Record<string, number>, limit = 5) => { return Object.entries(items) .sort(([, a], [, b]) => b - a) .slice(0, limit) }
-return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+  // 格式化数字
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('zh-CN')
+  }
+  
+  // 计算百分比
+  const getPercentage = (value: number, total: number) => {
+    if (total === 0) return 0
+    return Math.round((value / total) * 100)
+  }
+  
+  // 获取前N项
+  const getTopItems = (items: Record<string, number>, limit = 5) => {
+    return Object.entries(items)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, limit)
+  }
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-7xl mx-auto"> {/* 页面标题 */}
 <div className="text-center mb-12">
 <h1 className="text-4xl font-bold text-gray-900 mb-4"> 数据统计 </h1>
