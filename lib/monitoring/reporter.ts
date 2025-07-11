@@ -126,56 +126,454 @@ return vitals }
 /** * 计算指标摘要 */
 private calculateMetricSummary( metrics: any[], metricType: MetricType ): MetricSummary { const typeMetrics = metrics.filter(m => m.metric_type === metricType) if (typeMetrics.length === 0) { return { average: 0, median: 0, p75: 0, p90: 0, p95: 0, p99: 0, min: 0, max: 0, count: 0, rating_distribution: { good: 0, needs_improvement: 0, poor: 0, }, }
 }
-const values = typeMetrics.map(m => m.value) const stats = Statistics.summary(values) // 计算评级分布 const ratingCounts = typeMetrics.reduce((acc, m) => { const rating = m.rating || PerformanceRating.GOOD acc[rating] = (acc[rating] || 0) + 1 return acc }, {}
-as Record<PerformanceRating, number>) return { average: stats.mean, median: stats.median, p75: stats.percentiles.p75, p90: stats.percentiles.p90, p95: stats.percentiles.p95, p99: stats.percentiles.p99, min: stats.min, max: stats.max, count: stats.count, rating_distribution: { good: ratingCounts[PerformanceRating.GOOD] || 0, needs_improvement: ratingCounts[PerformanceRating.NEEDS_IMPROVEMENT] || 0, poor: ratingCounts[PerformanceRating.POOR] || 0, }, }
-}/** * 计算 API 性能 */
-private async calculateAPIPerformance(metrics: any[]) { const apiMetrics = metrics.filter(m => m.metric_type === MetricType.API_LATENCY) if (apiMetrics.length === 0) { return { average_latency: 0, p95_latency: 0, p99_latency: 0, error_rate: 0, total_requests: 0, top_slow_endpoints: [], }
+    
+    const values = typeMetrics.map(m => m.value)
+    const stats = Statistics.summary(values)
+    
+    // 计算评级分布
+    const ratingCounts = typeMetrics.reduce((acc, m) => {
+      const rating = m.rating || PerformanceRating.GOOD
+      acc[rating] = (acc[rating] || 0) + 1
+      return acc
+    }, {}
+    as Record<PerformanceRating, number>)
+    
+    return {
+      average: stats.mean,
+      median: stats.median,
+      p75: stats.percentiles.p75,
+      p90: stats.percentiles.p90,
+      p95: stats.percentiles.p95,
+      p99: stats.percentiles.p99,
+      min: stats.min,
+      max: stats.max,
+      count: stats.count,
+      rating_distribution: {
+        good: ratingCounts[PerformanceRating.GOOD] || 0,
+        needs_improvement: ratingCounts[PerformanceRating.NEEDS_IMPROVEMENT] || 0,
+        poor: ratingCounts[PerformanceRating.POOR] || 0,
+      },
+    }
+  }
+  
+  /**
+   * 计算 API 性能
+   */
+  private async calculateAPIPerformance(metrics: any[]) {
+    const apiMetrics = metrics.filter(m => m.metric_type === MetricType.API_LATENCY)
+    
+    if (apiMetrics.length === 0) {
+      return {
+        average_latency: 0,
+        p95_latency: 0,
+        p99_latency: 0,
+        error_rate: 0,
+        total_requests: 0,
+        top_slow_endpoints: [],
+      }
 }
-const latencies = apiMetrics.map(m => m.value) const stats = Statistics.summary(latencies) // 计算错误率 const errorMetrics = metrics.filter(m => m.metric_type === MetricType.API_ERROR_RATE) const errorRate = errorMetrics.length > 0 ? Statistics.mean(errorMetrics.map(m => m.value)) : 0 // 找出最慢的端点 const endpointLatencies = new Map<string, number[]>() apiMetrics.forEach(m => { const endpoint = m.context?.api_endpoint if (endpoint) { if (!endpointLatencies.has(endpoint)) { endpointLatencies.set(endpoint, []) }
-endpointLatencies.get(endpoint)!.push(m.value) }
-}) const topSlowEndpoints = Array.from(endpointLatencies.entries()) .map(([endpoint, values]) => ({ endpoint, avg_duration: Statistics.mean(values), count: values.length, })) .sort((a, b) => b.avg_duration - a.avg_duration) .slice(0, 10) return { average_latency: stats.mean, p95_latency: stats.percentiles.p95, p99_latency: stats.percentiles.p99, error_rate: errorRate, total_requests: apiMetrics.length, top_slow_endpoints: topSlowEndpoints, }
-}/** * 分析错误 */
-private async analyzeErrors(startDate: Date, endDate: Date) { const { data: errors } = await this.supabase .from('monitoring_metrics') .select('*') .eq('metric_type', MetricType.ERROR_COUNT) .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) if (!errors || errors.length === 0) { return { total_errors: 0, error_rate: 0, top_errors: [], error_trend: 'stable' as const, }
+    
+    const latencies = apiMetrics.map(m => m.value)
+    const stats = Statistics.summary(latencies)
+    
+    // 计算错误率
+    const errorMetrics = metrics.filter(m => m.metric_type === MetricType.API_ERROR_RATE)
+    const errorRate = errorMetrics.length > 0 
+      ? Statistics.mean(errorMetrics.map(m => m.value)) 
+      : 0
+      
+    // 找出最慢的端点
+    const endpointLatencies = new Map<string, number[]>()
+    
+    apiMetrics.forEach(m => {
+      const endpoint = m.context?.api_endpoint
+      if (endpoint) {
+        if (!endpointLatencies.has(endpoint)) {
+          endpointLatencies.set(endpoint, [])
+        }
+        endpointLatencies.get(endpoint)!.push(m.value)
+      }
+    })
+    
+    const topSlowEndpoints = Array.from(endpointLatencies.entries())
+      .map(([endpoint, values]) => ({
+        endpoint,
+        avg_duration: Statistics.mean(values),
+        count: values.length,
+      }))
+      .sort((a, b) => b.avg_duration - a.avg_duration)
+      .slice(0, 10)
+      
+    return {
+      average_latency: stats.mean,
+      p95_latency: stats.percentiles.p95,
+      p99_latency: stats.percentiles.p99,
+      error_rate: errorRate,
+      total_requests: apiMetrics.length,
+      top_slow_endpoints: topSlowEndpoints,
+    }
+  }
+  
+  /**
+   * 分析错误
+   */
+  private async analyzeErrors(startDate: Date, endDate: Date) {
+    const { data: errors } = await this.supabase
+      .from('monitoring_metrics')
+      .select('*')
+      .eq('metric_type', MetricType.ERROR_COUNT)
+      .gte('timestamp', startDate.toISOString())
+      .lte('timestamp', endDate.toISOString())
+      
+    if (!errors || errors.length === 0) {
+      return {
+        total_errors: 0,
+        error_rate: 0,
+        top_errors: [],
+        error_trend: 'stable' as const,
+      }
 }
-// 统计错误信息 const errorMessages = new Map<string, { count: number; users: Set<string> }>() errors.forEach(error => { const message = error.metadata?.message || 'Unknown error' if (!errorMessages.has(message)) { errorMessages.set(message, { count: 0, users: new Set() }) }
-const stats = errorMessages.get(message)! stats.count++ if (error.context?.user_id) { stats.users.add(error.context.user_id) }
-}) const topErrors = Array.from(errorMessages.entries()) .map(([message, stats]) => ({ message, count: stats.count, affected_users: stats.users.size, })) .sort((a, b) => b.count - a.count) .slice(0, 10) // 分析错误趋势 const errorTrend = await this.analyzeErrorTrend(errors) // 计算错误率（错误数/总请求数） const { count: totalRequests } = await this.supabase .from('monitoring_metrics') .select('id', { count: 'exact', head: true }) .in('metric_type', [MetricType.API_LATENCY, MetricType.PAGE_LOAD_TIME]) .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) const errorRate = totalRequests > 0 ? errors.length / totalRequests : 0 return { total_errors: errors.length, error_rate: errorRate, top_errors: topErrors, error_trend: errorTrend, }
-}/** * 分析错误趋势 */
-private async analyzeErrorTrend(errors: any[]): Promise<'increasing' | 'stable' | 'decreasing'> { if (errors.length < 10) return 'stable' // 按时间排序 errors.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) // 将时间段分成两半 const midPoint = Math.floor(errors.length / 2) const firstHalf = errors.slice(0, midPoint) const secondHalf = errors.slice(midPoint) // 比较两半的错误率 const firstHalfRate = firstHalf.length / (firstHalf.length + secondHalf.length) const secondHalfRate = secondHalf.length / (firstHalf.length + secondHalf.length) const threshold = 0.1 // 10% 变化阈值 if (secondHalfRate > firstHalfRate + threshold) { return 'increasing' }
-else if (secondHalfRate < firstHalfRate - threshold) { return 'decreasing' }
-else { return 'stable' }
-}/** * 分析用户体验 */
-private async analyzeUserExperience(startDate: Date, endDate: Date) { // 获取会话数据 const { data: sessions } = await this.supabase .from('analytics_sessions') .select('*') .gte('started_at', startDate.toISOString()) .lte('started_at', endDate.toISOString()) if (!sessions || sessions.length === 0) { return { average_session_duration: 0, bounce_rate: 0, pages_per_session: 0, slowest_pages: [], }
+    
+    // 统计错误信息
+    const errorMessages = new Map<string, { count: number; users: Set<string> }>()
+    
+    errors.forEach(error => {
+      const message = error.metadata?.message || 'Unknown error'
+      if (!errorMessages.has(message)) {
+        errorMessages.set(message, { count: 0, users: new Set() })
+      }
+      
+      const stats = errorMessages.get(message)!
+      stats.count++
+      if (error.context?.user_id) {
+        stats.users.add(error.context.user_id)
+      }
+    })
+    
+    const topErrors = Array.from(errorMessages.entries())
+      .map(([message, stats]) => ({
+        message,
+        count: stats.count,
+        affected_users: stats.users.size,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+      
+    // 分析错误趋势
+    const errorTrend = await this.analyzeErrorTrend(errors)
+    
+    // 计算错误率（错误数/总请求数）
+    const { count: totalRequests } = await this.supabase
+      .from('monitoring_metrics')
+      .select('id', { count: 'exact', head: true })
+      .in('metric_type', [MetricType.API_LATENCY, MetricType.PAGE_LOAD_TIME])
+      .gte('timestamp', startDate.toISOString())
+      .lte('timestamp', endDate.toISOString())
+      
+    const errorRate = totalRequests > 0 ? errors.length / totalRequests : 0
+    
+    return {
+      total_errors: errors.length,
+      error_rate: errorRate,
+      top_errors: topErrors,
+      error_trend: errorTrend,
+    }
+  }
+  
+  /**
+   * 分析错误趋势
+   */
+  private async analyzeErrorTrend(errors: any[]): Promise<'increasing' | 'stable' | 'decreasing'> {
+    if (errors.length < 10) return 'stable'
+    
+    // 按时间排序
+    errors.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+    
+    // 将时间段分成两半
+    const midPoint = Math.floor(errors.length / 2)
+    const firstHalf = errors.slice(0, midPoint)
+    const secondHalf = errors.slice(midPoint)
+    
+    // 比较两半的错误率
+    const firstHalfRate = firstHalf.length / (firstHalf.length + secondHalf.length)
+    const secondHalfRate = secondHalf.length / (firstHalf.length + secondHalf.length)
+    
+    const threshold = 0.1 // 10% 变化阈值
+    
+    if (secondHalfRate > firstHalfRate + threshold) {
+      return 'increasing'
+    }
+    else if (secondHalfRate < firstHalfRate - threshold) {
+      return 'decreasing'
+    }
+    else {
+      return 'stable'
+    }
+  }
+  
+  /**
+   * 分析用户体验
+   */
+  private async analyzeUserExperience(startDate: Date, endDate: Date) {
+    // 获取会话数据
+    const { data: sessions } = await this.supabase
+      .from('analytics_sessions')
+      .select('*')
+      .gte('started_at', startDate.toISOString())
+      .lte('started_at', endDate.toISOString())
+      
+    if (!sessions || sessions.length === 0) {
+      return {
+        average_session_duration: 0,
+        bounce_rate: 0,
+        pages_per_session: 0,
+        slowest_pages: [],
+      }
 }
-// 计算平均会话时长 const sessionDurations = sessions .filter(s => s.last_activity_at && s.started_at) .map(s => { const duration = new Date(s.last_activity_at).getTime() - new Date(s.started_at).getTime() return duration / 1000 // 转换为秒 }) const avgSessionDuration = Statistics.mean(sessionDurations) // 计算跳出率 const bouncedSessions = sessions.filter(s => s.page_views === 1).length const bounceRate = sessions.length > 0 ? bouncedSessions / sessions.length : 0 // 计算每会话页面浏览量 const pagesPerSession = Statistics.mean(sessions.map(s => s.page_views || 0)) // 找出最慢的页面 const { data: pageMetrics } = await this.supabase .from('monitoring_metrics') .select('*') .eq('metric_type', MetricType.PAGE_LOAD_TIME) .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) const pageLoadTimes = new Map<string, { times: number[]; views: number }>() if (pageMetrics) { pageMetrics.forEach(m => { const page = m.context?.page if (page) { if (!pageLoadTimes.has(page)) { pageLoadTimes.set(page, { times: [], views: 0 }) }
-const stats = pageLoadTimes.get(page)! stats.times.push(m.value) stats.views++ }
-}) }
-const slowestPages = Array.from(pageLoadTimes.entries()) .map(([path, stats]) => ({ path, avg_load_time: Statistics.mean(stats.times), views: stats.views, })) .sort((a, b) => b.avg_load_time - a.avg_load_time) .slice(0, 10) return { average_session_duration: avgSessionDuration, bounce_rate: bounceRate, pages_per_session: pagesPerSession, slowest_pages: slowestPages, }
-}/** * 分析资源使用 */
-private async analyzeResourceUsage(metrics: any[]) { const memoryMetrics = metrics.filter(m => m.metric_type === MetricType.MEMORY_USAGE) const cpuMetrics = metrics.filter(m => m.metric_type === MetricType.CPU_USAGE) const bandwidthMetrics = metrics.filter(m => m.metric_type === MetricType.BANDWIDTH_USAGE) return { memory: this.calculateResourceSummary(memoryMetrics), cpu: this.calculateResourceSummary(cpuMetrics), bandwidth: this.calculateResourceSummary(bandwidthMetrics), }
-}/** * 计算资源摘要 */
-private calculateResourceSummary(metrics: any[]): ResourceSummary { if (metrics.length === 0) { return { average: 0, peak: 0, percentile_95: 0, trend: 'stable', }
+    
+    // 计算平均会话时长
+    const sessionDurations = sessions
+      .filter(s => s.last_activity_at && s.started_at)
+      .map(s => {
+        const duration = new Date(s.last_activity_at).getTime() - new Date(s.started_at).getTime()
+        return duration / 1000 // 转换为秒
+      })
+      
+    const avgSessionDuration = Statistics.mean(sessionDurations)
+    
+    // 计算跳出率
+    const bouncedSessions = sessions.filter(s => s.page_views === 1).length
+    const bounceRate = sessions.length > 0 ? bouncedSessions / sessions.length : 0
+    
+    // 计算每会话页面浏览量
+    const pagesPerSession = Statistics.mean(sessions.map(s => s.page_views || 0))
+    
+    // 找出最慢的页面
+    const { data: pageMetrics } = await this.supabase
+      .from('monitoring_metrics')
+      .select('*')
+      .eq('metric_type', MetricType.PAGE_LOAD_TIME)
+      .gte('timestamp', startDate.toISOString())
+      .lte('timestamp', endDate.toISOString())
+      
+    const pageLoadTimes = new Map<string, { times: number[]; views: number }>()
+    
+    if (pageMetrics) {
+      pageMetrics.forEach(m => {
+        const page = m.context?.page
+        if (page) {
+          if (!pageLoadTimes.has(page)) {
+            pageLoadTimes.set(page, { times: [], views: 0 })
+          }
+          const stats = pageLoadTimes.get(page)!
+          stats.times.push(m.value)
+          stats.views++
+        }
+      })
+    }
+    
+    const slowestPages = Array.from(pageLoadTimes.entries())
+      .map(([path, stats]) => ({
+        path,
+        avg_load_time: Statistics.mean(stats.times),
+        views: stats.views,
+      }))
+      .sort((a, b) => b.avg_load_time - a.avg_load_time)
+      .slice(0, 10)
+      
+    return {
+      average_session_duration: avgSessionDuration,
+      bounce_rate: bounceRate,
+      pages_per_session: pagesPerSession,
+      slowest_pages: slowestPages,
+    }
+  }
+  
+  /**
+   * 分析资源使用
+   */
+  private async analyzeResourceUsage(metrics: any[]) {
+    const memoryMetrics = metrics.filter(m => m.metric_type === MetricType.MEMORY_USAGE)
+    const cpuMetrics = metrics.filter(m => m.metric_type === MetricType.CPU_USAGE)
+    const bandwidthMetrics = metrics.filter(m => m.metric_type === MetricType.BANDWIDTH_USAGE)
+    
+    return {
+      memory: this.calculateResourceSummary(memoryMetrics),
+      cpu: this.calculateResourceSummary(cpuMetrics),
+      bandwidth: this.calculateResourceSummary(bandwidthMetrics),
+    }
+  }
+  
+  /**
+   * 计算资源摘要
+   */
+  private calculateResourceSummary(metrics: any[]): ResourceSummary {
+    if (metrics.length === 0) {
+      return {
+        average: 0,
+        peak: 0,
+        percentile_95: 0,
+        trend: 'stable',
+      }
 }
-const values = metrics.map(m => m.value) const stats = Statistics.summary(values) // 分析趋势 const trend = this.analyzeTrend(metrics) return { average: stats.mean, peak: stats.max, percentile_95: stats.percentiles.p95, trend, }
-}/** * 分析趋势 */
-private analyzeTrend(metrics: any[]): 'increasing' | 'stable' | 'decreasing' { if (metrics.length < 10) return 'stable' // 按时间排序 metrics.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()) // 计算移动平均 const windowSize = Math.min(5, Math.floor(metrics.length / 3)) const values = metrics.map(m => m.value) const earlyAvg = Statistics.mean(values.slice(0, windowSize)) const lateAvg = Statistics.mean(values.slice(-windowSize)) const changeRatio = (lateAvg - earlyAvg) / earlyAvg if (changeRatio > 0.1) return 'increasing' if (changeRatio < -0.1) return 'decreasing' return 'stable' }
-/** * 生成建议 */
-private generateRecommendations(data: any) { const recommendations = [] // Web Vitals 建议 if (data.webVitals.lcp.p75 > 2500) { recommendations.push({ priority: 'high' as const, category: 'Web Vitals', issue: 'LCP (最大内容绘制) 较慢', suggestion: '优化图片加载、减少阻塞资源、使用预加载', potential_impact: '改善用户感知的页面加载速度', }) }
-if (data.webVitals.cls.p75 > 0.1) { recommendations.push({ priority: 'medium' as const, category: 'Web Vitals', issue: 'CLS (累积布局偏移) 较高', suggestion: '为图片和视频设置尺寸、避免动态插入内容', potential_impact: '减少页面跳动，提升用户体验', }) }
-// API 性能建议 if (data.apiPerformance.p95_latency > 1000) { recommendations.push({ priority: 'high' as const, category: 'API 性能', issue: 'API 响应时间过长', suggestion: '优化数据库查询、添加缓存、考虑分页', potential_impact: '显著提升应用响应速度', }) }
-if (data.apiPerformance.error_rate > 0.01) { recommendations.push({ priority: 'high' as const, category: 'API 可靠性', issue: 'API 错误率偏高', suggestion: '检查错误日志、添加重试机制、改进错误处理', potential_impact: '提高系统可靠性，减少用户投诉', }) }
-// 错误相关建议 if (data.errorAnalysis.error_trend === 'increasing') { recommendations.push({ priority: 'high' as const, category: '错误监控', issue: '错误数量呈上升趋势', suggestion: '立即调查最近的代码变更、检查依赖更新', potential_impact: '防止问题恶化，保护用户体验', }) }
-// 用户体验建议 if (data.userExperience.bounce_rate > 0.5) { recommendations.push({ priority: 'medium' as const, category: '用户体验', issue: '跳出率较高', suggestion: '优化首屏内容、提升页面加载速度、改进内容相关性', potential_impact: '提高用户参与度和留存率', }) }
-return recommendations.sort((a, b) => { const priorityOrder = { high: 0, medium: 1, low: 2 }
-return priorityOrder[a.priority] - priorityOrder[b.priority]
-}) }
-/** * 计算总体评分 */
-private calculateOverallScore(data: any): number { const weights = { webVitals: 0.4, apiPerformance: 0.3, errors: 0.3, }
-// Web Vitals 分数 const webVitalsScore = this.calculateWebVitalsScore(data.webVitals) // API 性能分数 const apiScore = this.calculateAPIScore(data.apiPerformance) // 错误分数 const errorScore = this.calculateErrorScore(data.errorAnalysis) const overallScore = webVitalsScore * weights.webVitals + apiScore * weights.apiPerformance + errorScore * weights.errors return Math.round(overallScore) }
-/** * 计算 Web Vitals 分数 */
-private calculateWebVitalsScore(webVitals: any): number { const scores = { fcp: this.getMetricScore(webVitals.fcp, { good: 1800, poor: 3000 }), lcp: this.getMetricScore(webVitals.lcp, { good: 2500, poor: 4000 }), fid: this.getMetricScore(webVitals.fid, { good: 100, poor: 300 }), cls: this.getMetricScore(webVitals.cls, { good: 0.1, poor: 0.25 }, true), ttfb: this.getMetricScore(webVitals.ttfb, { good: 800, poor: 1800 }), }
-return Statistics.mean(Object.values(scores)) }
-/** * 计算指标分数 */
+    
+    const values = metrics.map(m => m.value)
+    const stats = Statistics.summary(values)
+    
+    // 分析趋势
+    const trend = this.analyzeTrend(metrics)
+    
+    return {
+      average: stats.mean,
+      peak: stats.max,
+      percentile_95: stats.percentiles.p95,
+      trend,
+    }
+  }
+  
+  /**
+   * 分析趋势
+   */
+  private analyzeTrend(metrics: any[]): 'increasing' | 'stable' | 'decreasing' {
+    if (metrics.length < 10) return 'stable'
+    
+    // 按时间排序
+    metrics.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+    
+    // 计算移动平均
+    const windowSize = Math.min(5, Math.floor(metrics.length / 3))
+    const values = metrics.map(m => m.value)
+    const earlyAvg = Statistics.mean(values.slice(0, windowSize))
+    const lateAvg = Statistics.mean(values.slice(-windowSize))
+    
+    const changeRatio = (lateAvg - earlyAvg) / earlyAvg
+    
+    if (changeRatio > 0.1) return 'increasing'
+    if (changeRatio < -0.1) return 'decreasing'
+    return 'stable'
+  }
+  
+  /**
+   * 生成建议
+   */
+  private generateRecommendations(data: any) {
+    const recommendations = []
+    
+    // Web Vitals 建议
+    if (data.webVitals.lcp.p75 > 2500) {
+      recommendations.push({
+        priority: 'high' as const,
+        category: 'Web Vitals',
+        issue: 'LCP (最大内容绘制) 较慢',
+        suggestion: '优化图片加载、减少阻塞资源、使用预加载',
+        potential_impact: '改善用户感知的页面加载速度',
+      })
+    }
+    
+    if (data.webVitals.cls.p75 > 0.1) {
+      recommendations.push({
+        priority: 'medium' as const,
+        category: 'Web Vitals',
+        issue: 'CLS (累积布局偏移) 较高',
+        suggestion: '为图片和视频设置尺寸、避免动态插入内容',
+        potential_impact: '减少页面跳动，提升用户体验',
+      })
+    }
+    
+    // API 性能建议
+    if (data.apiPerformance.p95_latency > 1000) {
+      recommendations.push({
+        priority: 'high' as const,
+        category: 'API 性能',
+        issue: 'API 响应时间过长',
+        suggestion: '优化数据库查询、添加缓存、考虑分页',
+        potential_impact: '显著提升应用响应速度',
+      })
+    }
+    
+    if (data.apiPerformance.error_rate > 0.01) {
+      recommendations.push({
+        priority: 'high' as const,
+        category: 'API 可靠性',
+        issue: 'API 错误率偏高',
+        suggestion: '检查错误日志、添加重试机制、改进错误处理',
+        potential_impact: '提高系统可靠性，减少用户投诉',
+      })
+    }
+    
+    // 错误相关建议
+    if (data.errorAnalysis.error_trend === 'increasing') {
+      recommendations.push({
+        priority: 'high' as const,
+        category: '错误监控',
+        issue: '错误数量呈上升趋势',
+        suggestion: '立即调查最近的代码变更、检查依赖更新',
+        potential_impact: '防止问题恶化，保护用户体验',
+      })
+    }
+    
+    // 用户体验建议
+    if (data.userExperience.bounce_rate > 0.5) {
+      recommendations.push({
+        priority: 'medium' as const,
+        category: '用户体验',
+        issue: '跳出率较高',
+        suggestion: '优化首屏内容、提升页面加载速度、改进内容相关性',
+        potential_impact: '提高用户参与度和留存率',
+      })
+    }
+    
+    return recommendations.sort((a, b) => {
+      const priorityOrder = { high: 0, medium: 1, low: 2 }
+      return priorityOrder[a.priority] - priorityOrder[b.priority]
+    })
+  }
+  
+  /**
+   * 计算总体评分
+   */
+  private calculateOverallScore(data: any): number {
+    const weights = {
+      webVitals: 0.4,
+      apiPerformance: 0.3,
+      errors: 0.3,
+    }
+    
+    // Web Vitals 分数
+    const webVitalsScore = this.calculateWebVitalsScore(data.webVitals)
+    
+    // API 性能分数
+    const apiScore = this.calculateAPIScore(data.apiPerformance)
+    
+    // 错误分数
+    const errorScore = this.calculateErrorScore(data.errorAnalysis)
+    
+    const overallScore = 
+      webVitalsScore * weights.webVitals +
+      apiScore * weights.apiPerformance +
+      errorScore * weights.errors
+      
+    return Math.round(overallScore)
+  }
+  
+  /**
+   * 计算 Web Vitals 分数
+   */
+  private calculateWebVitalsScore(webVitals: any): number {
+    const scores = {
+      fcp: this.getMetricScore(webVitals.fcp, { good: 1800, poor: 3000 }),
+      lcp: this.getMetricScore(webVitals.lcp, { good: 2500, poor: 4000 }),
+      fid: this.getMetricScore(webVitals.fid, { good: 100, poor: 300 }),
+      cls: this.getMetricScore(webVitals.cls, { good: 0.1, poor: 0.25 }, true),
+      ttfb: this.getMetricScore(webVitals.ttfb, { good: 800, poor: 1800 }),
+    }
+    
+    return Statistics.mean(Object.values(scores))
+  }
+  
+  /**
+   * 计算指标分数
+   */
 private getMetricScore( summary: MetricSummary, thresholds: { good: number; poor: number }, inverse = false ): number { if (summary.count === 0) return 100 const value = summary.p75 // 使用第75百分位数 if (inverse) { // 对于 CLS 等越小越好的指标 if (value <= thresholds.good) return 100 if (value >= thresholds.poor) return 0 return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100 }
 else { // 对于时间等越小越好的指标 if (value <= thresholds.good) return 100 if (value >= thresholds.poor) return 0 return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100 }
 }/** * 计算 API 分数 */
