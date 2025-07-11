@@ -1,23 +1,54 @@
-/** * Notion API integration for blog content management */
-import { Client }
-from '@notionhq/client' 
+/**
+ * Notion API integration for blog content management
+ */
+import { Client } from '@notionhq/client'
 
-import { NotionToMarkdown }
-from 'notion-to-md' 
+import { NotionToMarkdown } from 'notion-to-md'
 
-import { remark }
-from 'remark' 
+import { remark } from 'remark'
 
-import remarkHtml from 'remark-html' // import { cache }
-from 'react' // React 19 cache API 可能有兼容性问题 import type { BlogPost, NotionPage, CacheItem }
-from '../types/notion' import { NotionError }
-from '../types/notion' 
+import remarkHtml from 'remark-html'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
+import type { BlogPost, NotionPage, CacheItem } from '../types/notion'
+import { NotionError } from '../types/notion'
 
-import { withRetry }
-from './utils/retry' // Initialize Notion client const notion = new Client({ auth: process.env.NOTION_TOKEN, }) // Initialize notion-to-markdown converter const n2m = new NotionToMarkdown({ notionClient: notion }) // Simple in-memory cache class NotionCache { private cache = new Map<string, CacheItem<any>>() set<T>(key: string, data: T, ttl = parseInt(process.env.CACHE_TTL || '300000')) { this.cache.set(key, { data, timestamp: Date.now(), ttl, }) }
-get<T>(key: string): T | null { const item = this.cache.get(key) if (!item) return null if (Date.now() - item.timestamp > item.ttl) { this.cache.delete(key) return null }
-return item.data }
-clear() { this.cache.clear() }
+import { withRetry } from './utils/retry'
+
+// Initialize Notion client
+const notion = new Client({
+  auth: process.env.NOTION_TOKEN,
+})
+
+// Initialize notion-to-markdown converter
+const n2m = new NotionToMarkdown({ notionClient: notion })
+
+// Simple in-memory cache
+class NotionCache {
+  private cache = new Map<string, CacheItem<any>>()
+  
+  set<T>(key: string, data: T, ttl = parseInt(process.env.CACHE_TTL || '300000')) {
+    this.cache.set(key, {
+      data,
+      timestamp: Date.now(),
+      ttl,
+    })
+  }
+  
+  get<T>(key: string): T | null {
+    const item = this.cache.get(key)
+    if (!item) return null
+    
+    if (Date.now() - item.timestamp > item.ttl) {
+      this.cache.delete(key)
+      return null
+    }
+    
+    return item.data
+  }
+  
+  clear() {
+    this.cache.clear()
+  }
 }
 const cache = new NotionCache() /** * Validate environment variables */
 function validateEnv() { if (!process.env.NOTION_TOKEN) { throw new Error('NOTION_TOKEN environment variable is required') }

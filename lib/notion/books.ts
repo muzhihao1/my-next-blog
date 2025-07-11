@@ -1,18 +1,38 @@
-/** * 书架系统 Notion 数据获取模块 * @module lib/notion/books * @description 负责从 Notion 数据库获取书籍数据，包含缓存机制和后备数据支持 */
-import { Client }
-from '@notionhq/client' 
+/**
+ * 书架系统 Notion 数据获取模块
+ * @module lib/notion/books
+ * @description 负责从 Notion 数据库获取书籍数据，包含缓存机制和后备数据支持
+ */
+import { Client } from '@notionhq/client'
 
-import { NotionToMarkdown }
-from 'notion-to-md' // import { cache }
-from 'react' // React 19 cache API 可能有兼容性问题 import { Book, NotionBookProperties, isValidBookStatus, isValidRating, NotionAPIError, ConfigurationError, ResourceNotFoundError, handleBookshelfError, validateBookData }
-from '@/types/bookshelf' 
+import { NotionToMarkdown } from 'notion-to-md'
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
+import {
+  Book,
+  NotionBookProperties,
+  isValidBookStatus,
+  isValidRating,
+  NotionAPIError,
+  ConfigurationError,
+  ResourceNotFoundError,
+  handleBookshelfError,
+  validateBookData
+} from '@/types/bookshelf'
 
-import { fallbackBooks }
-from '@/lib/fallback-books' 
+import { fallbackBooks } from '@/lib/fallback-books'
 
-import { withRetry }
-from '@/lib/utils/retry' /** * Notion 客户端实例 */
-const notion = new Client({ auth: process.env.NOTION_TOKEN, }) /** * Notion 转 Markdown 工具实例 */
+import { withRetry } from '@/lib/utils/retry'
+
+/**
+ * Notion 客户端实例
+ */
+const notion = new Client({
+  auth: process.env.NOTION_TOKEN,
+})
+
+/**
+ * Notion 转 Markdown 工具实例
+ */
 const n2m = new NotionToMarkdown({ notionClient: notion }) /** * 书籍数据库 ID */
 const booksDatabaseId = process.env.NOTION_BOOKS_DB || '' /** * 内存缓存存储 */
 let booksCache: Book[] | null = null /** * 缓存时间戳 */

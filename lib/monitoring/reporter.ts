@@ -121,11 +121,46 @@ export class PerformanceReporter {
   /**
    * 计算 Web Vitals 统计
    */
-private async calculateWebVitals(metrics: any[]) { const vitals = { fcp: this.calculateMetricSummary(metrics, MetricType.FCP), lcp: this.calculateMetricSummary(metrics, MetricType.LCP), fid: this.calculateMetricSummary(metrics, MetricType.FID), cls: this.calculateMetricSummary(metrics, MetricType.CLS), ttfb: this.calculateMetricSummary(metrics, MetricType.TTFB), inp: this.calculateMetricSummary(metrics, MetricType.INP), }
-return vitals }
-/** * 计算指标摘要 */
-private calculateMetricSummary( metrics: any[], metricType: MetricType ): MetricSummary { const typeMetrics = metrics.filter(m => m.metric_type === metricType) if (typeMetrics.length === 0) { return { average: 0, median: 0, p75: 0, p90: 0, p95: 0, p99: 0, min: 0, max: 0, count: 0, rating_distribution: { good: 0, needs_improvement: 0, poor: 0, }, }
-}
+  private async calculateWebVitals(metrics: any[]) {
+    const vitals = {
+      fcp: this.calculateMetricSummary(metrics, MetricType.FCP),
+      lcp: this.calculateMetricSummary(metrics, MetricType.LCP),
+      fid: this.calculateMetricSummary(metrics, MetricType.FID),
+      cls: this.calculateMetricSummary(metrics, MetricType.CLS),
+      ttfb: this.calculateMetricSummary(metrics, MetricType.TTFB),
+      inp: this.calculateMetricSummary(metrics, MetricType.INP),
+    }
+    
+    return vitals
+  }
+  
+  /**
+   * 计算指标摘要
+   */
+  private calculateMetricSummary(
+    metrics: any[],
+    metricType: MetricType
+  ): MetricSummary {
+    const typeMetrics = metrics.filter(m => m.metric_type === metricType)
+    
+    if (typeMetrics.length === 0) {
+      return {
+        average: 0,
+        median: 0,
+        p75: 0,
+        p90: 0,
+        p95: 0,
+        p99: 0,
+        min: 0,
+        max: 0,
+        count: 0,
+        rating_distribution: {
+          good: 0,
+          needs_improvement: 0,
+          poor: 0,
+        },
+      }
+    }
     
     const values = typeMetrics.map(m => m.value)
     const stats = Statistics.summary(values)
