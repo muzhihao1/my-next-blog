@@ -11,14 +11,15 @@ from '@/types/notion'
 
 export default async function ArchivePage() { 
   let posts = []
-try { 
+  
+  try { 
     posts = await getPublishedPosts() 
-  }
-  catch (error) { 
+  } catch (error) { 
     console.error('Failed to fetch posts:', error) 
     posts = fallbackPosts 
   }
-// 按年份分组文章 
+  
+  // 按年份分组文章 
   const postsByYear = posts.reduce((acc: Record<string, BlogPost[]>, post: BlogPost) => { 
     const year = new Date(post.date).getFullYear() 
     if (!acc[year]) { 
