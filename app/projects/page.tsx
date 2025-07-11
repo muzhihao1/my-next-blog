@@ -1,5 +1,6 @@
-'use client' import { useState, useMemo }
-from 'react' 
+'use client'
+
+import { useState, useMemo } from 'react' 
 
 import { getProjects }
 from '@/lib/notion/projects' 
@@ -12,37 +13,174 @@ from '@/components/features/ProjectCard'
 
 import LazyLoad from '@/components/ui/LazyLoad' 
 
-import { PageContainer }
-from '@/components/ui/Container' // 使用后备数据，因为还没有配置 Notion const projects = fallbackProjects type SortOption = 'date-desc' | 'date-asc' | 'status' | 'featured' | 'complexity' | 'scale' export default function ProjectsPage() { const [selectedCategory, setSelectedCategory] = useState<string>('all') const [sortBy, setSortBy] = useState<SortOption>('date-desc') // 按类别分组项目 const groupedProjects = useMemo(() => { return projects.reduce((acc, project) => { if (!acc[project.category]) { acc[project.category] = []
-}
-acc[project.category].push(project) return acc }, {}
-as Record<string, typeof projects>) }, []) // 筛选项目 const filteredProjects = useMemo(() => { if (selectedCategory === 'all') { return projects }
-return groupedProjects[selectedCategory] || []
-}, [selectedCategory, groupedProjects]) // 排序项目 const sortedProjects = useMemo(() => { const projectsCopy = [...filteredProjects]
-switch (sortBy) { case 'date-desc': return projectsCopy.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime() ) case 'date-asc': return projectsCopy.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime() ) case 'status': const statusOrder = { active: 0, completed: 1, archived: 2 }
-return projectsCopy.sort((a, b) => statusOrder[a.status] - statusOrder[b.status] ) case 'featured': return projectsCopy.sort((a, b) => { if (a.featured && !b.featured) return -1 if (!a.featured && b.featured) return 1 return 0 }) case 'complexity': // 按技术栈数量排序（越多越复杂） return projectsCopy.sort((a, b) => b.techStack.length - a.techStack.length ) case 'scale': // 按用户数排序（如果有的话） return projectsCopy.sort((a, b) => { const aUsers = a.metrics?.users || 0 const bUsers = b.metrics?.users || 0 return bUsers - aUsers }) default: return projectsCopy }
-}, [filteredProjects, sortBy]) // 对分组项目进行排序 const sortProjects = (projects: typeof fallbackProjects) => { const projectsCopy = [...projects]
-switch (sortBy) { case 'date-desc': return projectsCopy.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime() ) case 'date-asc': return projectsCopy.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime() ) case 'status': const statusOrder = { active: 0, completed: 1, archived: 2 }
-return projectsCopy.sort((a, b) => statusOrder[a.status] - statusOrder[b.status] ) case 'featured': return projectsCopy.sort((a, b) => { if (a.featured && !b.featured) return -1 if (!a.featured && b.featured) return 1 return 0 }) case 'complexity': // 按技术栈数量排序（越多越复杂） return projectsCopy.sort((a, b) => b.techStack.length - a.techStack.length ) case 'scale': // 按用户数排序（如果有的话） return projectsCopy.sort((a, b) => { const aUsers = a.metrics?.users || 0 const bUsers = b.metrics?.users || 0 return bUsers - aUsers }) default: return projectsCopy }
-}
-const categoryNames = { website: '网站应用', opensource: '开源项目', design: '设计作品', other: '其他' }
-const categoryIcons = { website: ( <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /> </svg> ), opensource: ( <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /> </svg> ), design: ( <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /> </svg> ), other: ( <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /> </svg> ) }
-return ( <PageContainer size="xl"> {/* 页面标题 */}
-<div className="mb-12">
-<h1 className="text-4xl font-bold text-gray-900 mb-4"> 项目作品 </h1>
-<p className="text-lg text-gray-600"> 我参与和创建的各类项目 </p> </div> {/* 筛选和排序 */}
-<div className="mb-12 space-y-6"> {/* 分类筛选 */}
-<div className="flex flex-wrap gap-2">
-<button onClick={() => setSelectedCategory('all')}
-className={`px-4 py-2 rounded-lg font-medium transition-colors ${ selectedCategory === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200:bg-gray-700' }`} > 全部项目 ({projects.length}) </button> {Object.entries(groupedProjects).map(([category, items]) => ( <button key={category}
+import { PageContainer } from '@/components/ui/Container'
+
+// 使用后备数据，因为还没有配置 Notion
+const projects = fallbackProjects
+
+type SortOption = 'date-desc' | 'date-asc' | 'status' | 'featured' | 'complexity' | 'scale'
+
+export default function ProjectsPage() {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('date-desc')
+  
+  // 按类别分组项目
+  const groupedProjects = useMemo(() => {
+    return projects.reduce((acc, project) => {
+      if (!acc[project.category]) {
+        acc[project.category] = []
+      }
+      acc[project.category].push(project)
+      return acc
+    }, {} as Record<string, typeof projects>)
+  }, [])
+  
+  // 筛选项目
+  const filteredProjects = useMemo(() => {
+    if (selectedCategory === 'all') {
+      return projects
+    }
+    return groupedProjects[selectedCategory] || []
+  }, [selectedCategory, groupedProjects])
+  
+  // 排序项目
+  const sortedProjects = useMemo(() => {
+    const projectsCopy = [...filteredProjects]
+    
+    switch (sortBy) {
+      case 'date-desc':
+        return projectsCopy.sort((a, b) => 
+          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        )
+      case 'date-asc':
+        return projectsCopy.sort((a, b) => 
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        )
+      case 'status':
+        const statusOrder = { active: 0, completed: 1, archived: 2 }
+        return projectsCopy.sort((a, b) => 
+          statusOrder[a.status] - statusOrder[b.status]
+        )
+      case 'featured':
+        return projectsCopy.sort((a, b) => {
+          if (a.featured && !b.featured) return -1
+          if (!a.featured && b.featured) return 1
+          return 0
+        })
+      case 'complexity':
+        // 按技术栈数量排序（越多越复杂）
+        return projectsCopy.sort((a, b) => 
+          b.techStack.length - a.techStack.length
+        )
+      case 'scale':
+        // 按用户数排序（如果有的话）
+        return projectsCopy.sort((a, b) => {
+          const aUsers = a.metrics?.users || 0
+          const bUsers = b.metrics?.users || 0
+          return bUsers - aUsers
+        })
+      default:
+        return projectsCopy
+    }
+  }, [filteredProjects, sortBy])
+  
+  // 对分组项目进行排序
+  const sortProjects = (projects: typeof fallbackProjects) => {
+    const projectsCopy = [...projects]
+    switch (sortBy) {
+      case 'date-desc':
+        return projectsCopy.sort((a, b) => 
+          new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        )
+      case 'date-asc':
+        return projectsCopy.sort((a, b) => 
+          new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        )
+      case 'status':
+        const statusOrder = { active: 0, completed: 1, archived: 2 }
+        return projectsCopy.sort((a, b) => 
+          statusOrder[a.status] - statusOrder[b.status]
+        )
+      case 'featured':
+        return projectsCopy.sort((a, b) => {
+          if (a.featured && !b.featured) return -1
+          if (!a.featured && b.featured) return 1
+          return 0
+        })
+      case 'complexity':
+        // 按技术栈数量排序（越多越复杂）
+        return projectsCopy.sort((a, b) => 
+          b.techStack.length - a.techStack.length
+        )
+      case 'scale':
+        // 按用户数排序（如果有的话）
+        return projectsCopy.sort((a, b) => {
+          const aUsers = a.metrics?.users || 0
+          const bUsers = b.metrics?.users || 0
+          return bUsers - aUsers
+        })
+      default:
+        return projectsCopy
+    }
+  }
+  
+  const categoryNames = {
+    website: '网站应用',
+    opensource: '开源项目',
+    design: '设计作品',
+    other: '其他'
+  }
+  const categoryIcons = {
+    website: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+    ),
+    opensource: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+          d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+      </svg>
+    ),
+    design: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+    other: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+      </svg>
+    )
+  }
+  
+  return (
+    <PageContainer size="xl">
+      {/* 页面标题 */}
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">项目作品</h1>
+        <p className="text-lg text-gray-600">我参与和创建的各类项目</p>
+      </div>
+      
+      {/* 筛选和排序 */}
+      <div className="mb-12 space-y-6">
+        {/* 分类筛选 */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              selectedCategory === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200:bg-gray-700'
+            }`}
+          >
+            全部项目 ({projects.length})
+          </button>
+          {Object.entries(groupedProjects).map(([category, items]) => (
+            <button key={category}
 onClick={() => setSelectedCategory(category)}
 className={`px-4 py-2 rounded-lg font-medium transition-colors ${ selectedCategory === category ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200:bg-gray-700' }`} > {categoryNames[category as keyof typeof categoryNames] || category} ({items.length}) </button> ))} </div> {/* 排序选项 */}
 <div className="flex items-center gap-4">

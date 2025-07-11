@@ -11,17 +11,34 @@ from '@/lib/notion/tools'
 import { fallbackTools }
 from '@/lib/fallback-tools' 
 
-import type { Tool }
-from '@/types/tool' import { StructuredData, generateSoftwareApplicationStructuredData }
-from '@/components/seo/StructuredData' 
+import type { Tool } from '@/types/tool'
+import { StructuredData, generateSoftwareApplicationStructuredData } from '@/components/seo/StructuredData' 
 
-import type { Metadata }
-from 'next' // ISR配置：每小时重新验证一次 export const revalidate = 3600 /** * Generate static params for all tools */
-export async function generateStaticParams() { try { const slugs = await getAllToolSlugs() if (slugs.length > 0) { return slugs.map((slug: string) => ({ slug })) }
+import type { Metadata } from 'next'
+
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
+/**
+ * Generate static params for all tools
+ */
+export async function generateStaticParams() {
+  try {
+    const slugs = await getAllToolSlugs()
+    if (slugs.length > 0) {
+      return slugs.map((slug: string) => ({ slug }))
+    }
+  } catch (error) {
+    console.error('Error generating static params:', error)
+  }
+  
+  // Fallback to static tools
+  return fallbackTools.map((tool: Tool) => ({ slug: tool.slug }))
 }
-catch (error) { console.error('Error generating static params:', error) }
-// Fallback to static tools return fallbackTools.map((tool: Tool) => ({ slug: tool.slug })) }
-/** * Get tool data with fallback */
+
+/**
+ * Get tool data with fallback
+ */
 async function getToolData(slug: string): Promise<Tool | null> { try { const tool = await getToolBySlug(slug) if (tool) return tool }
 catch (error) { console.error('Error loading tool:', error) }
 // Try fallback tools return fallbackTools.find(tool => tool.slug === slug) || null }

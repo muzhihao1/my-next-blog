@@ -6,12 +6,63 @@ from 'next'
 
 import SubscribeForm from '@/components/features/SubscribeForm' 
 
-import CopyButton from '@/components/ui/CopyButton' export const metadata: Metadata = { title: '订阅 - 无题之墨', description: '通过 RSS、Atom、JSON Feed 或邮件订阅博客更新' }
-export default function SubscribePage() { const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const feedFormats = [ { name: 'RSS 2.0', description: '最广泛支持的订阅格式', url: '/rss.xml', icon: '📡', recommended: true }, { name: 'Atom 1.0', description: '现代化的 XML 订阅格式', url: '/atom.xml', icon: '⚛️' }, { name: 'JSON Feed', description: '面向开发者的 JSON 格式订阅', url: '/feed.json', icon: '{ }' }
-]
-const feedReaders = [ { name: 'Feedly', url: 'https://feedly.com', description: '流行的在线 RSS 阅读器' }, { name: 'Inoreader', url: 'https://www.inoreader.com', description: '功能强大的 RSS 服务' }, { name: 'NetNewsWire', url: 'https://netnewswire.com', description: 'Mac 和 iOS 原生应用' }, { name: 'Reeder', url: 'https://reederapp.com', description: '优雅的阅读体验' }
-]
-return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+import CopyButton from '@/components/ui/CopyButton'
+
+export const metadata: Metadata = {
+  title: '订阅 - 无题之墨',
+  description: '通过 RSS、Atom、JSON Feed 或邮件订阅博客更新'
+}
+
+export default function SubscribePage() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  
+  const feedFormats = [
+    {
+      name: 'RSS 2.0',
+      description: '最广泛支持的订阅格式',
+      url: '/rss.xml',
+      icon: '📡',
+      recommended: true
+    },
+    {
+      name: 'Atom 1.0',
+      description: '现代化的 XML 订阅格式',
+      url: '/atom.xml',
+      icon: '⚛️'
+    },
+    {
+      name: 'JSON Feed',
+      description: '面向开发者的 JSON 格式订阅',
+      url: '/feed.json',
+      icon: '{ }'
+    }
+  ]
+  
+  const feedReaders = [
+    {
+      name: 'Feedly',
+      url: 'https://feedly.com',
+      description: '流行的在线 RSS 阅读器'
+    },
+    {
+      name: 'Inoreader',
+      url: 'https://www.inoreader.com',
+      description: '功能强大的 RSS 服务'
+    },
+    {
+      name: 'NetNewsWire',
+      url: 'https://netnewswire.com',
+      description: 'Mac 和 iOS 原生应用'
+    },
+    {
+      name: 'Reeder',
+      url: 'https://reederapp.com',
+      description: '优雅的阅读体验'
+    }
+  ]
+  
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-4xl mx-auto"> {/* 页面标题 */}
 <div className="text-center mb-12">
 <h1 className="text-4xl font-bold text-gray-900 mb-4"> 订阅博客更新 </h1>

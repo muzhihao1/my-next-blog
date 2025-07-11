@@ -13,14 +13,24 @@ from '@/lib/fallback-projects'
 
 import Link from 'next/link' 
 
-import type { Metadata }
-from 'next' import { createTagSlug, getTagColor }
-from '@/types/tag' 
+import type { Metadata } from 'next'
+import { createTagSlug, getTagColor } from '@/types/tag' 
 
-import { TagCloud }
-from '@/components/features/TagList' // ISR配置：每小时重新验证一次 export const revalidate = 3600 export const metadata: Metadata = { title: '标签 - 博客', description: '浏览所有文章和项目标签' }
-/** * 标签统计信息 * @interface TagInfo * @property {string}
-name - 标签名称 * @property {string}
+import { TagCloud } from '@/components/features/TagList'
+
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
+export const metadata: Metadata = {
+  title: '标签 - 博客',
+  description: '浏览所有文章和项目标签'
+}
+
+/**
+ * 标签统计信息
+ * @interface TagInfo
+ * @property {string} name - 标签名称
+ * @property {string}
 slug - 标签slug * @property {number}
 postCount - 文章数量 * @property {number}
 projectCount - 项目数量 * @property {number}

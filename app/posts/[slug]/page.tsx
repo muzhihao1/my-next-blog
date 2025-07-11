@@ -15,19 +15,109 @@ import TagList from '@/components/features/TagList'
 import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/FavoriteButton'
 import { FavoriteType } from '@/lib/hooks/useFavorites'
 import { ContentContainer } from '@/components/ui/Container'
-import { CommentSection } from '@/components/comments/CommentSection' // ISR配置：每小时重新验证一次 export const revalidate = 3600 export async function generateStaticParams() { // Use fallback slugs for static export when Notion API may not be available const fallbackSlugs = [ 'overcome-procrastination', 'react-18-concurrent-features', 'personal-knowledge-management', 'design-system-thinking' ]
-try { // Try to get slugs from Notion if environment is configured if (process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID) { const slugs = await getAllPostSlugs() if (slugs.length > 0) { return slugs.map((slug: string) => ({ slug })) }
-} }
-catch (error) { console.warn('Failed to fetch slugs from Notion, using fallback:', error) }
-// Return fallback slugs return fallbackSlugs.map((slug: string) => ({ slug })) }
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params const post = await withFallback( () => getPostBySlug(slug), getFallbackPostBySlug(slug) ) if (!post) { return { title: '文章不存在 - 无题之墨', description: '抱歉，找不到这篇文章。' }
+import { CommentSection } from '@/components/comments/CommentSection'
+
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  // Use fallback slugs for static export when Notion API may not be available
+  const fallbackSlugs = [
+    'overcome-procrastination',
+    'react-18-concurrent-features',
+    'personal-knowledge-management',
+    'design-system-thinking'
+  ]
+
+  try {
+    // Try to get slugs from Notion if environment is configured
+    if (process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID) {
+      const slugs = await getAllPostSlugs()
+      if (slugs.length > 0) {
+        return slugs.map((slug: string) => ({ slug }))
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to fetch slugs from Notion, using fallback:', error)
+  }
+
+  // Return fallback slugs
+  return fallbackSlugs.map((slug: string) => ({ slug }))
 }
-return { title: `${post.title} - 无题之墨`, description: post.excerpt, openGraph: { title: post.title, description: post.excerpt, images: post.cover ? [post.cover] : [], type: 'article', publishedTime: post.date, authors: [post.author.name], tags: post.tags, }, twitter: { card: 'summary_large_image', title: post.title, description: post.excerpt, images: post.cover ? [post.cover] : [], }, }
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const post = await withFallback(
+    () => getPostBySlug(slug),
+    getFallbackPostBySlug(slug)
+  )
+
+  if (!post) {
+    return {
+      title: '文章不存在 - 无题之墨',
+      description: '抱歉，找不到这篇文章。'
+    }
+  }
+
+  return {
+    title: `${post.title} - 无题之墨`,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: post.cover ? [post.cover] : [],
+      type: 'article',
+      publishedTime: post.date,
+      authors: [post.author.name],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt,
+      images: post.cover ? [post.cover] : [],
+    },
+  }
 }
-export default async function Post({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params const post = await withFallback( () => getPostBySlug(slug), getFallbackPostBySlug(slug) ) if (!post) { notFound() }
-function getCategoryClass(category: string) { const categoryMap: { [key: string]: string } = { 'Technology': 'category-technology', 'Design': 'category-design', 'Productivity': 'category-productivity', 'Life': 'category-life' }
-return `category-badge ${categoryMap[category] || 'category-technology'}` }
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const articleStructuredData = generateArticleStructuredData({ title: post.title, description: post.excerpt, publishedDate: post.date, modifiedDate: post.lastEditedTime || post.date, authorName: post.author.name, authorUrl: `${baseUrl}/about`, image: post.cover, keywords: post.tags, url: `${baseUrl}/posts/${slug}` }) // Calculate word count const wordCount = post.content ? calculateWordCount(post.content) : 0 const updateTime = formatUpdateTime(post.date, post.lastEditedTime) return ( <article className="py-16 bg-white">
+export default async function Post({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const post = await withFallback(
+    () => getPostBySlug(slug),
+    getFallbackPostBySlug(slug)
+  )
+
+  if (!post) {
+    notFound()
+  }
+
+  function getCategoryClass(category: string) {
+    const categoryMap: { [key: string]: string } = {
+      'Technology': 'category-technology',
+      'Design': 'category-design',
+      'Productivity': 'category-productivity',
+      'Life': 'category-life'
+    }
+    return `category-badge ${categoryMap[category] || 'category-technology'}`
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  const articleStructuredData = generateArticleStructuredData({
+    title: post.title,
+    description: post.excerpt,
+    publishedDate: post.date,
+    modifiedDate: post.lastEditedTime || post.date,
+    authorName: post.author.name,
+    authorUrl: `${baseUrl}/about`,
+    image: post.cover,
+    keywords: post.tags,
+    url: `${baseUrl}/posts/${slug}`
+  })
+
+  // Calculate word count
+  const wordCount = post.content ? calculateWordCount(post.content) : 0
+  const updateTime = formatUpdateTime(post.date, post.lastEditedTime)
+
+  return (
+    <article className="py-16 bg-white">
 <SEO structuredData={articleStructuredData}
 />
 <ReadingProgress showPercentage={false}

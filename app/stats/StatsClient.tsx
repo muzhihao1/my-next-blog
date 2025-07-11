@@ -1,14 +1,36 @@
-/** * 统计页面客户端组件 * @module app/stats/StatsClient */ 'use client' import { useState, useEffect }
-from 'react' 
+/**
+ * 统计页面客户端组件
+ * @module app/stats/StatsClient
+ */
+'use client'
+
+import { useState, useEffect } from 'react' 
 
 import Link from 'next/link' 
 
-import { BlogStatistics }
-from '@/lib/statistics' interface StatsClientProps { initialStats: BlogStatistics }
-export default function StatsClient({ initialStats }: StatsClientProps) { const [stats, setStats] = useState(initialStats) const [loading, setLoading] = useState(false) // 刷新统计数据 const refreshStats = async () => { setLoading(true) try { const response = await fetch('/api/statistics') if (response.ok) { const data = await response.json() setStats(data) }
+import { BlogStatistics } from '@/lib/statistics'
+
+interface StatsClientProps {
+  initialStats: BlogStatistics
 }
-catch (error) { console.error('Failed to refresh statistics:', error) }
-setLoading(false) }
+export default function StatsClient({ initialStats }: StatsClientProps) {
+  const [stats, setStats] = useState(initialStats)
+  const [loading, setLoading] = useState(false)
+  
+  // 刷新统计数据
+  const refreshStats = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/statistics')
+      if (response.ok) {
+        const data = await response.json()
+        setStats(data)
+      }
+    } catch (error) {
+      console.error('Failed to refresh statistics:', error)
+    }
+    setLoading(false)
+  }
 // 格式化数字 const formatNumber = (num: number) => { return num.toLocaleString('zh-CN') }
 // 计算百分比 const getPercentage = (value: number, total: number) => { if (total === 0) return 0 return Math.round((value / total) * 100) }
 // 获取前N项 const getTopItems = (items: Record<string, number>, limit = 5) => { return Object.entries(items) .sort(([, a], [, b]) => b - a) .slice(0, limit) }

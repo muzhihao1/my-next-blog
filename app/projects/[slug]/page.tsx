@@ -32,20 +32,84 @@ import FavoriteButton from '@/components/features/FavoriteButton'
 import { FavoriteType }
 from '@/lib/hooks/useFavorites' 
 
-import type { Metadata }
-from 'next' import type { Project }
-from '@/types/project' // ISR配置：每小时重新验证一次 export const revalidate = 3600 // 生成静态路径 export async function generateStaticParams() { let projects = await getProjects() if (projects.length === 0) { projects = fallbackProjects }
-return projects.map((project: Project) => ({ slug: project.slug, })) }
-// 处理 Markdown 内容 async function markdownToHtml(markdown: string) { const result = await remark().use(html).process(markdown) return result.toString() }
-// 生成元数据 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params let project = await getProjectBySlug(slug) if (!project) { project = fallbackProjects.find(p => p.slug === slug) || null }
-if (!project) { return { title: '项目不存在', description: '抱歉，找不到这个项目。' }
+import type { Metadata } from 'next'
+import type { Project } from '@/types/project'
+
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
+// 生成静态路径
+export async function generateStaticParams() {
+  let projects = await getProjects()
+  if (projects.length === 0) {
+    projects = fallbackProjects
+  }
+  return projects.map((project: Project) => ({
+    slug: project.slug,
+  }))
 }
-return { title: `${project.title} - 项目展示`, description: project.description, openGraph: { title: project.title, description: project.description, type: 'website', images: project.thumbnail ? [project.thumbnail] : [], }, }
+// 处理 Markdown 内容
+async function markdownToHtml(markdown: string) {
+  const result = await remark().use(html).process(markdown)
+  return result.toString()
 }
-export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params let project = await getProjectBySlug(slug) // 如果没有从 Notion 获取到，尝试从后备数据中查找 if (!project) { project = fallbackProjects.find(p => p.slug === slug) || null }
-if (!project) { notFound() }
-const contentHtml = await markdownToHtml(project.content) const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com' const projectStructuredData = { name: project.title, description: project.description, url: `${baseUrl}/projects/${slug}`, image: project.thumbnail, author: { '@type': 'Person', name: 'Your Name' }, dateCreated: project.startDate, applicationCategory: project.category }
-return ( <div className="py-16 px-4 sm:px-6 lg:px-8">
+
+// 生成元数据
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  let project = await getProjectBySlug(slug)
+  if (!project) {
+    project = fallbackProjects.find(p => p.slug === slug) || null
+  }
+
+  if (!project) {
+    return {
+      title: '项目不存在',
+      description: '抱歉，找不到这个项目。'
+    }
+  }
+
+  return {
+    title: `${project.title} - 项目展示`,
+    description: project.description,
+    openGraph: {
+      title: project.title,
+      description: project.description,
+      type: 'website',
+      images: project.thumbnail ? [project.thumbnail] : [],
+    },
+  }
+}
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  let project = await getProjectBySlug(slug)
+  
+  // 如果没有从 Notion 获取到，尝试从后备数据中查找
+  if (!project) {
+    project = fallbackProjects.find(p => p.slug === slug) || null
+  }
+
+  if (!project) {
+    notFound()
+  }
+
+  const contentHtml = await markdownToHtml(project.content)
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yourdomain.com'
+  const projectStructuredData = {
+    name: project.title,
+    description: project.description,
+    url: `${baseUrl}/projects/${slug}`,
+    image: project.thumbnail,
+    author: {
+      '@type': 'Person',
+      name: 'Your Name'
+    },
+    dateCreated: project.startDate,
+    applicationCategory: project.category
+  }
+
+  return (
+    <div className="py-16 px-4 sm:px-6 lg:px-8">
 <div className="max-w-4xl mx-auto">
 <StructuredData type="SoftwareApplication" data={projectStructuredData}
 /> {/* 返回按钮 */}

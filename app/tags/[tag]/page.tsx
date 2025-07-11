@@ -18,19 +18,33 @@ import Link from 'next/link'
 
 import Image from 'next/image' 
 
-import type { Metadata }
-from 'next' import { BlogPost }
-from '@/types/notion' 
+import type { Metadata } from 'next'
+import { BlogPost } from '@/types/notion' 
 
 import { Project }
 from '@/types/project' 
 
-import { createTagSlug }
-from '@/types/tag' // ISR配置：每小时重新验证一次 export const revalidate = 3600 /** * 内容卡片组件 * @component * @param {Object}
-props - 组件属性 * @param {BlogPost | Project}
-props.item - 内容项 * @param {'post' | 'project'}
-props.type - 内容类型 * @returns {JSX.Element} 渲染的内容卡片 */
-function ContentCard({ item, type }: { item: BlogPost | Project; type: 'post' | 'project' }) { const href = type === 'post' ? `/posts/${item.slug}` : `/projects/${item.slug}` const date = type === 'post' ? new Date((item as BlogPost).date).toLocaleDateString('zh-CN') : new Date((item as Project).startDate).toLocaleDateString('zh-CN') return ( <Link href={href}
+import { createTagSlug } from '@/types/tag'
+
+// ISR配置：每小时重新验证一次
+export const revalidate = 3600
+
+/**
+ * 内容卡片组件
+ * @component
+ * @param {Object} props - 组件属性
+ * @param {BlogPost | Project} props.item - 内容项
+ * @param {'post' | 'project'} props.type - 内容类型
+ * @returns {JSX.Element} 渲染的内容卡片
+ */
+function ContentCard({ item, type }: { item: BlogPost | Project; type: 'post' | 'project' }) {
+  const href = type === 'post' ? `/posts/${item.slug}` : `/projects/${item.slug}`
+  const date = type === 'post' 
+    ? new Date((item as BlogPost).date).toLocaleDateString('zh-CN')
+    : new Date((item as Project).startDate).toLocaleDateString('zh-CN')
+  
+  return (
+    <Link href={href}
 className="block group">
 <article className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full"> {/* 缩略图 */} {((type === 'post' && (item as BlogPost).cover) || (type === 'project' && (item as Project).thumbnail)) && ( <div className="relative aspect-video overflow-hidden">
 <Image src={(type === 'post' ? (item as BlogPost).cover : (item as Project).thumbnail) || ''}
@@ -42,9 +56,44 @@ fill className="object-cover group-hover:scale-105 transition-transform duration
 <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600:text-blue-400 transition-colors"> {item.title} </h3> {/* 描述 */}
 <p className="text-gray-600 mb-4 line-clamp-2"> {type === 'post' ? (item as BlogPost).excerpt : (item as Project).description} </p> {/* 底部信息 */}
 <div className="flex items-center justify-between text-sm">
-<time className="text-gray-500"> {date} </time> {type === 'post' && (item as BlogPost).readTime && ( <span className="text-gray-500"> {(item as BlogPost).readTime} </span> )} </div> </div> </article> </Link> ) }
-/** * 生成静态路径 * @async * @function generateStaticParams * @returns {Promise<Array<{tag: string}>>} 返回所有标签的路径参数 * @description 从文章和项目中收集所有唯一的标签 */
-export async function generateStaticParams() { const posts = await getPosts() || fallbackPosts const projects = await getProjects() || fallbackProjects // 收集所有唯一的标签 const allTags = new Set<string>() posts.forEach(post => { post.tags?.forEach(tag => allTags.add(tag)) }) projects.forEach(project => { project.tags?.forEach(tag => allTags.add(tag)) }) return Array.from(allTags).map(tag => ({ tag: createTagSlug(tag) })) }
+              <time className="text-gray-500">{date}</time>
+              {type === 'post' && (item as BlogPost).readTime && (
+                <span className="text-gray-500">{(item as BlogPost).readTime}</span>
+              )}
+            </div>
+          </div>
+        </article>
+      </Link>
+    )
+  )
+}
+
+/**
+ * 生成静态路径
+ * @async
+ * @function generateStaticParams
+ * @returns {Promise<Array<{tag: string}>>} 返回所有标签的路径参数
+ * @description 从文章和项目中收集所有唯一的标签
+ */
+export async function generateStaticParams() {
+  const posts = await getPosts() || fallbackPosts
+  const projects = await getProjects() || fallbackProjects
+  
+  // 收集所有唯一的标签
+  const allTags = new Set<string>()
+  
+  posts.forEach(post => {
+    post.tags?.forEach(tag => allTags.add(tag))
+  })
+  
+  projects.forEach(project => {
+    project.tags?.forEach(tag => allTags.add(tag))
+  })
+  
+  return Array.from(allTags).map(tag => ({
+    tag: createTagSlug(tag)
+  }))
+}
 /** * 生成页面元数据 * @async * @function generateMetadata * @param {Object}
 props - 属性对象 * @param {Promise<{tag: string}>}
 props.params - 包含标签的参数 * @returns {Promise<Metadata>} 返回页面的元数据 */
