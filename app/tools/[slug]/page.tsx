@@ -169,9 +169,22 @@ function ToolSkeleton() { return ( <div className="max-w-4xl mx-auto">
 <div className="h-48 bg-muted rounded animate-pulse" />
 <div className="grid md:grid-cols-2 gap-8">
 <div className="h-32 bg-muted rounded animate-pulse" />
-<div className="h-32 bg-muted rounded animate-pulse" /> </div> </div> </div> ) }
+          <div className="h-32 bg-muted rounded animate-pulse" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /** * Tool detail page component */
-export default async function ToolDetailPage({ params }: { params: Promise<{ slug: string }> }) { const { slug } = await params return ( <div className="container py-12">
-<Suspense fallback={<ToolSkeleton />}>
-<ToolContent slug={slug}
-/> </Suspense> </div> ) }
+export default async function ToolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  
+  return (
+    <div className="container py-12">
+      <Suspense fallback={<ToolSkeleton />}>
+        <ToolContent slug={slug} />
+      </Suspense>
+    </div>
+  )
+}

@@ -1,5 +1,7 @@
-/** * 年度总结客户端组件 * @module app/year-in-review/YearInReviewClient * @description 展示年度数据的交互式组件 */ 'use client' import { useState }
-from 'react' 
+/** * 年度总结客户端组件 * @module app/year-in-review/YearInReviewClient * @description 展示年度数据的交互式组件 */
+'use client'
+
+import { useState } from 'react' 
 
 import Link from 'next/link' 
 

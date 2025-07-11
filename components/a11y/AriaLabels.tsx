@@ -1,23 +1,86 @@
 /** * ARIA标签优化组件 * 提供可访问性增强的UI组件 */
-import React from 'react' interface SkipLinkProps { href: string children: React.ReactNode }
+import React from 'react'
+
+interface SkipLinkProps {
+  href: string
+  children: React.ReactNode
+}
+
 /** * 跳转到主内容链接 */
-export function SkipLink({ href, children }: SkipLinkProps) { return ( <a href={href}
-className="absolute left-0 top-0 block -translate-y-full rounded-b bg-blue-600 px-4 py-2 text-white transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-500" > {children} </a> ) }
-interface ScreenReaderOnlyProps { children: React.ReactNode as?: keyof JSX.IntrinsicElements }
+export function SkipLink({ href, children }: SkipLinkProps) {
+  return (
+    <a 
+      href={href}
+      className="absolute left-0 top-0 block -translate-y-full rounded-b bg-blue-600 px-4 py-2 text-white transition-transform focus:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      {children}
+    </a>
+  )
+}
+interface ScreenReaderOnlyProps {
+  children: React.ReactNode
+  as?: keyof JSX.IntrinsicElements
+}
+
 /** * 仅屏幕阅读器可见内容 */
-export function ScreenReaderOnly({ children, as: Component = 'span' }: ScreenReaderOnlyProps) { return ( <Component className="sr-only"> {children} </Component> ) }
-interface AriaLiveProps { children: React.ReactNode politeness?: 'polite' | 'assertive' | 'off' atomic?: boolean relevant?: 'additions' | 'removals' | 'text' | 'all' }
+export function ScreenReaderOnly({ children, as: Component = 'span' }: ScreenReaderOnlyProps) {
+  return (
+    <Component className="sr-only">
+      {children}
+    </Component>
+  )
+}
+interface AriaLiveProps {
+  children: React.ReactNode
+  politeness?: 'polite' | 'assertive' | 'off'
+  atomic?: boolean
+  relevant?: 'additions' | 'removals' | 'text' | 'all'
+}
+
 /** * ARIA实时区域 */
-export function AriaLive({ children, politeness = 'polite', atomic = false, relevant = 'additions text' }: AriaLiveProps) { return ( <div role="status" aria-live={politeness}
-aria-atomic={atomic}
-aria-relevant={relevant}
-className="sr-only" > {children} </div> ) }
-interface LandmarkProps { children: React.ReactNode label: string className?: string }
+export function AriaLive({ 
+  children, 
+  politeness = 'polite', 
+  atomic = false, 
+  relevant = 'additions text' 
+}: AriaLiveProps) {
+  return (
+    <div 
+      role="status" 
+      aria-live={politeness}
+      aria-atomic={atomic}
+      aria-relevant={relevant}
+      className="sr-only"
+    >
+      {children}
+    </div>
+  )
+}
+
+interface LandmarkProps {
+  children: React.ReactNode
+  label: string
+  className?: string
+}
+
 /** * 主要内容区域 */
-export function MainContent({ children, label, className }: LandmarkProps) { return ( <main role="main" aria-label={label}
-className={className} > {children} </main> ) }
+export function MainContent({ children, label, className }: LandmarkProps) {
+  return (
+    <main 
+      role="main" 
+      aria-label={label}
+      className={className}
+    >
+      {children}
+    </main>
+  )
+}
 /** * 导航区域 */
-export function Navigation({ children, label, className }: LandmarkProps) { return ( <nav role="navigation" aria-label={label}
+export function Navigation({ children, label, className }: LandmarkProps) {
+  return (
+    <nav 
+      role="navigation" 
+      aria-label={label}
 className={className} > {children} </nav> ) }
 /** * 补充内容区域 */
 export function Aside({ children, label, className }: LandmarkProps) { return ( <aside role="complementary" aria-label={label}

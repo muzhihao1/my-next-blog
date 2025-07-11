@@ -169,7 +169,22 @@ function LoadingSkeleton() {
 <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
 <div className="h-10 w-64 bg-gray-200 rounded mb-4"></div>
 <div className="h-6 w-96 bg-gray-200 rounded mb-8"></div>
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"> {[1, 2, 3, 4, 5, 6, 7, 8].map((i: number) => ( <div key={i}
-className="h-40 bg-gray-200 rounded"></div> ))} </div> </div> </div> </div> ) }
-// 导出的页面组件，包含 Suspense 边界 export default function ToolComparePage() { return ( <Suspense fallback={<LoadingSkeleton />}>
-<ToolCompareContent /> </Suspense> ) }
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i: number) => (
+          <div key={i} className="h-40 bg-gray-200 rounded"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+  )
+}
+
+// 导出的页面组件，包含 Suspense 边界
+export default function ToolComparePage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <ToolCompareContent />
+    </Suspense>
+  )
+}
