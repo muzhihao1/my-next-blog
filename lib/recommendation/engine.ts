@@ -20,18 +20,127 @@ from './user-profile'
 import { createClient }
 from '@/lib/supabase/server' 
 
-import { v4 as uuidv4 }
-from 'uuid' /** * 推荐引擎 */
-export class RecommendationEngine { private config = DEFAULT_RECOMMENDATION_CONFIG private algorithms = { content: new ContentBasedAlgorithm(), collaborative: new CollaborativeFilteringAlgorithm(), trending: new TrendingAlgorithm(), }
-private profileBuilder = new UserProfileBuilder() // 缓存 private userProfileCache = new Map<string, { profile: UserProfile; timestamp: number }>() private contentFeatureCache = new Map<string, { features: ContentFeatures; timestamp: number }>() private recommendationCache = new Map<string, { response: RecommendationResponse; timestamp: number }>() /** * 生成推荐 */
-async recommend(request: RecommendationRequest): Promise<RecommendationResponse> { const startTime = Date.now() const sessionId = request.context?.session_id || uuidv4() // 检查缓存 const cacheKey = this.getCacheKey(request) const cached = this.getFromCache(cacheKey) if (cached) { return cached }
-try { // 获取用户画像 const userProfile = request.user_id ? await this.getUserProfile(request.user_id) : null // 获取内容池 const contentPool = await this.getContentPool() // 生成候选集 const candidates = await this.generateCandidates( userProfile, request, contentPool ) // 重排序 const rerankedCandidates = await this.rerank( candidates, userProfile, request ) // 转换为响应格式 const recommendations = this.formatRecommendations( rerankedCandidates, request.count || RECOMMENDATION_LIMITS.DEFAULT_COUNT ) const response: RecommendationResponse = { recommendations, session_id: sessionId, generated_at: new Date(), }
-// 添加调试信息（仅开发环境） if (process.env.NODE_ENV === 'development') { response.debug = { user_profile: userProfile ? { interests: Object.entries(userProfile.interests) .sort((a, b) => b[1] - a[1]) .slice(0, 10) .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {}), segments: userProfile.segments, } : undefined, strategy_weights: this.config.strategy_weights, candidates_count: candidates.length, processing_time: Date.now() - startTime, }
-}
-// 缓存结果 this.cacheRecommendation(cacheKey, response) // 异步记录推荐日志 this.logRecommendation(request, response).catch(console.error) return response }
-catch (error) { console.error('Recommendation error:', error) // 降级策略：返回热门内容 return this.fallbackRecommendation(request) }
-}/** * 记录用户行为 */
-async recordUserAction(action: UserAction): Promise<void> { try { const supabase = await createClient() // 保存用户行为 const { error } = await supabase .from('user_actions') .insert({ id: action.id, user_id: action.user_id, action_type: action.action_type, target_id: action.target_id, target_type: action.target_type, value: action.value, context: action.context, created_at: action.created_at, }) if (error) { console.error('Failed to record user action:', error) return }
+import { v4 as uuidv4 } from 'uuid'
+
+/**
+ * 推荐引擎
+ */
+export class RecommendationEngine {
+  private config = DEFAULT_RECOMMENDATION_CONFIG
+  private algorithms = {
+    content: new ContentBasedAlgorithm(),
+    collaborative: new CollaborativeFilteringAlgorithm(),
+    trending: new TrendingAlgorithm(),
+  }
+  private profileBuilder = new UserProfileBuilder()
+  
+  // 缓存
+  private userProfileCache = new Map<string, { profile: UserProfile; timestamp: number }>()
+  private contentFeatureCache = new Map<string, { features: ContentFeatures; timestamp: number }>()
+  private recommendationCache = new Map<string, { response: RecommendationResponse; timestamp: number }>()
+  
+  /**
+   * 生成推荐
+   */
+  async recommend(request: RecommendationRequest): Promise<RecommendationResponse> {
+    const startTime = Date.now()
+    const sessionId = request.context?.session_id || uuidv4()
+    
+    // 检查缓存
+    const cacheKey = this.getCacheKey(request)
+    const cached = this.getFromCache(cacheKey)
+    if (cached) {
+      return cached
+    }
+    try {
+      // 获取用户画像
+      const userProfile = request.user_id
+        ? await this.getUserProfile(request.user_id)
+        : null
+        
+      // 获取内容池
+      const contentPool = await this.getContentPool()
+      
+      // 生成候选集
+      const candidates = await this.generateCandidates(
+        userProfile,
+        request,
+        contentPool
+      )
+      
+      // 重排序
+      const rerankedCandidates = await this.rerank(
+        candidates,
+        userProfile,
+        request
+      )
+      
+      // 转换为响应格式
+      const recommendations = this.formatRecommendations(
+        rerankedCandidates,
+        request.count || RECOMMENDATION_LIMITS.DEFAULT_COUNT
+      )
+      
+      const response: RecommendationResponse = {
+        recommendations,
+        session_id: sessionId,
+        generated_at: new Date(),
+      }
+      // 添加调试信息（仅开发环境）
+      if (process.env.NODE_ENV === 'development') {
+        response.debug = {
+          user_profile: userProfile ? {
+            interests: Object.entries(userProfile.interests)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 10)
+              .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {}),
+            segments: userProfile.segments,
+          } : undefined,
+          strategy_weights: this.config.strategy_weights,
+          candidates_count: candidates.length,
+          processing_time: Date.now() - startTime,
+        }
+      }
+      
+      // 缓存结果
+      this.cacheRecommendation(cacheKey, response)
+      
+      // 异步记录推荐日志
+      this.logRecommendation(request, response).catch(console.error)
+      
+      return response
+    } catch (error) {
+      console.error('Recommendation error:', error)
+      // 降级策略：返回热门内容
+      return this.fallbackRecommendation(request)
+    }
+  }
+  
+  /**
+   * 记录用户行为
+   */
+  async recordUserAction(action: UserAction): Promise<void> {
+    try {
+      const supabase = await createClient()
+      
+      // 保存用户行为
+      const { error } = await supabase
+        .from('user_actions')
+        .insert({
+          id: action.id,
+          user_id: action.user_id,
+          action_type: action.action_type,
+          target_id: action.target_id,
+          target_type: action.target_type,
+          value: action.value,
+          context: action.context,
+          created_at: action.created_at,
+        })
+        
+      if (error) {
+        console.error('Failed to record user action:', error)
+        return
+      }
 // 清除用户画像缓存 this.userProfileCache.delete(action.user_id) // 异步更新用户画像 this.updateUserProfile(action.user_id).catch(console.error) }
 catch (error) { console.error('Record user action error:', error) }
 }/** * 获取用户画像 */

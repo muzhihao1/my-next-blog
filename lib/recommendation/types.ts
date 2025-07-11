@@ -1,18 +1,121 @@
-/** * 推荐系统类型定义 */ /** * 用户行为类型 */
-export enum UserActionType { VIEW = 'view', // 浏览 LIKE = 'like', // 点赞 COLLECT = 'collect', // 收藏 COMMENT = 'comment', // 评论 SHARE = 'share', // 分享 READ_TIME = 'read_time', // 阅读时长 CLICK = 'click', // 点击 }
-/** * 用户行为记录 */
-export interface UserAction { id: string user_id: string action_type: UserActionType target_id: string // 文章ID target_type: 'post' // 目标类型 value?: number // 行为值（如阅读时长秒数） context?: { source?: string // 来源（首页、推荐、搜索等） position?: number // 展示位置 session_id?: string // 会话ID }
-created_at: Date }
-/** * 用户画像 */
-export interface UserProfile { user_id: string // 兴趣标签（标签 -> 权重） interests: Record<string, number> // 阅读偏好 preferences: { preferred_length?: 'short' | 'medium' | 'long' // 文章长度偏好 preferred_time?: string[] // 偏好阅读时间段 preferred_categories?: string[] // 偏好分类 reading_speed?: number // 阅读速度（字/分钟） }
-// 行为统计 stats: { total_views: number total_likes: number total_collects: number total_comments: number avg_read_time: number // 平均阅读时长（秒） active_days: number // 活跃天数 last_active: Date }
-// 用户分群 segments?: string[] // 用户分群标签 updated_at: Date }
-/** * 内容特征 */
-export interface ContentFeatures { post_id: string // 基础特征 title: string author: string published_at: Date // 内容特征 categories: string[] // 分类 tags: string[] // 标签 keywords: string[] // 关键词 summary?: string // 摘要 // 统计特征 word_count: number // 字数 read_time: number // 预计阅读时间（分钟） difficulty?: number // 难度系数（0-1） // 质量指标 quality_score?: number // 内容质量分 // 互动指标 engagement: { views: number likes: number collects: number comments: number shares: number avg_read_ratio: number // 平均阅读完成率 }
-// 向量表示（用于相似度计算） embedding?: number[]
-updated_at: Date }
-/** * 推荐候选项 */
-export interface RecommendationCandidate { post_id: string score: number // 推荐分数 reasons: string[] // 推荐理由 source: RecommendationSource // 推荐来源 features?: { similarity_score?: number // 相似度分数 popularity_score?: number // 热度分数 freshness_score?: number // 新鲜度分数 personalization_score?: number // 个性化分数 }
+/**
+ * 推荐系统类型定义
+ */
+
+/**
+ * 用户行为类型
+ */
+export enum UserActionType {
+  VIEW = 'view', // 浏览
+  LIKE = 'like', // 点赞
+  COLLECT = 'collect', // 收藏
+  COMMENT = 'comment', // 评论
+  SHARE = 'share', // 分享
+  READ_TIME = 'read_time', // 阅读时长
+  CLICK = 'click', // 点击
+}
+/**
+ * 用户行为记录
+ */
+export interface UserAction {
+  id: string
+  user_id: string
+  action_type: UserActionType
+  target_id: string // 文章ID
+  target_type: 'post' // 目标类型
+  value?: number // 行为值（如阅读时长秒数）
+  context?: {
+    source?: string // 来源（首页、推荐、搜索等）
+    position?: number // 展示位置
+    session_id?: string // 会话ID
+  }
+  created_at: Date
+}
+/**
+ * 用户画像
+ */
+export interface UserProfile {
+  user_id: string
+  
+  // 兴趣标签（标签 -> 权重）
+  interests: Record<string, number>
+  
+  // 阅读偏好
+  preferences: {
+    preferred_length?: 'short' | 'medium' | 'long' // 文章长度偏好
+    preferred_time?: string[] // 偏好阅读时间段
+    preferred_categories?: string[] // 偏好分类
+    reading_speed?: number // 阅读速度（字/分钟）
+  }
+  
+  // 行为统计
+  stats: {
+    total_views: number
+    total_likes: number
+    total_collects: number
+    total_comments: number
+    avg_read_time: number // 平均阅读时长（秒）
+    active_days: number // 活跃天数
+    last_active: Date
+  }
+  
+  // 用户分群
+  segments?: string[] // 用户分群标签
+  updated_at: Date
+}
+/**
+ * 内容特征
+ */
+export interface ContentFeatures {
+  post_id: string
+  
+  // 基础特征
+  title: string
+  author: string
+  published_at: Date
+  
+  // 内容特征
+  categories: string[] // 分类
+  tags: string[] // 标签
+  keywords: string[] // 关键词
+  summary?: string // 摘要
+  
+  // 统计特征
+  word_count: number // 字数
+  read_time: number // 预计阅读时间（分钟）
+  difficulty?: number // 难度系数（0-1）
+  
+  // 质量指标
+  quality_score?: number // 内容质量分
+  
+  // 互动指标
+  engagement: {
+    views: number
+    likes: number
+    collects: number
+    comments: number
+    shares: number
+    avg_read_ratio: number // 平均阅读完成率
+  }
+  
+  // 向量表示（用于相似度计算）
+  embedding?: number[]
+  updated_at: Date
+}
+/**
+ * 推荐候选项
+ */
+export interface RecommendationCandidate {
+  post_id: string
+  score: number // 推荐分数
+  reasons: string[] // 推荐理由
+  source: RecommendationSource // 推荐来源
+  features?: {
+    similarity_score?: number // 相似度分数
+    popularity_score?: number // 热度分数
+    freshness_score?: number // 新鲜度分数
+    personalization_score?: number // 个性化分数
+  }
 }/** * 推荐来源 */
 export enum RecommendationSource { COLLABORATIVE = 'collaborative', // 协同过滤 CONTENT_BASED = 'content_based', // 内容相似 TRENDING = 'trending', // 热门趋势 RECENT = 'recent', // 最新内容 SIMILAR_USERS = 'similar_users', // 相似用户 AUTHOR_FOLLOW = 'author_follow', // 关注作者 TAG_BASED = 'tag_based', // 标签相关 }
 /** * 推荐请求 */

@@ -5,18 +5,102 @@ from './base'
 import { RecommendationCandidate, UserProfile, ContentFeatures, RecommendationRequest, RecommendationSource, }
 from '../types' 
 
-import { SIMILARITY_CONFIG, QUALITY_SCORE_CONFIG }
-from '../config' /** * 内容相似度推荐算法 */
-export class ContentBasedAlgorithm extends BaseRecommendationAlgorithm { name = 'content-based' async generateCandidates( userProfile: UserProfile | null, request: RecommendationRequest, contentPool: ContentFeatures[] ): Promise<RecommendationCandidate[]> { // 过滤候选内容 const filteredContent = this.filterCandidates(contentPool, request, userProfile) // 如果有当前文章，基于当前文章推荐 if (request.context?.current_post_id) { const currentPost = contentPool.find(c => c.post_id === request.context!.current_post_id) if (currentPost) { return this.recommendSimilarContent(currentPost, filteredContent, request.count || 10) }
-}
-// 如果有用户画像，基于用户兴趣推荐 if (userProfile) { return this.recommendByUserInterests(userProfile, filteredContent, request.count || 10) }
-// 冷启动：推荐高质量内容 return this.recommendHighQualityContent(filteredContent, request.count || 10) }
-score( candidate: ContentFeatures, userProfile: UserProfile | null, context?: any ): number { let score = 0 // 基础质量分 const qualityScore = this.calculateQualityScore(candidate) score += qualityScore * 0.3 // 新鲜度分 const freshnessScore = this.calculateFreshnessScore(candidate.published_at) score += freshnessScore * 0.2 // 用户兴趣匹配分 if (userProfile) { const interestScore = this.calculateUserInterestScore(candidate, userProfile) score += interestScore * 0.5 }
-else { // 无用户信息时，使用热度分 const popularityScore = this.calculatePopularityScore( candidate.engagement, { views: 1000, likes: 100, collects: 50, comments: 20, } ) score += popularityScore * 0.5 }
-return Math.min(score, 1) // 归一化到0-1 }
-/** * 基于内容相似度推荐 */
-private async recommendSimilarContent( baseContent: ContentFeatures, contentPool: ContentFeatures[], limit: number ): Promise<RecommendationCandidate[]> { const candidates: RecommendationCandidate[] = []
-for (const content of contentPool) { if (content.post_id === baseContent.post_id) continue // 计算相似度 const similarity = this.calculateContentSimilarity(baseContent, content) if (similarity >= SIMILARITY_CONFIG.thresholds.min_similarity) { const score = this.score(content, null, { similarity }) const candidate: RecommendationCandidate = { post_id: content.post_id, score: score * similarity, // 结合相似度和质量分 reasons: [], source: RecommendationSource.CONTENT_BASED, features: { similarity_score: similarity, quality_score: content.quality_score, freshness_score: this.calculateFreshnessScore(content.published_at), }, }
+import { SIMILARITY_CONFIG, QUALITY_SCORE_CONFIG } from '../config'
+
+/**
+ * 内容相似度推荐算法
+ */
+export class ContentBasedAlgorithm extends BaseRecommendationAlgorithm {
+  name = 'content-based'
+  
+  async generateCandidates(
+    userProfile: UserProfile | null,
+    request: RecommendationRequest,
+    contentPool: ContentFeatures[]
+  ): Promise<RecommendationCandidate[]> {
+    // 过滤候选内容
+    const filteredContent = this.filterCandidates(contentPool, request, userProfile)
+    
+    // 如果有当前文章，基于当前文章推荐
+    if (request.context?.current_post_id) {
+      const currentPost = contentPool.find(c => c.post_id === request.context!.current_post_id)
+      if (currentPost) {
+        return this.recommendSimilarContent(currentPost, filteredContent, request.count || 10)
+      }
+    }
+    
+    // 如果有用户画像，基于用户兴趣推荐
+    if (userProfile) {
+      return this.recommendByUserInterests(userProfile, filteredContent, request.count || 10)
+    }
+    
+    // 冷启动：推荐高质量内容
+    return this.recommendHighQualityContent(filteredContent, request.count || 10)
+  }
+  score(
+    candidate: ContentFeatures,
+    userProfile: UserProfile | null,
+    context?: any
+  ): number {
+    let score = 0
+    
+    // 基础质量分
+    const qualityScore = this.calculateQualityScore(candidate)
+    score += qualityScore * 0.3
+    
+    // 新鲜度分
+    const freshnessScore = this.calculateFreshnessScore(candidate.published_at)
+    score += freshnessScore * 0.2
+    
+    // 用户兴趣匹配分
+    if (userProfile) {
+      const interestScore = this.calculateUserInterestScore(candidate, userProfile)
+      score += interestScore * 0.5
+    } else {
+      // 无用户信息时，使用热度分
+      const popularityScore = this.calculatePopularityScore(
+        candidate.engagement,
+        {
+          views: 1000,
+          likes: 100,
+          collects: 50,
+          comments: 20,
+        }
+      )
+      score += popularityScore * 0.5
+    }
+    
+    return Math.min(score, 1) // 归一化到0-1
+  }
+  /**
+   * 基于内容相似度推荐
+   */
+  private async recommendSimilarContent(
+    baseContent: ContentFeatures,
+    contentPool: ContentFeatures[],
+    limit: number
+  ): Promise<RecommendationCandidate[]> {
+    const candidates: RecommendationCandidate[] = []
+    
+    for (const content of contentPool) {
+      if (content.post_id === baseContent.post_id) continue
+      
+      // 计算相似度
+      const similarity = this.calculateContentSimilarity(baseContent, content)
+      
+      if (similarity >= SIMILARITY_CONFIG.thresholds.min_similarity) {
+        const score = this.score(content, null, { similarity })
+        const candidate: RecommendationCandidate = {
+          post_id: content.post_id,
+          score: score * similarity, // 结合相似度和质量分
+          reasons: [],
+          source: RecommendationSource.CONTENT_BASED,
+          features: {
+            similarity_score: similarity,
+            quality_score: content.quality_score,
+            freshness_score: this.calculateFreshnessScore(content.published_at),
+          },
+        }
 this.addRecommendationReasons(candidate, content) candidates.push(candidate) }
 }
 return this.sortCandidates(candidates, limit) }
