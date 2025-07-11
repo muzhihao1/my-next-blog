@@ -32,6 +32,7 @@ interface UserSimilarity {
   user2: string
   similarity: number
 }
+
 /**
  * 协同过滤推荐算法
  */
@@ -88,6 +89,7 @@ export class CollaborativeFilteringAlgorithm extends BaseRecommendationAlgorithm
     for (const candidate of userBasedCandidates) {
       candidateMap.set(candidate.post_id, candidate)
     }
+    
     // 合并物品协同过滤结果
     for (const candidate of itemBasedCandidates) {
       const existing = candidateMap.get(candidate.post_id)
@@ -98,32 +100,150 @@ export class CollaborativeFilteringAlgorithm extends BaseRecommendationAlgorithm
           ...existing.features,
           ...candidate.features,
         }
-      }
-      else {
+      } else {
         candidateMap.set(candidate.post_id, candidate)
       }
-}
-return this.sortCandidates(Array.from(candidateMap.values()), request.count || 10) }
-score( candidate: ContentFeatures, userProfile: UserProfile | null, context?: any ): number { let score = 0 // 基础质量分 const qualityScore = this.calculateQualityScore(candidate) score += qualityScore * 0.2 // 协同过滤分数（从context中获取） if (context?.collaborative_score) { score += context.collaborative_score * 0.6 }
-// 热度分 const popularityScore = this.calculatePopularityScore( candidate.engagement, { views: 1000, likes: 100, collects: 50, comments: 20, } ) score += popularityScore * 0.2 return Math.min(score, 1) }
-/** * 基于用户的协同过滤 */
-private async userBasedRecommendation( userId: string, contentPool: ContentFeatures[], limit: number ): Promise<RecommendationCandidate[]> { if (!this.userItemMatrix) return [] // 获取相似用户 const similarUsers = await this.findSimilarUsers(userId, 20) if (similarUsers.length === 0) return [] // 计算推荐分数 const itemScores: Map<string, number> = new Map() const itemReasons: Map<string, Set<string>> = new Map() for (const similar of similarUsers) { const otherUserItems = this.userItemMatrix[similar.user2]
-if (!otherUserItems) continue for (const [itemId, score]
-of Object.entries(otherUserItems)) { // 如果当前用户已经交互过，跳过 if (this.userItemMatrix[userId]?.[itemId]) continue // 累加推荐分数 const currentScore = itemScores.get(itemId) || 0 itemScores.set(itemId, currentScore + score * similar.similarity) // 记录推荐原因 if (!itemReasons.has(itemId)) { itemReasons.set(itemId, new Set()) }
-itemReasons.get(itemId)!.add(similar.user2) }
-}
-// 转换为候选列表 const candidates: RecommendationCandidate[] = []
-const contentMap = new Map(contentPool.map(c => [c.post_id, c])) for (const [itemId, score]
-of itemScores.entries()) { const content = contentMap.get(itemId) if (!content) continue const candidate: RecommendationCandidate = { post_id: itemId, score: this.score(content, null, { collaborative_score: score }), reasons: [`${itemReasons.get(itemId)!.size}位相似用户喜欢`], source: RecommendationSource.COLLABORATIVE, features: { similarity_score: score, popularity_score: this.calculatePopularityScore( content.engagement, { views: 1000, likes: 100, collects: 50, comments: 20 } ), }, }
+    }
+    
+    return this.sortCandidates(Array.from(candidateMap.values()), request.count || 10)
+  }
+  
+  score(
+    candidate: ContentFeatures,
+    userProfile: UserProfile | null,
+    context?: any
+  ): number {
+    let score = 0
+    
+    // 基础质量分
+    const qualityScore = this.calculateQualityScore(candidate)
+    score += qualityScore * 0.2
+    
+    // 协同过滤分数（从context中获取）
+    if (context?.collaborative_score) {
+      score += context.collaborative_score * 0.6
+    }
+    
+    // 热度分
+    const popularityScore = this.calculatePopularityScore(
+      candidate.engagement,
+      {
+        views: 1000,
+        likes: 100,
+        collects: 50,
+        comments: 20,
+      }
+    )
+    score += popularityScore * 0.2
+    
+    return Math.min(score, 1)
+  }
+  
+  /**
+   * 基于用户的协同过滤
+   */
+  private async userBasedRecommendation(
+    userId: string,
+    contentPool: ContentFeatures[],
+    limit: number
+  ): Promise<RecommendationCandidate[]> {
+    if (!this.userItemMatrix) return []
+    
+    // 获取相似用户
+    const similarUsers = await this.findSimilarUsers(userId, 20)
+    if (similarUsers.length === 0) return []
+    
+    // 计算推荐分数
+    const itemScores: Map<string, number> = new Map()
+    const itemReasons: Map<string, Set<string>> = new Map()
+    
+    for (const similar of similarUsers) {
+      const otherUserItems = this.userItemMatrix[similar.user2]
+      if (!otherUserItems) continue
+      
+      for (const [itemId, score] of Object.entries(otherUserItems)) {
+        // 如果当前用户已经交互过，跳过
+        if (this.userItemMatrix[userId]?.[itemId]) continue
+        
+        // 累加推荐分数
+        const currentScore = itemScores.get(itemId) || 0
+        itemScores.set(itemId, currentScore + score * similar.similarity)
+        
+        // 记录推荐原因
+        if (!itemReasons.has(itemId)) {
+          itemReasons.set(itemId, new Set())
+        }
+        itemReasons.get(itemId)!.add(similar.user2)
+      }
+    }
+    
+    // 转换为候选列表
+    const candidates: RecommendationCandidate[] = []
+    const contentMap = new Map(contentPool.map(c => [c.post_id, c]))
+    
+    for (const [itemId, score] of itemScores.entries()) {
+      const content = contentMap.get(itemId)
+      if (!content) continue
+      
+      const candidate: RecommendationCandidate = {
+        post_id: itemId,
+        score: this.score(content, null, { collaborative_score: score }),
+        reasons: [`${itemReasons.get(itemId)!.size}位相似用户喜欢`],
+        source: RecommendationSource.COLLABORATIVE,
+        features: {
+          similarity_score: score,
+          popularity_score: this.calculatePopularityScore(
+            content.engagement,
+            { views: 1000, likes: 100, collects: 50, comments: 20 }
+          ),
+        },
+      }
       candidates.push(candidate)
     }
     
     return this.sortCandidates(candidates, limit)
   }
-/** * 基于物品的协同过滤 */
-private async itemBasedRecommendation( userId: string, userActions: UserAction[], contentPool: ContentFeatures[], limit: number ): Promise<RecommendationCandidate[]> { if (!this.userItemMatrix) return [] // 获取用户交互过的物品 const userItems = new Set(userActions.map(a => a.target_id)) // 计算推荐分数 const itemScores: Map<string, number> = new Map() const itemReasons: Map<string, string[]> = new Map() for (const baseItemId of userItems) { // 获取相似物品 const similarItems = await this.findSimilarItems(baseItemId, 10) for (const [similarItemId, similarity]
-of similarItems.entries()) { // 如果用户已经交互过，跳过 if (userItems.has(similarItemId)) continue // 累加推荐分数 const currentScore = itemScores.get(similarItemId) || 0 const userScore = this.userItemMatrix[userId]?.[baseItemId] || 1 itemScores.set(similarItemId, currentScore + userScore * similarity) // 记录推荐原因 if (!itemReasons.has(similarItemId)) { itemReasons.set(similarItemId, []) }
-const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseContent) { itemReasons.get(similarItemId)!.push(baseContent.title) }
+  
+  /**
+   * 基于物品的协同过滤
+   */
+  private async itemBasedRecommendation(
+    userId: string,
+    userActions: UserAction[],
+    contentPool: ContentFeatures[],
+    limit: number
+  ): Promise<RecommendationCandidate[]> {
+    if (!this.userItemMatrix) return []
+    
+    // 获取用户交互过的物品
+    const userItems = new Set(userActions.map(a => a.target_id))
+    
+    // 计算推荐分数
+    const itemScores: Map<string, number> = new Map()
+    const itemReasons: Map<string, string[]> = new Map()
+    
+    for (const baseItemId of userItems) {
+      // 获取相似物品
+      const similarItems = await this.findSimilarItems(baseItemId, 10)
+      
+      for (const [similarItemId, similarity] of similarItems.entries()) {
+        // 如果用户已经交互过，跳过
+        if (userItems.has(similarItemId)) continue
+        
+        // 累加推荐分数
+        const currentScore = itemScores.get(similarItemId) || 0
+        const userScore = this.userItemMatrix[userId]?.[baseItemId] || 1
+        itemScores.set(similarItemId, currentScore + userScore * similarity)
+        
+        // 记录推荐原因
+        if (!itemReasons.has(similarItemId)) {
+          itemReasons.set(similarItemId, [])
+        }
+        
+        const baseContent = contentPool.find(c => c.post_id === baseItemId)
+        if (baseContent) {
+          itemReasons.get(similarItemId)!.push(baseContent.title)
+        }
       }
     }
     
@@ -139,8 +259,7 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
       const candidate: RecommendationCandidate = {
         post_id: itemId,
         score: this.score(content, null, { collaborative_score: score }),
-        reasons: reasons.length > 0 ? [`与「${reasons[0]
-}」相似`] : ['基于您的阅读历史'],
+        reasons: reasons.length > 0 ? [`与「${reasons[0]}」相似`] : ['基于您的阅读历史'],
         source: RecommendationSource.COLLABORATIVE,
         features: {
           similarity_score: score,
@@ -152,6 +271,7 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
     
     return this.sortCandidates(candidates, limit)
   }
+  
   /**
    * 查找相似用户
    */
@@ -160,6 +280,7 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
     if (this.userSimilarities.has(userId)) {
       return this.userSimilarities.get(userId)!.slice(0, limit)
     }
+    
     if (!this.userItemMatrix || !this.userItemMatrix[userId]) {
       return []
     }
@@ -186,6 +307,7 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
     this.userSimilarities.set(userId, similarities)
     return similarities.slice(0, limit)
   }
+  
   /**
    * 查找相似物品
    */
@@ -194,6 +316,7 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
     if (this.itemSimilarities.has(itemId)) {
       return this.itemSimilarities.get(itemId)!
     }
+    
     if (!this.userItemMatrix) {
       return new Map()
     }
@@ -219,34 +342,111 @@ const baseContent = contentPool.find(c => c.post_id === baseItemId) if (baseCont
       for (const item of Object.keys(items)) {
         allItems.add(item)
       }
-}
-// 计算相似度 for (const otherItemId of allItems) { if (otherItemId === itemId) continue const otherItemUsers: Map<string, number> = new Map() for (const [userId, items]
-of Object.entries(this.userItemMatrix)) { if (items[otherItemId]) { otherItemUsers.set(userId, items[otherItemId]) }
-}
-const similarity = this.calculateItemSimilarity(itemUsers, otherItemUsers) if (similarity > 0.1) { similarities.set(otherItemId, similarity) }
-}
-// 排序并取前N个 const sortedSimilarities = new Map( [...similarities.entries()] .sort((a, b) => b[1] - a[1]) .slice(0, limit) ) // 缓存结果 this.itemSimilarities.set(itemId, sortedSimilarities) return sortedSimilarities }
-/** * 计算用户相似度（余弦相似度） */
-private calculateUserSimilarity( user1Items: Record<string, number>, user2Items: Record<string, number> ): number { const commonItems = Object.keys(user1Items).filter(item => item in user2Items) if (commonItems.length === 0) return 0 let dotProduct = 0 let norm1 = 0 let norm2 = 0 for (const item of commonItems) { dotProduct += user1Items[item] * user2Items[item]
-}
-for (const score of Object.values(user1Items)) { norm1 += score * score }
-for (const score of Object.values(user2Items)) { norm2 += score * score }
+    }
+    
+    // 计算相似度
+    for (const otherItemId of allItems) {
+      if (otherItemId === itemId) continue
+      
+      const otherItemUsers: Map<string, number> = new Map()
+      for (const [userId, items] of Object.entries(this.userItemMatrix)) {
+        if (items[otherItemId]) {
+          otherItemUsers.set(userId, items[otherItemId])
+        }
+      }
+      
+      const similarity = this.calculateItemSimilarity(itemUsers, otherItemUsers)
+      if (similarity > 0.1) {
+        similarities.set(otherItemId, similarity)
+      }
+    }
+    
+    // 排序并取前N个
+    const sortedSimilarities = new Map(
+      [...similarities.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+    )
+    
+    // 缓存结果
+    this.itemSimilarities.set(itemId, sortedSimilarities)
+    return sortedSimilarities
+  }
+  
+  /**
+   * 计算用户相似度（余弦相似度）
+   */
+  private calculateUserSimilarity(
+    user1Items: Record<string, number>,
+    user2Items: Record<string, number>
+  ): number {
+    const commonItems = Object.keys(user1Items).filter(item => item in user2Items)
+    if (commonItems.length === 0) return 0
+    
+    let dotProduct = 0
+    let norm1 = 0
+    let norm2 = 0
+    
+    for (const item of commonItems) {
+      dotProduct += user1Items[item] * user2Items[item]
+    }
+    
+    for (const score of Object.values(user1Items)) {
+      norm1 += score * score
+    }
+    
+    for (const score of Object.values(user2Items)) {
+      norm2 += score * score
+    }
+    
     norm1 = Math.sqrt(norm1)
     norm2 = Math.sqrt(norm2)
     
     return norm1 * norm2 > 0 ? dotProduct / (norm1 * norm2) : 0
   }
-/** * 计算物品相似度（余弦相似度） */
-private calculateItemSimilarity( item1Users: Map<string, number>, item2Users: Map<string, number> ): number { const commonUsers = new Set([...item1Users.keys()].filter(u => item2Users.has(u))) if (commonUsers.size === 0) return 0 let dotProduct = 0 let norm1 = 0 let norm2 = 0 for (const user of commonUsers) { dotProduct += item1Users.get(user)! * item2Users.get(user)! }
-for (const score of item1Users.values()) { norm1 += score * score }
-for (const score of item2Users.values()) { norm2 += score * score }
+  
+  /**
+   * 计算物品相似度（余弦相似度）
+   */
+  private calculateItemSimilarity(
+    item1Users: Map<string, number>,
+    item2Users: Map<string, number>
+  ): number {
+    const commonUsers = new Set([...item1Users.keys()].filter(u => item2Users.has(u)))
+    if (commonUsers.size === 0) return 0
+    
+    let dotProduct = 0
+    let norm1 = 0
+    let norm2 = 0
+    
+    for (const user of commonUsers) {
+      dotProduct += item1Users.get(user)! * item2Users.get(user)!
+    }
+    
+    for (const score of item1Users.values()) {
+      norm1 += score * score
+    }
+    
+    for (const score of item2Users.values()) {
+      norm2 += score * score
+    }
+    
     norm1 = Math.sqrt(norm1)
     norm2 = Math.sqrt(norm2)
     
     return norm1 * norm2 > 0 ? dotProduct / (norm1 * norm2) : 0
   }
-/** * 构建用户-物品矩阵 */
-private async buildUserItemMatrix(): Promise<void> { // 这里简化处理，实际需要从数据库获取所有用户行为 // 并构建完整的用户-物品交互矩阵 if (this.userItemMatrix) return this.userItemMatrix = {}
+  
+  /**
+   * 构建用户-物品矩阵
+   */
+  private async buildUserItemMatrix(): Promise<void> {
+    // 这里简化处理，实际需要从数据库获取所有用户行为
+    // 并构建完整的用户-物品交互矩阵
+    if (this.userItemMatrix) return
+    
+    this.userItemMatrix = {}
+    
     // TODO: 从数据库获取所有用户行为并构建矩阵
     // 示例代码：
     // const allActions = await getAllUserActions()

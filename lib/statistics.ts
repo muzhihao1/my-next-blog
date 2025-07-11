@@ -424,7 +424,6 @@ export async function getSiteStatistics({ limit = 10, period = 'all' }: { limit?
     ...stats
   }
 }
-}
 
 /**
  * 生成浏览量趋势数据
