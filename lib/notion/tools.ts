@@ -8,10 +8,12 @@ from 'notion-to-md'
 import { remark }
 from 'remark' 
 
-import remarkHtml from 'remark-html' // import { cache }
-from 'react' // React 19 cache API 可能有兼容性问题 import type { Tool }
-from '../../types/tool' import { withRetry }
-from '@/lib/utils/retry' // Initialize Notion client const notion = new Client({ auth: process.env.NOTION_TOKEN, }) // Initialize notion-to-markdown converter const n2m = new NotionToMarkdown({ notionClient: notion }) // Simple in-memory cache const toolsCache = new Map<string, { data: any; timestamp: number; ttl: number }>() /** * Validate required environment variables for Notion integration * @private * @returns {void} * @description Checks if necessary environment variables are set and logs warnings if missing */
+import remarkHtml from 'remark-html'
+
+// import { cache } from 'react' // React 19 cache API 可能有兼容性问题
+
+import type { Tool } from '../../types/tool'
+import { withRetry } from '@/lib/utils/retry' // Initialize Notion client const notion = new Client({ auth: process.env.NOTION_TOKEN, }) // Initialize notion-to-markdown converter const n2m = new NotionToMarkdown({ notionClient: notion }) // Simple in-memory cache const toolsCache = new Map<string, { data: any; timestamp: number; ttl: number }>() /** * Validate required environment variables for Notion integration * @private * @returns {void} * @description Checks if necessary environment variables are set and logs warnings if missing */
 function validateEnv(): void { if (!process.env.NOTION_TOKEN) { console.warn('NOTION_TOKEN environment variable is not set') }
 if (!process.env.NOTION_TOOLS_DB) { console.warn('NOTION_TOOLS_DB environment variable is not set') }
 }/** * Internal function to get all tools with retry logic * @private */

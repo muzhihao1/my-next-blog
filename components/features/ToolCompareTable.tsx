@@ -1,7 +1,10 @@
-/** * 工具对比表格组件 * @module components/features/ToolCompareTable */ 'use client' import { Tool }
-from '@/types/tool' 
+/** * 工具对比表格组件 * @module components/features/ToolCompareTable */
+'use client'
 
-import Link from 'next/link' /** * 工具对比表格组件的属性 * @interface ToolCompareTableProps * @property {Tool[]
+import { Tool } from '@/types/tool'
+import Link from 'next/link'
+
+/** * 工具对比表格组件的属性 * @interface ToolCompareTableProps * @property {Tool[]
 }
 tools - 需要对比的工具数组 */
 interface ToolCompareTableProps { tools: Tool[]
