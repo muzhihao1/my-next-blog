@@ -227,20 +227,147 @@ export function getMetricUnit(metricType: MetricType): string {
 /**
  * 获取指标显示名称
  */
-export function getMetricDisplayName(metricType: MetricType): string { const displayNames: Record<MetricType, string> = { [MetricType.FCP]: '首次内容绘制', [MetricType.LCP]: '最大内容绘制', [MetricType.FID]: '首次输入延迟', [MetricType.CLS]: '累积布局偏移', [MetricType.TTFB]: '首字节时间', [MetricType.INP]: '交互到下一次绘制', [MetricType.API_LATENCY]: 'API 延迟', [MetricType.API_ERROR_RATE]: 'API 错误率', [MetricType.PAGE_LOAD_TIME]: '页面加载时间', [MetricType.CACHE_HIT_RATE]: '缓存命中率', [MetricType.DB_QUERY_TIME]: '数据库查询时间', [MetricType.MEMORY_USAGE]: '内存使用率', [MetricType.CPU_USAGE]: 'CPU 使用率', [MetricType.BANDWIDTH_USAGE]: '带宽使用', [MetricType.USER_SESSION_DURATION]: '会话时长', [MetricType.PAGE_VIEWS_PER_SESSION]: '每会话页面浏览量', [MetricType.ERROR_COUNT]: '错误数量', [MetricType.CRASH_RATE]: '崩溃率', }
-return displayNames[metricType] || metricType }
-/** * 合并配置 */
-export function mergeConfig( custom?: Partial<MonitoringConfig> ): MonitoringConfig { if (!custom) return DEFAULT_CONFIG return { collection: { ...DEFAULT_CONFIG.collection, ...custom.collection, }, thresholds: { ...DEFAULT_CONFIG.thresholds, ...custom.thresholds, }, alerting: { ...DEFAULT_CONFIG.alerting, ...custom.alerting, channels: custom.alerting?.channels || DEFAULT_CONFIG.alerting.channels, rules: custom.alerting?.rules || DEFAULT_CONFIG.alerting.rules, }, reporting: { ...DEFAULT_CONFIG.reporting, ...custom.reporting, }, }
-}/** * 验证配置 */
-export function validateConfig(config: MonitoringConfig): string[] { const errors: string[] = [] // 验证采样率 if (config.collection.sample_rate < 0 || config.collection.sample_rate > 1) { errors.push('采样率必须在 0 到 1 之间') }
-// 验证阈值 Object.entries(config.thresholds).forEach(([metric, threshold]) => { if (threshold.good >= threshold.poor) { errors.push(`${metric} 的 good 阈值必须小于 poor 阈值`) }
-}) // 验证告警规则 config.alerting.rules.forEach(rule => { if (!Object.values(MetricType).includes(rule.metric_type)) { errors.push(`无效的指标类型: ${rule.metric_type}`) }
-if (rule.condition.duration && rule.condition.duration < 0) { errors.push(`规则 ${rule.name} 的持续时间必须大于 0`) }
-const validChannels = config.alerting.channels.map(c => c.id) rule.channels.forEach(channelId => { if (!validChannels.includes(channelId)) { errors.push(`规则 ${rule.name} 引用了不存在的通道: ${channelId}`) }
-}) }) return errors }
-/** * 环境特定配置 */
-export function getEnvironmentConfig(): Partial<MonitoringConfig> { const env = process.env.NODE_ENV switch (env) { case 'development': return { collection: { enabled: true, sample_rate: 1.0, // 开发环境 100% 采样 endpoints: ['/api/*'], excluded_paths: ['/api/health'], }, alerting: { enabled: false, // 开发环境不启用告警 channels: [], rules: [], }, }
-case 'test': return { collection: { enabled: false, // 测试环境不采集 sample_rate: 0, endpoints: [], excluded_paths: [], }, }
-case 'production': return { collection: { enabled: true, sample_rate: 0.1, // 生产环境 10% 采样 endpoints: ['/api/*'], excluded_paths: [ '/api/health', '/api/monitoring/*', '/_next/*', ], }, }
-default: return {}
-} }
+export function getMetricDisplayName(metricType: MetricType): string {
+  const displayNames: Record<MetricType, string> = {
+    [MetricType.FCP]: '首次内容绘制',
+    [MetricType.LCP]: '最大内容绘制',
+    [MetricType.FID]: '首次输入延迟',
+    [MetricType.CLS]: '累积布局偏移',
+    [MetricType.TTFB]: '首字节时间',
+    [MetricType.INP]: '交互到下一次绘制',
+    [MetricType.API_LATENCY]: 'API 延迟',
+    [MetricType.API_ERROR_RATE]: 'API 错误率',
+    [MetricType.PAGE_LOAD_TIME]: '页面加载时间',
+    [MetricType.CACHE_HIT_RATE]: '缓存命中率',
+    [MetricType.DB_QUERY_TIME]: '数据库查询时间',
+    [MetricType.MEMORY_USAGE]: '内存使用率',
+    [MetricType.CPU_USAGE]: 'CPU 使用率',
+    [MetricType.BANDWIDTH_USAGE]: '带宽使用',
+    [MetricType.USER_SESSION_DURATION]: '会话时长',
+    [MetricType.PAGE_VIEWS_PER_SESSION]: '每会话页面浏览量',
+    [MetricType.ERROR_COUNT]: '错误数量',
+    [MetricType.CRASH_RATE]: '崩溃率',
+  }
+  
+  return displayNames[metricType] || metricType
+}
+
+/**
+ * 合并配置
+ */
+export function mergeConfig(
+  custom?: Partial<MonitoringConfig>
+): MonitoringConfig {
+  if (!custom) return DEFAULT_CONFIG
+  
+  return {
+    collection: {
+      ...DEFAULT_CONFIG.collection,
+      ...custom.collection,
+    },
+    thresholds: {
+      ...DEFAULT_CONFIG.thresholds,
+      ...custom.thresholds,
+    },
+    alerting: {
+      ...DEFAULT_CONFIG.alerting,
+      ...custom.alerting,
+      channels: custom.alerting?.channels || DEFAULT_CONFIG.alerting.channels,
+      rules: custom.alerting?.rules || DEFAULT_CONFIG.alerting.rules,
+    },
+    reporting: {
+      ...DEFAULT_CONFIG.reporting,
+      ...custom.reporting,
+    },
+  }
+}
+
+/**
+ * 验证配置
+ */
+export function validateConfig(config: MonitoringConfig): string[] {
+  const errors: string[] = []
+  
+  // 验证采样率
+  if (config.collection.sample_rate < 0 || config.collection.sample_rate > 1) {
+    errors.push('采样率必须在 0 到 1 之间')
+  }
+  
+  // 验证阈值
+  Object.entries(config.thresholds).forEach(([metric, threshold]) => {
+    if (threshold.good >= threshold.poor) {
+      errors.push(`${metric} 的 good 阈值必须小于 poor 阈值`)
+    }
+  })
+  
+  // 验证告警规则
+  config.alerting.rules.forEach(rule => {
+    if (!Object.values(MetricType).includes(rule.metric_type)) {
+      errors.push(`无效的指标类型: ${rule.metric_type}`)
+    }
+    
+    if (rule.condition.duration && rule.condition.duration < 0) {
+      errors.push(`规则 ${rule.name} 的持续时间必须大于 0`)
+    }
+    
+    const validChannels = config.alerting.channels.map(c => c.id)
+    rule.channels.forEach(channelId => {
+      if (!validChannels.includes(channelId)) {
+        errors.push(`规则 ${rule.name} 引用了不存在的通道: ${channelId}`)
+      }
+    })
+  })
+  
+  return errors
+}
+
+/**
+ * 环境特定配置
+ */
+export function getEnvironmentConfig(): Partial<MonitoringConfig> {
+  const env = process.env.NODE_ENV
+  
+  switch (env) {
+    case 'development':
+      return {
+        collection: {
+          enabled: true,
+          sample_rate: 1.0, // 开发环境 100% 采样
+          endpoints: ['/api/*'],
+          excluded_paths: ['/api/health'],
+        },
+        alerting: {
+          enabled: false, // 开发环境不启用告警
+          channels: [],
+          rules: [],
+        },
+      }
+      
+    case 'test':
+      return {
+        collection: {
+          enabled: false, // 测试环境不采集
+          sample_rate: 0,
+          endpoints: [],
+          excluded_paths: [],
+        },
+      }
+      
+    case 'production':
+      return {
+        collection: {
+          enabled: true,
+          sample_rate: 0.1, // 生产环境 10% 采样
+          endpoints: ['/api/*'],
+          excluded_paths: [
+            '/api/health',
+            '/api/monitoring/*',
+            '/_next/*',
+          ],
+        },
+      }
+      
+    default:
+      return {}
+  }
+}

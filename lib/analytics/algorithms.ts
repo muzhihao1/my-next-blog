@@ -226,12 +226,38 @@ export class TimeSeries {
     if (Math.abs(slope) < threshold) return 'stable'
     return slope > 0 ? 'increasing' : 'decreasing'
   }
-/** * 季节性分解 */
-static seasonalDecomposition(data: TimeSeriesPoint[], period: number) { const trend = this.movingAverage(data, period) const detrended = data.map((point, i) => ({ timestamp: point.timestamp, value: point.value - (trend[i - Math.floor(period / 2)]?.value || point.value), })) // 计算季节性成分 const seasonal: number[] = []
-for (let i = 0; i < period; i++) { const values = detrended.filter((_, index) => index % period === i).map(p => p.value) seasonal.push(Statistics.mean(values)) }
-// 计算残差 const residual = data.map((point, i) => ({ timestamp: point.timestamp, value: point.value - (trend[i - Math.floor(period / 2)]?.value || 0) - seasonal[i % period], })) return { trend, seasonal, residual }
-} }
-/** * 用户行为分析 */
+  
+  /**
+   * 季节性分解
+   */
+  static seasonalDecomposition(data: TimeSeriesPoint[], period: number) {
+    const trend = this.movingAverage(data, period)
+    const detrended = data.map((point, i) => ({
+      timestamp: point.timestamp,
+      value: point.value - (trend[i - Math.floor(period / 2)]?.value || point.value),
+    }))
+    
+    // 计算季节性成分
+    const seasonal: number[] = []
+    
+    for (let i = 0; i < period; i++) {
+      const values = detrended.filter((_, index) => index % period === i).map(p => p.value)
+      seasonal.push(Statistics.mean(values))
+    }
+    
+    // 计算残差
+    const residual = data.map((point, i) => ({
+      timestamp: point.timestamp,
+      value: point.value - (trend[i - Math.floor(period / 2)]?.value || 0) - seasonal[i % period],
+    }))
+    
+    return { trend, seasonal, residual }
+  }
+}
+
+/**
+ * 用户行为分析
+ */
 export class UserBehaviorAnalysis { /** * 计算用户留存率 */
 static calculateRetention( cohortUsers: Set<string>, activeUsers: Set<string> ): number { if (cohortUsers.size === 0) return 0 const retainedUsers = [...cohortUsers].filter(user => activeUsers.has(user)) return retainedUsers.length / cohortUsers.size }
 /** * 计算用户生命周期价值（简化版） */

@@ -170,8 +170,7 @@ export class PerformanceReporter {
       const rating = m.rating || PerformanceRating.GOOD
       acc[rating] = (acc[rating] || 0) + 1
       return acc
-    }, {}
-    as Record<PerformanceRating, number>)
+    }, {} as Record<PerformanceRating, number>)
     
     return {
       average: stats.mean,
@@ -206,7 +205,7 @@ export class PerformanceReporter {
         total_requests: 0,
         top_slow_endpoints: [],
       }
-}
+    }
     
     const latencies = apiMetrics.map(m => m.value)
     const stats = Statistics.summary(latencies)
@@ -267,7 +266,7 @@ export class PerformanceReporter {
         top_errors: [],
         error_trend: 'stable' as const,
       }
-}
+    }
     
     // 统计错误信息
     const errorMessages = new Map<string, { count: number; users: Set<string> }>()
@@ -364,7 +363,7 @@ export class PerformanceReporter {
         pages_per_session: 0,
         slowest_pages: [],
       }
-}
+    }
     
     // 计算平均会话时长
     const sessionDurations = sessions
@@ -450,7 +449,7 @@ export class PerformanceReporter {
         percentile_95: 0,
         trend: 'stable',
       }
-}
+    }
     
     const values = metrics.map(m => m.value)
     const stats = Statistics.summary(values)
@@ -609,37 +608,170 @@ export class PerformanceReporter {
   /**
    * 计算指标分数
    */
-private getMetricScore( summary: MetricSummary, thresholds: { good: number; poor: number }, inverse = false ): number { if (summary.count === 0) return 100 const value = summary.p75 // 使用第75百分位数 if (inverse) { // 对于 CLS 等越小越好的指标 if (value <= thresholds.good) return 100 if (value >= thresholds.poor) return 0 return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100 }
-else { // 对于时间等越小越好的指标 if (value <= thresholds.good) return 100 if (value >= thresholds.poor) return 0 return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100 }
-}/** * 计算 API 分数 */
-private calculateAPIScore(apiPerformance: any): number { const latencyScore = this.getLatencyScore(apiPerformance.p95_latency) const errorScore = 100 - (apiPerformance.error_rate * 100 * 10) // 每1%错误率扣10分 return (latencyScore + errorScore) / 2 }
-/** * 计算延迟分数 */
-private getLatencyScore(latency: number): number { if (latency <= 200) return 100 if (latency <= 500) return 80 if (latency <= 1000) return 60 if (latency <= 2000) return 40 return 20 }
-/** * 计算错误分数 */
-private calculateErrorScore(errorAnalysis: any): number { const baseScore = 100 const errorPenalty = Math.min(errorAnalysis.error_rate * 1000, 50) // 最多扣50分 const trendPenalty = errorAnalysis.error_trend === 'increasing' ? 20 : 0 return Math.max(baseScore - errorPenalty - trendPenalty, 0) }
-/** * 获取总体评级 */
-private getOverallRating(score: number): PerformanceRating { if (score >= 80) return PerformanceRating.GOOD if (score >= 50) return PerformanceRating.NEEDS_IMPROVEMENT return PerformanceRating.POOR }
-/** * 生成关键洞察 */
-private generateKeyInsights(data: any): string[] { const insights = [] // 性能洞察 if (data.webVitals.lcp.p75 > 4000) { insights.push('页面加载速度严重影响用户体验，需要立即优化') }
-else if (data.webVitals.lcp.p75 > 2500) { insights.push('页面加载速度有改进空间') }
-// API 洞察 if (data.apiPerformance.error_rate > 0.05) { insights.push('API 错误率异常高，影响系统可用性') }
-if (data.apiPerformance.top_slow_endpoints.length > 0) { const slowest = data.apiPerformance.top_slow_endpoints[0]
-insights.push(`最慢的 API 端点是 ${slowest.endpoint}，平均响应时间 ${Math.round(slowest.avg_duration)}
-ms`) }
-// 错误洞察 if (data.errorAnalysis.error_trend === 'increasing') { insights.push('错误数量呈上升趋势，需要关注系统稳定性') }
-if (data.errorAnalysis.top_errors.length > 0) { const topError = data.errorAnalysis.top_errors[0]
-insights.push(`最常见的错误是"${topError.message}"，发生了 ${topError.count} 次`) }
-// 用户体验洞察 if (data.userExperience.bounce_rate > 0.5) { insights.push(`跳出率高达 ${(data.userExperience.bounce_rate * 100).toFixed(1)}%，用户参与度较低`) }
-if (data.userExperience.average_session_duration < 60) { insights.push('平均会话时长不足1分钟，内容吸引力需要提升') }
-// 如果没有明显问题 if (insights.length === 0) { insights.push('系统整体性能表现良好') }
-return insights.slice(0, 5) // 最多返回5条洞察 }
-/** * 保存报告 */
-private async saveReport(report: PerformanceReport) { await this.supabase .from('performance_reports') .insert({ id: report.id, period_start: report.period.start, period_end: report.period.end, period_type: report.period.type, report_data: report, created_at: report.generated_at, }) }
-/** * 发送报告 */
-async sendReport(report: PerformanceReport, recipients: string[]) { // 生成 HTML 报告 const htmlReport = this.generateHTMLReport(report) // 发送邮件 await fetch('/api/notifications/email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ to: recipients, subject: `性能报告 - ${new Date(report.period.start).toLocaleDateString()} 至 ${new Date(report.period.end).toLocaleDateString()}`, html: htmlReport, attachments: [ { filename: `performance-report-${report.id}.json`, content: JSON.stringify(report, null, 2), contentType: 'application/json', }, ], }), }) }
-/** * 生成 HTML 报告 */
-private generateHTMLReport(report: PerformanceReport): string { const ratingEmoji = { [PerformanceRating.GOOD]: '🟢', [PerformanceRating.NEEDS_IMPROVEMENT]: '🟡', [PerformanceRating.POOR]: '🔴', }
-return ` <!DOCTYPE html>
+  private getMetricScore(
+    summary: MetricSummary,
+    thresholds: { good: number; poor: number },
+    inverse = false
+  ): number {
+    if (summary.count === 0) return 100
+    
+    const value = summary.p75 // 使用第75百分位数
+    
+    if (inverse) {
+      // 对于 CLS 等越小越好的指标
+      if (value <= thresholds.good) return 100
+      if (value >= thresholds.poor) return 0
+      return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100
+    } else {
+      // 对于时间等越小越好的指标
+      if (value <= thresholds.good) return 100
+      if (value >= thresholds.poor) return 0
+      return 100 - ((value - thresholds.good) / (thresholds.poor - thresholds.good)) * 100
+    }
+  }
+  
+  /**
+   * 计算 API 分数
+   */
+  private calculateAPIScore(apiPerformance: any): number {
+    const latencyScore = this.getLatencyScore(apiPerformance.p95_latency)
+    const errorScore = 100 - (apiPerformance.error_rate * 100 * 10) // 每1%错误率扣10分
+    return (latencyScore + errorScore) / 2
+  }
+  
+  /**
+   * 计算延迟分数
+   */
+  private getLatencyScore(latency: number): number {
+    if (latency <= 200) return 100
+    if (latency <= 500) return 80
+    if (latency <= 1000) return 60
+    if (latency <= 2000) return 40
+    return 20
+  }
+  
+  /**
+   * 计算错误分数
+   */
+  private calculateErrorScore(errorAnalysis: any): number {
+    const baseScore = 100
+    const errorPenalty = Math.min(errorAnalysis.error_rate * 1000, 50) // 最多扣50分
+    const trendPenalty = errorAnalysis.error_trend === 'increasing' ? 20 : 0
+    return Math.max(baseScore - errorPenalty - trendPenalty, 0)
+  }
+  
+  /**
+   * 获取总体评级
+   */
+  private getOverallRating(score: number): PerformanceRating {
+    if (score >= 80) return PerformanceRating.GOOD
+    if (score >= 50) return PerformanceRating.NEEDS_IMPROVEMENT
+    return PerformanceRating.POOR
+  }
+  
+  /**
+   * 生成关键洞察
+   */
+  private generateKeyInsights(data: any): string[] {
+    const insights = []
+    
+    // 性能洞察
+    if (data.webVitals.lcp.p75 > 4000) {
+      insights.push('页面加载速度严重影响用户体验，需要立即优化')
+    } else if (data.webVitals.lcp.p75 > 2500) {
+      insights.push('页面加载速度有改进空间')
+    }
+    
+    // API 洞察
+    if (data.apiPerformance.error_rate > 0.05) {
+      insights.push('API 错误率异常高，影响系统可用性')
+    }
+    
+    if (data.apiPerformance.top_slow_endpoints.length > 0) {
+      const slowest = data.apiPerformance.top_slow_endpoints[0]
+      insights.push(`最慢的 API 端点是 ${slowest.endpoint}，平均响应时间 ${Math.round(slowest.avg_duration)} ms`)
+    }
+    
+    // 错误洞察
+    if (data.errorAnalysis.error_trend === 'increasing') {
+      insights.push('错误数量呈上升趋势，需要关注系统稳定性')
+    }
+    
+    if (data.errorAnalysis.top_errors.length > 0) {
+      const topError = data.errorAnalysis.top_errors[0]
+      insights.push(`最常见的错误是"${topError.message}"，发生了 ${topError.count} 次`)
+    }
+    
+    // 用户体验洞察
+    if (data.userExperience.bounce_rate > 0.5) {
+      insights.push(`跳出率高达 ${(data.userExperience.bounce_rate * 100).toFixed(1)}%，用户参与度较低`)
+    }
+    
+    if (data.userExperience.average_session_duration < 60) {
+      insights.push('平均会话时长不足1分钟，内容吸引力需要提升')
+    }
+    
+    // 如果没有明显问题
+    if (insights.length === 0) {
+      insights.push('系统整体性能表现良好')
+    }
+    
+    return insights.slice(0, 5) // 最多返回5条洞察
+  }
+  
+  /**
+   * 保存报告
+   */
+  private async saveReport(report: PerformanceReport) {
+    await this.supabase
+      .from('performance_reports')
+      .insert({
+        id: report.id,
+        period_start: report.period.start,
+        period_end: report.period.end,
+        period_type: report.period.type,
+        report_data: report,
+        created_at: report.generated_at,
+      })
+  }
+  
+  /**
+   * 发送报告
+   */
+  async sendReport(report: PerformanceReport, recipients: string[]) {
+    // 生成 HTML 报告
+    const htmlReport = this.generateHTMLReport(report)
+    
+    // 发送邮件
+    await fetch('/api/notifications/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: recipients,
+        subject: `性能报告 - ${new Date(report.period.start).toLocaleDateString()} 至 ${new Date(report.period.end).toLocaleDateString()}`,
+        html: htmlReport,
+        attachments: [
+          {
+            filename: `performance-report-${report.id}.json`,
+            content: JSON.stringify(report, null, 2),
+            contentType: 'application/json',
+          },
+        ],
+      }),
+    })
+  }
+  
+  /**
+   * 生成 HTML 报告
+   */
+  private generateHTMLReport(report: PerformanceReport): string {
+    const ratingEmoji = {
+      [PerformanceRating.GOOD]: '🟢',
+      [PerformanceRating.NEEDS_IMPROVEMENT]: '🟡',
+      [PerformanceRating.POOR]: '🔴',
+    }
+    
+    return ` <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
