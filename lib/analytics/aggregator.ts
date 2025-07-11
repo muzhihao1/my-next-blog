@@ -1,4 +1,7 @@
-/** * 数据聚合服务 * 定期聚合分析数据，生成统计报告 */
+/**
+ * 数据聚合服务
+ * 定期聚合分析数据，生成统计报告
+ */
 import { createClient }
 from '@/lib/supabase/server' 
 
@@ -6,16 +9,174 @@ import { AggregatedStats, TimeGranularity, RealtimeStats, EventType, AnalyticsEv
 from './types' 
 
 import { Statistics, TimeSeries, UserBehaviorAnalysis, ContentAnalysis, FunnelAnalysis, AnomalyDetection }
-from './algorithms' /** * 数据聚合器 */
-export class AnalyticsAggregator { private supabase: any constructor() { this.initializeSupabase() }
-private async initializeSupabase() { this.supabase = await createClient() }
-/** * 聚合统计数据 */
-async aggregateStats( startDate: Date, endDate: Date, granularity: TimeGranularity ): Promise<AggregatedStats> { // 获取时间范围内的所有事件 const { data: events, error } = await this.supabase .from('analytics_events') .select('*') .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) .order('timestamp', { ascending: true }) if (error) { console.error('Failed to fetch analytics events:', error) throw error }
-// 基础指标 const pageViews = events.filter((e: AnalyticsEvent) => e.event_type === EventType.PAGE_VIEW) const uniqueVisitors = new Set(events.map((e: AnalyticsEvent) => e.anonymous_id)) const sessions = new Set(events.map((e: AnalyticsEvent) => e.session_id)) // 计算会话时长 const sessionDurations = await this.calculateSessionDurations(Array.from(sessions)) const avgSessionDuration = Statistics.mean(sessionDurations) // 计算跳出率 const bounceRate = await this.calculateBounceRate(Array.from(sessions)) // 内容指标 const postViews = events.filter((e: AnalyticsEvent) => e.event_type === EventType.POST_VIEW) const postReads = events.filter((e: AnalyticsEvent) => e.event_type === EventType.POST_READ) const readTimes = postReads.map((e: AnalyticsEvent) => e.properties.read_time || 0) const avgReadTime = Statistics.mean(readTimes) // 计算参与度 const engagementRate = await this.calculateEngagementRate(events) // 用户指标 const { newUsers, returningUsers } = await this.calculateUserMetrics(events, startDate) const retentionRate = await this.calculateRetentionRate(startDate, endDate) // 设备和浏览器分布 const deviceBreakdown = this.calculateBreakdown(events, 'device.type') const browserBreakdown = this.calculateBreakdown(events, 'device.browser') const osBreakdown = this.calculateBreakdown(events, 'device.os') // 地理分布 const countryBreakdown = this.calculateBreakdown(events, 'location.country') // 热门内容 const topPosts = await this.calculateTopPosts(postViews, postReads) // 热门搜索 const topSearches = await this.calculateTopSearches(events) return { time_period: { start: startDate, end: endDate, granularity, }, total_views: pageViews.length, unique_visitors: uniqueVisitors.size, total_sessions: sessions.size, avg_session_duration: avgSessionDuration, bounce_rate: bounceRate, total_post_views: postViews.length, total_post_reads: postReads.length, avg_read_time: avgReadTime, engagement_rate: engagementRate, new_users: newUsers, returning_users: returningUsers, user_retention_rate: retentionRate, device_breakdown: deviceBreakdown, browser_breakdown: browserBreakdown, os_breakdown: osBreakdown, country_breakdown: countryBreakdown, top_posts: topPosts, top_searches: topSearches, }
-}/** * 获取实时统计 */
-async getRealtimeStats(): Promise<RealtimeStats> { const now = new Date() const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000) // 获取活跃会话 const { data: activeSessions } = await this.supabase .from('realtime_active_sessions') .select('*') .gte('expires_at', now.toISOString()) const currentActiveUsers = activeSessions?.length || 0 // 获取当前页面浏览 const { data: recentPageViews } = await this.supabase .from('analytics_events') .select('page') .eq('event_type', EventType.PAGE_VIEW) .gte('timestamp', thirtyMinutesAgo.toISOString()) const currentPageViews = this.aggregatePageViews(recentPageViews || []) // 获取最近事件 const { data: recentEvents } = await this.supabase .from('analytics_events') .select('*') .gte('timestamp', thirtyMinutesAgo.toISOString()) .order('timestamp', { ascending: false }) .limit(100) // 获取趋势内容 const { data: trendingData } = await this.supabase .from('content_trending_scores') .select('post_id, score') .order('score', { ascending: false }) .limit(10) const trendingPosts = (trendingData || []).map((item: any) => ({ post_id: item.post_id, trend_score: item.score, })) return { current_active_users: currentActiveUsers, current_page_views: currentPageViews, recent_events: recentEvents || [], trending_posts: trendingPosts, }
-}/** * 执行定时聚合任务 */
-async runScheduledAggregation(granularity: TimeGranularity) { const now = new Date() let startDate: Date let tableName: string switch (granularity) { case TimeGranularity.HOUR: startDate = new Date(now.getTime() - 60 * 60 * 1000) tableName = 'analytics_hourly' break
+from './algorithms'
+
+/**
+ * 数据聚合器
+ */
+export class AnalyticsAggregator {
+  private supabase: any
+  
+  constructor() {
+    this.initializeSupabase()
+  }
+  
+  private async initializeSupabase() {
+    this.supabase = await createClient()
+  }
+  
+  /**
+   * 聚合统计数据
+   */
+  async aggregateStats(
+    startDate: Date,
+    endDate: Date,
+    granularity: TimeGranularity
+  ): Promise<AggregatedStats> {
+    // 获取时间范围内的所有事件
+    const { data: events, error } = await this.supabase
+      .from('analytics_events')
+      .select('*')
+      .gte('timestamp', startDate.toISOString())
+      .lte('timestamp', endDate.toISOString())
+      .order('timestamp', { ascending: true })
+      
+    if (error) {
+      console.error('Failed to fetch analytics events:', error)
+      throw error
+    }
+    
+    // 基础指标
+    const pageViews = events.filter((e: AnalyticsEvent) => e.event_type === EventType.PAGE_VIEW)
+    const uniqueVisitors = new Set(events.map((e: AnalyticsEvent) => e.anonymous_id))
+    const sessions = new Set(events.map((e: AnalyticsEvent) => e.session_id))
+    
+    // 计算会话时长
+    const sessionDurations = await this.calculateSessionDurations(Array.from(sessions))
+    const avgSessionDuration = Statistics.mean(sessionDurations)
+    
+    // 计算跳出率
+    const bounceRate = await this.calculateBounceRate(Array.from(sessions))
+    
+    // 内容指标
+    const postViews = events.filter((e: AnalyticsEvent) => e.event_type === EventType.POST_VIEW)
+    const postReads = events.filter((e: AnalyticsEvent) => e.event_type === EventType.POST_READ)
+    const readTimes = postReads.map((e: AnalyticsEvent) => e.properties.read_time || 0)
+    const avgReadTime = Statistics.mean(readTimes)
+    
+    // 计算参与度
+    const engagementRate = await this.calculateEngagementRate(events)
+    
+    // 用户指标
+    const { newUsers, returningUsers } = await this.calculateUserMetrics(events, startDate)
+    const retentionRate = await this.calculateRetentionRate(startDate, endDate)
+    
+    // 设备和浏览器分布
+    const deviceBreakdown = this.calculateBreakdown(events, 'device.type')
+    const browserBreakdown = this.calculateBreakdown(events, 'device.browser')
+    const osBreakdown = this.calculateBreakdown(events, 'device.os')
+    
+    // 地理分布
+    const countryBreakdown = this.calculateBreakdown(events, 'location.country')
+    
+    // 热门内容
+    const topPosts = await this.calculateTopPosts(postViews, postReads)
+    
+    // 热门搜索
+    const topSearches = await this.calculateTopSearches(events)
+    
+    return {
+      time_period: {
+        start: startDate,
+        end: endDate,
+        granularity,
+      },
+      total_views: pageViews.length,
+      unique_visitors: uniqueVisitors.size,
+      total_sessions: sessions.size,
+      avg_session_duration: avgSessionDuration,
+      bounce_rate: bounceRate,
+      total_post_views: postViews.length,
+      total_post_reads: postReads.length,
+      avg_read_time: avgReadTime,
+      engagement_rate: engagementRate,
+      new_users: newUsers,
+      returning_users: returningUsers,
+      user_retention_rate: retentionRate,
+      device_breakdown: deviceBreakdown,
+      browser_breakdown: browserBreakdown,
+      os_breakdown: osBreakdown,
+      country_breakdown: countryBreakdown,
+      top_posts: topPosts,
+      top_searches: topSearches,
+    }
+  }
+  
+  /**
+   * 获取实时统计
+   */
+  async getRealtimeStats(): Promise<RealtimeStats> {
+    const now = new Date()
+    const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000)
+    
+    // 获取活跃会话
+    const { data: activeSessions } = await this.supabase
+      .from('realtime_active_sessions')
+      .select('*')
+      .gte('expires_at', now.toISOString())
+      
+    const currentActiveUsers = activeSessions?.length || 0
+    
+    // 获取当前页面浏览
+    const { data: recentPageViews } = await this.supabase
+      .from('analytics_events')
+      .select('page')
+      .eq('event_type', EventType.PAGE_VIEW)
+      .gte('timestamp', thirtyMinutesAgo.toISOString())
+      
+    const currentPageViews = this.aggregatePageViews(recentPageViews || [])
+    
+    // 获取最近事件
+    const { data: recentEvents } = await this.supabase
+      .from('analytics_events')
+      .select('*')
+      .gte('timestamp', thirtyMinutesAgo.toISOString())
+      .order('timestamp', { ascending: false })
+      .limit(100)
+      
+    // 获取趋势内容
+    const { data: trendingData } = await this.supabase
+      .from('content_trending_scores')
+      .select('post_id, score')
+      .order('score', { ascending: false })
+      .limit(10)
+      
+    const trendingPosts = (trendingData || []).map((item: any) => ({
+      post_id: item.post_id,
+      trend_score: item.score,
+    }))
+    
+    return {
+      current_active_users: currentActiveUsers,
+      current_page_views: currentPageViews,
+      recent_events: recentEvents || [],
+      trending_posts: trendingPosts,
+    }
+  }
+  
+  /**
+   * 执行定时聚合任务
+   */
+  async runScheduledAggregation(granularity: TimeGranularity) {
+    const now = new Date()
+    let startDate: Date
+    let tableName: string
+    
+    switch (granularity) {
+      case TimeGranularity.HOUR:
+        startDate = new Date(now.getTime() - 60 * 60 * 1000)
+        tableName = 'analytics_hourly'
+        break
 case TimeGranularity.DAY: startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000) tableName = 'analytics_daily' break
 case TimeGranularity.WEEK: startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) tableName = 'analytics_weekly' break
 case TimeGranularity.MONTH: startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) tableName = 'analytics_monthly' break
