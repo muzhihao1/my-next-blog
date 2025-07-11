@@ -16,14 +16,43 @@ const categoryLabels: Record<string, string> = { development: '开发工具', de
 props - 组件属性 * @returns {JSX.Element} 渲染的对比表格 * @description 以表格形式展示多个工具的详细对比信息。 * 支持多种数据类型的格式化显示，包括列表、日期等。 * 自动过滤空数据维度，确保表格简洁。 * @example * <ToolCompareTable tools={[tool1, tool2, tool3]
 }
 /> */
-export default function ToolCompareTable({ tools }: ToolCompareTableProps) { /** * 格式化值的显示 * @function formatValue * @param {any}
-value - 需要格式化的值 * @param {string}
-type - 值的类型（'list' | 'date' | 'text'） * @returns {JSX.Element | string} 格式化后的显示内容 * @description 根据数据类型格式化显示内容： * - list: 渲染为无序列表 * - date: 格式化为中文日期 * - text: 处理分类标签的中文映射 */
-const formatValue = (value: any, type: string) => { if (!value) return '-' switch (type) { case 'list': if (Array.isArray(value)) { return ( <ul className="list-disc list-inside space-y-1"> {value.map((item, index) => ( <li key={index}
-className="text-sm">{item}</li> ))} </ul> ) }
-return value case 'date': return new Date(value).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }) case 'text': if (value === 'development' || value === 'design' || value === 'productivity' || value === 'hardware' || value === 'service') { return categoryLabels[value] || value }
-return value default: return value }
-}/** * 检查某个维度是否至少有一个工具有值 * @function hasAnyValue * @param {string}
+export default function ToolCompareTable({ tools }: ToolCompareTableProps) {
+  /** * 格式化值的显示 * @function formatValue * @param {any}
+  value - 需要格式化的值 * @param {string}
+  type - 值的类型（'list' | 'date' | 'text'） * @returns {JSX.Element | string} 格式化后的显示内容 * @description 根据数据类型格式化显示内容： * - list: 渲染为无序列表 * - date: 格式化为中文日期 * - text: 处理分类标签的中文映射 */
+  const formatValue = (value: any, type: string) => {
+    if (!value) return '-'
+    
+    switch (type) {
+      case 'list':
+        if (Array.isArray(value)) {
+          return (
+            <ul className="list-disc list-inside space-y-1">
+              {value.map((item, index) => (
+                <li key={index} className="text-sm">{item}</li>
+              ))}
+            </ul>
+          )
+        }
+        return value
+      
+      case 'date':
+        return new Date(value).toLocaleDateString('zh-CN', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      
+      case 'text':
+        if (value === 'development' || value === 'design' || value === 'productivity' || value === 'hardware' || value === 'service') {
+          return categoryLabels[value] || value
+        }
+        return value
+      
+      default:
+        return value
+    }
+  }/** * 检查某个维度是否至少有一个工具有值 * @function hasAnyValue * @param {string}
 key - 需要检查的属性键名 * @returns {boolean} 是否有至少一个工具在该维度有值 * @description 用于过滤空数据维度，确保表格只显示有意义的对比项 */
 const hasAnyValue = (key: string) => { return tools.some(tool => { const value = (tool as any)[key]
 return value && (Array.isArray(value) ? value.length > 0 : true) }) }

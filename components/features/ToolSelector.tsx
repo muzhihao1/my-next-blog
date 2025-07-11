@@ -13,9 +13,12 @@ tools - 可选择的工具列表 * @property {Tool[]
 selectedTools - 已选中的工具列表 * @property {(tool: Tool) => void}
 onSelectTool - 选择工具的回调函数 * @property {number}
 maxSelection - 最大可选择数量 */
-interface ToolSelectorProps { tools: Tool[]
-selectedTools: Tool[]
-onSelectTool: (tool: Tool) => void maxSelection: number }
+interface ToolSelectorProps {
+  tools: Tool[]
+  selectedTools: Tool[]
+  onSelectTool: (tool: Tool) => void
+  maxSelection: number
+}
 /** * 工具分类标签映射 * @constant * @type {Record<string, string>} * @description 将英文分类标识映射为中文显示名称 */
 const categoryLabels: Record<string, string> = { development: '开发工具', design: '设计工具', productivity: '效率工具', hardware: '硬件设备', service: '在线服务' }
 /** * 工具选择器组件 * @component * @param {ToolSelectorProps}
