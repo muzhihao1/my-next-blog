@@ -32,6 +32,22 @@ async retryPendingActions(): Promise<void> { const stored = localStorage.getItem
 await this.flush() }
 /** * 清理资源 */
 destroy(): void { if (this.batchTimer) { clearTimeout(this.batchTimer) this.batchTimer = null }
-// 发送剩余的数据 this.flush() }
+    // 发送剩余的数据
+    this.flush()
+  }
 }
-// 导出单例实例 export const tracker = new ActionTracker() // 页面卸载时发送剩余数据 if (typeof window !== 'undefined') { window.addEventListener('beforeunload', () => { tracker.flush() }) // 页面加载时重试失败的请求 window.addEventListener('load', () => { tracker.retryPendingActions() }) }
+
+// 导出单例实例
+export const tracker = new ActionTracker()
+
+// 页面卸载时发送剩余数据
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    tracker.flush()
+  })
+  
+  // 页面加载时重试失败的请求
+  window.addEventListener('load', () => {
+    tracker.retryPendingActions()
+  })
+}

@@ -137,10 +137,12 @@ export class UserProfileBuilder {
     contentFeatures: Map<string, ContentFeatures>
   ): UserProfile['preferences'] {
     const preferences: UserProfile['preferences'] = {}
-// 文章长度偏好 const lengthCounts = { short: 0, medium: 0, long: 0 }
-const readTimes: number[] = []
-const categories: Record<string, number> = {}
-const readingHours: Record<number, number> = {}
+    
+    // 文章长度偏好
+    const lengthCounts = { short: 0, medium: 0, long: 0 }
+    const readTimes: number[] = []
+    const categories: Record<string, number> = {}
+    const readingHours: Record<number, number> = {}
     for (const action of userActions) {
       const content = contentFeatures.get(action.target_id)
       if (!content) continue
