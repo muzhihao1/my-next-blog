@@ -141,22 +141,124 @@ export class RecommendationEngine {
         console.error('Failed to record user action:', error)
         return
       }
-// 清除用户画像缓存 this.userProfileCache.delete(action.user_id) // 异步更新用户画像 this.updateUserProfile(action.user_id).catch(console.error) }
-catch (error) { console.error('Record user action error:', error) }
-}/** * 获取用户画像 */
-private async getUserProfile(userId: string): Promise<UserProfile | null> { // 检查缓存 const cached = this.userProfileCache.get(userId) if (cached && Date.now() - cached.timestamp < CACHE_CONFIG.ttl.user_profile) { return cached.profile }
-try { const supabase = await createClient() // 获取保存的用户画像 const { data: savedProfile } = await supabase .from('user_profiles') .select('*') .eq('user_id', userId) .single() if (savedProfile) { const profile: UserProfile = { user_id: savedProfile.user_id, interests: savedProfile.interests || {}, preferences: savedProfile.preferences || {}, stats: savedProfile.stats || {}, segments: savedProfile.segments || [], updated_at: new Date(savedProfile.updated_at), }
-// 缓存 this.userProfileCache.set(userId, { profile, timestamp: Date.now(), }) return profile }
-// 如果没有保存的画像，构建新的 return await this.buildUserProfile(userId) }
-catch (error) { console.error('Failed to get user profile:', error) return null }
-}/** * 构建用户画像 */
-private async buildUserProfile(userId: string): Promise<UserProfile | null> { try { const supabase = await createClient() // 获取用户行为历史 const { data: actions } = await supabase .from('user_actions') .select('*') .eq('user_id', userId) .order('created_at', { ascending: false }) .limit(1000) if (!actions || actions.length === 0) { return null }
-// 获取内容特征 const contentIds = [...new Set(actions.map(a => a.target_id))]
-const contentFeatures = await this.getContentFeatures(contentIds) // 构建画像 const userActions: UserAction[] = actions.map(a => ({ id: a.id, user_id: a.user_id, action_type: a.action_type, target_id: a.target_id, target_type: a.target_type, value: a.value, context: a.context, created_at: new Date(a.created_at), }))
+      
+      // 清除用户画像缓存
+      this.userProfileCache.delete(action.user_id)
+      
+      // 异步更新用户画像
+      this.updateUserProfile(action.user_id).catch(console.error)
+    }
+    catch (error) {
+      console.error('Record user action error:', error)
+    }
+  }
+  
+  /**
+   * 获取用户画像
+   */
+  private async getUserProfile(userId: string): Promise<UserProfile | null> {
+    // 检查缓存
+    const cached = this.userProfileCache.get(userId)
+    if (cached && Date.now() - cached.timestamp < CACHE_CONFIG.ttl.user_profile) {
+      return cached.profile
+    }
+    try {
+      const supabase = await createClient()
+      
+      // 获取保存的用户画像
+      const { data: savedProfile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .single()
+        
+      if (savedProfile) {
+        const profile: UserProfile = {
+          user_id: savedProfile.user_id,
+          interests: savedProfile.interests || {},
+          preferences: savedProfile.preferences || {},
+          stats: savedProfile.stats || {},
+          segments: savedProfile.segments || [],
+          updated_at: new Date(savedProfile.updated_at),
+        }
+        // 缓存
+        this.userProfileCache.set(userId, {
+          profile,
+          timestamp: Date.now(),
+        })
+        
+        return profile
+      }
+      
+      // 如果没有保存的画像，构建新的
+      return await this.buildUserProfile(userId)
+    }
+    catch (error) {
+      console.error('Failed to get user profile:', error)
+      return null
+    }
+  }
+  
+  /**
+   * 构建用户画像
+   */
+  private async buildUserProfile(userId: string): Promise<UserProfile | null> {
+    try {
+      const supabase = await createClient()
+      
+      // 获取用户行为历史
+      const { data: actions } = await supabase
+        .from('user_actions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1000)
+        
+      if (!actions || actions.length === 0) {
+        return null
+      }
+      // 获取内容特征
+      const contentIds = [...new Set(actions.map(a => a.target_id))]
+      const contentFeatures = await this.getContentFeatures(contentIds)
+      
+      // 构建画像
+      const userActions: UserAction[] = actions.map(a => ({
+        id: a.id,
+        user_id: a.user_id,
+        action_type: a.action_type,
+        target_id: a.target_id,
+        target_type: a.target_type,
+        value: a.value,
+        context: a.context,
+        created_at: new Date(a.created_at),
+      }))
 
-const profile = await this.profileBuilder.buildProfile( userId, userActions, new Map(contentFeatures.map(f => [f.post_id, f])) ) // 保存画像 await this.saveUserProfile(profile) // 缓存 this.userProfileCache.set(userId, { profile, timestamp: Date.now(), }) return profile }
-catch (error) { console.error('Failed to build user profile:', error) return null }
-}/** * 获取内容池 */
+      const profile = await this.profileBuilder.buildProfile(
+        userId,
+        userActions,
+        new Map(contentFeatures.map(f => [f.post_id, f]))
+      )
+      
+      // 保存画像
+      await this.saveUserProfile(profile)
+      
+      // 缓存
+      this.userProfileCache.set(userId, {
+        profile,
+        timestamp: Date.now(),
+      })
+      
+      return profile
+    }
+    catch (error) {
+      console.error('Failed to build user profile:', error)
+      return null
+    }
+  }
+  
+  /**
+   * 获取内容池
+   */
 private async getContentPool(): Promise<ContentFeatures[]> { try { const supabase = await createClient() // 获取所有发布的文章 const { data: posts } = await supabase .from('posts') .select(` id, title, author, published_at, categories, tags, summary, word_count, read_time, quality_score, views, likes, collects, comments `) .eq('status', 'published') .order('published_at', { ascending: false }) .limit(1000) if (!posts) return [] // 转换为内容特征 return posts.map(post => ({ post_id: post.id, title: post.title, author: post.author, published_at: new Date(post.published_at), categories: post.categories || [], tags: post.tags || [], keywords: [], // TODO: 从内容中提取关键词 summary: post.summary, word_count: post.word_count || 0, read_time: post.read_time || Math.ceil(post.word_count / 200), quality_score: post.quality_score, engagement: { views: post.views || 0, likes: post.likes || 0, collects: post.collects || 0, comments: post.comments || 0, shares: 0, // TODO: 添加分享统计 avg_read_ratio: 0.7, // TODO: 计算实际完读率 }, updated_at: new Date(), })) }
 catch (error) { console.error('Failed to get content pool:', error) return []
 }
