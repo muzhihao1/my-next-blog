@@ -132,3 +132,14 @@ export function isValidBook(obj: any): obj is import('./book').Book {
 export function isValidBookStatus(status: string): status is import('./book').Book['status'] {
   return ['reading', 'read', 'want-to-read'].includes(status)
 }
+
+/**
+ * 检查数字是否为有效的书籍评分
+ * @function isValidRating
+ * @param {any} rating - 待检查的评分值
+ * @returns {rating is number} 返回类型守卫结果
+ * @description 有效的评分范围是 1-5 的整数
+ */
+export function isValidRating(rating: any): rating is number {
+  return typeof rating === 'number' && [1, 2, 3, 4, 5].includes(rating)
+}

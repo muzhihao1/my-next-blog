@@ -83,3 +83,26 @@ export interface NotionApiResponse {
   has_more: boolean
   next_cursor: string | null
 }
+
+/**
+ * Notion API 错误类
+ * @class NotionError
+ * @extends Error
+ * @description 用于处理 Notion API 相关的错误
+ */
+export class NotionError extends Error {
+  public readonly code: string;
+  public readonly status?: number;
+  
+  constructor(message: string, code: string = 'NOTION_ERROR', status?: number) {
+    super(message);
+    this.name = 'NotionError';
+    this.code = code;
+    this.status = status;
+    
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, NotionError);
+    }
+  }
+}
