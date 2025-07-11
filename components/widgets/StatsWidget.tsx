@@ -1,4 +1,11 @@
-/** * 统计数据小部件 * @module components/widgets/StatsWidget * @description 在首页或侧边栏展示的统计数据小部件 */ 'use client' import { useEffect, useState }
+/**
+ * 统计数据小部件
+ * @module components/widgets/StatsWidget
+ * @description 在首页或侧边栏展示的统计数据小部件
+ */
+'use client'
+
+import { useEffect, useState }
 from 'react' 
 
 import Link from 'next/link' 

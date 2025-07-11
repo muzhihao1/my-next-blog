@@ -1,4 +1,7 @@
-/** * 性能报告生成器 * 生成定期的性能分析报告 */
+/**
+ * 性能报告生成器
+ * 生成定期的性能分析报告
+ */
 import { createClient }
 from '@/lib/supabase/server' 
 
@@ -9,15 +12,115 @@ import { getMetricDisplayName, getMetricUnit }
 from './config' 
 
 import { Statistics }
-from '@/lib/analytics/algorithms' /** * 报告生成器 */
-export class PerformanceReporter { private supabase: any constructor() { this.initializeSupabase() }
-private async initializeSupabase() { this.supabase = await createClient() }
-/** * 生成性能报告 */
-async generateReport( startDate: Date, endDate: Date, type: 'hourly' | 'daily' | 'weekly' | 'monthly' = 'daily' ): Promise<PerformanceReport> { // 获取指标数据 const metrics = await this.fetchMetrics(startDate, endDate) // 计算 Web Vitals 统计 const webVitals = await this.calculateWebVitals(metrics) // 计算 API 性能 const apiPerformance = await this.calculateAPIPerformance(metrics) // 错误分析 const errorAnalysis = await this.analyzeErrors(startDate, endDate) // 用户体验分析 const userExperience = await this.analyzeUserExperience(startDate, endDate) // 资源使用分析 const resourceUsage = await this.analyzeResourceUsage(metrics) // 生成建议 const recommendations = this.generateRecommendations({ webVitals, apiPerformance, errorAnalysis, userExperience, }) // 计算总体评分 const overallScore = this.calculateOverallScore({ webVitals, apiPerformance, errorAnalysis, }) // 生成关键洞察 const keyInsights = this.generateKeyInsights({ webVitals, apiPerformance, errorAnalysis, userExperience, }) const report: PerformanceReport = { id: `report-${Date.now()}`, period: { start: startDate, end: endDate, type, }, summary: { overall_score: overallScore, rating: this.getOverallRating(overallScore), key_insights: keyInsights, }, web_vitals: webVitals, api_performance: apiPerformance, error_analysis: errorAnalysis, user_experience: userExperience, resource_usage: resourceUsage, recommendations, generated_at: new Date(), }
-// 保存报告 await this.saveReport(report) return report }
-/** * 获取指标数据 */
-private async fetchMetrics(startDate: Date, endDate: Date) { const { data: metrics } = await this.supabase .from('monitoring_metrics') .select('*') .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) .order('timestamp', { ascending: true }) return metrics || []
-}/** * 计算 Web Vitals 统计 */
+from '@/lib/analytics/algorithms'
+
+/**
+ * 报告生成器
+ */
+export class PerformanceReporter {
+  private supabase: any
+  
+  constructor() {
+    this.initializeSupabase()
+  }
+  
+  private async initializeSupabase() {
+    this.supabase = await createClient()
+  }
+  
+  /**
+   * 生成性能报告
+   */
+  async generateReport(
+    startDate: Date,
+    endDate: Date,
+    type: 'hourly' | 'daily' | 'weekly' | 'monthly' = 'daily'
+  ): Promise<PerformanceReport> {
+    // 获取指标数据
+    const metrics = await this.fetchMetrics(startDate, endDate)
+    
+    // 计算 Web Vitals 统计
+    const webVitals = await this.calculateWebVitals(metrics)
+    
+    // 计算 API 性能
+    const apiPerformance = await this.calculateAPIPerformance(metrics)
+    
+    // 错误分析
+    const errorAnalysis = await this.analyzeErrors(startDate, endDate)
+    
+    // 用户体验分析
+    const userExperience = await this.analyzeUserExperience(startDate, endDate)
+    
+    // 资源使用分析
+    const resourceUsage = await this.analyzeResourceUsage(metrics)
+    
+    // 生成建议
+    const recommendations = this.generateRecommendations({
+      webVitals,
+      apiPerformance,
+      errorAnalysis,
+      userExperience,
+    })
+    
+    // 计算总体评分
+    const overallScore = this.calculateOverallScore({
+      webVitals,
+      apiPerformance,
+      errorAnalysis,
+    })
+    
+    // 生成关键洞察
+    const keyInsights = this.generateKeyInsights({
+      webVitals,
+      apiPerformance,
+      errorAnalysis,
+      userExperience,
+    })
+    
+    const report: PerformanceReport = {
+      id: `report-${Date.now()}`,
+      period: {
+        start: startDate,
+        end: endDate,
+        type,
+      },
+      summary: {
+        overall_score: overallScore,
+        rating: this.getOverallRating(overallScore),
+        key_insights: keyInsights,
+      },
+      web_vitals: webVitals,
+      api_performance: apiPerformance,
+      error_analysis: errorAnalysis,
+      user_experience: userExperience,
+      resource_usage: resourceUsage,
+      recommendations,
+      generated_at: new Date(),
+    }
+    
+    // 保存报告
+    await this.saveReport(report)
+    
+    return report
+  }
+  
+  /**
+   * 获取指标数据
+   */
+  private async fetchMetrics(startDate: Date, endDate: Date) {
+    const { data: metrics } = await this.supabase
+      .from('monitoring_metrics')
+      .select('*')
+      .gte('timestamp', startDate.toISOString())
+      .lte('timestamp', endDate.toISOString())
+      .order('timestamp', { ascending: true })
+      
+    return metrics || []
+  }
+  
+  /**
+   * 计算 Web Vitals 统计
+   */
 private async calculateWebVitals(metrics: any[]) { const vitals = { fcp: this.calculateMetricSummary(metrics, MetricType.FCP), lcp: this.calculateMetricSummary(metrics, MetricType.LCP), fid: this.calculateMetricSummary(metrics, MetricType.FID), cls: this.calculateMetricSummary(metrics, MetricType.CLS), ttfb: this.calculateMetricSummary(metrics, MetricType.TTFB), inp: this.calculateMetricSummary(metrics, MetricType.INP), }
 return vitals }
 /** * 计算指标摘要 */

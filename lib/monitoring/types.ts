@@ -1,18 +1,122 @@
-/** * 性能监控类型定义 * 定义所有性能监控相关的TypeScript类型 */ /** * 监控指标类型 */
-export enum MetricType { // Web Vitals FCP = 'first_contentful_paint', LCP = 'largest_contentful_paint', FID = 'first_input_delay', CLS = 'cumulative_layout_shift', TTFB = 'time_to_first_byte', INP = 'interaction_to_next_paint', // 自定义性能指标 API_LATENCY = 'api_latency', API_ERROR_RATE = 'api_error_rate', PAGE_LOAD_TIME = 'page_load_time', CACHE_HIT_RATE = 'cache_hit_rate', DB_QUERY_TIME = 'db_query_time', // 资源指标 MEMORY_USAGE = 'memory_usage', CPU_USAGE = 'cpu_usage', BANDWIDTH_USAGE = 'bandwidth_usage', // 业务指标 USER_SESSION_DURATION = 'user_session_duration', PAGE_VIEWS_PER_SESSION = 'page_views_per_session', ERROR_COUNT = 'error_count', CRASH_RATE = 'crash_rate', }
-/** * 性能评级 */
-export enum PerformanceRating { GOOD = 'good', NEEDS_IMPROVEMENT = 'needs-improvement', POOR = 'poor', }
-/** * 监控数据点 */
-export interface MetricDataPoint { id?: string metric_type: MetricType value: number unit: string rating?: PerformanceRating timestamp: Date | string // 上下文信息 context: { page?: string api_endpoint?: string user_id?: string session_id?: string device_type?: string browser?: string connection_type?: string country?: string }
-// 元数据 metadata?: Record<string, any> }
-/** * Web Vitals 指标 */
-export interface WebVitalsMetric { id: string name: string value: number rating: PerformanceRating delta: number entries: PerformanceEntry[]
-}/** * API 性能指标 */
-export interface APIMetric { endpoint: string method: string status_code: number duration: number timestamp: Date // 详细信息 request_size?: number response_size?: number error?: string trace_id?: string }
-/** * 资源使用指标 */
-export interface ResourceMetric { timestamp: Date memory: { used: number total: number percentage: number }
-cpu: { usage: number cores: number }
-bandwidth: { incoming: number outgoing: number }
+/**
+ * 性能监控类型定义
+ * 定义所有性能监控相关的TypeScript类型
+ */
+
+/**
+ * 监控指标类型
+ */
+export enum MetricType {
+  // Web Vitals
+  FCP = 'first_contentful_paint',
+  LCP = 'largest_contentful_paint',
+  FID = 'first_input_delay',
+  CLS = 'cumulative_layout_shift',
+  TTFB = 'time_to_first_byte',
+  INP = 'interaction_to_next_paint',
+  
+  // 自定义性能指标
+  API_LATENCY = 'api_latency',
+  API_ERROR_RATE = 'api_error_rate',
+  PAGE_LOAD_TIME = 'page_load_time',
+  CACHE_HIT_RATE = 'cache_hit_rate',
+  DB_QUERY_TIME = 'db_query_time',
+  
+  // 资源指标
+  MEMORY_USAGE = 'memory_usage',
+  CPU_USAGE = 'cpu_usage',
+  BANDWIDTH_USAGE = 'bandwidth_usage',
+  
+  // 业务指标
+  USER_SESSION_DURATION = 'user_session_duration',
+  PAGE_VIEWS_PER_SESSION = 'page_views_per_session',
+  ERROR_COUNT = 'error_count',
+  CRASH_RATE = 'crash_rate',
+}
+
+/**
+ * 性能评级
+ */
+export enum PerformanceRating {
+  GOOD = 'good',
+  NEEDS_IMPROVEMENT = 'needs-improvement',
+  POOR = 'poor',
+}
+
+/**
+ * 监控数据点
+ */
+export interface MetricDataPoint {
+  id?: string
+  metric_type: MetricType
+  value: number
+  unit: string
+  rating?: PerformanceRating
+  timestamp: Date | string
+  
+  // 上下文信息
+  context: {
+    page?: string
+    api_endpoint?: string
+    user_id?: string
+    session_id?: string
+    device_type?: string
+    browser?: string
+    connection_type?: string
+    country?: string
+  }
+  
+  // 元数据
+  metadata?: Record<string, any>
+}
+
+/**
+ * Web Vitals 指标
+ */
+export interface WebVitalsMetric {
+  id: string
+  name: string
+  value: number
+  rating: PerformanceRating
+  delta: number
+  entries: PerformanceEntry[]
+}
+
+/**
+ * API 性能指标
+ */
+export interface APIMetric {
+  endpoint: string
+  method: string
+  status_code: number
+  duration: number
+  timestamp: Date
+  
+  // 详细信息
+  request_size?: number
+  response_size?: number
+  error?: string
+  trace_id?: string
+}
+
+/**
+ * 资源使用指标
+ */
+export interface ResourceMetric {
+  timestamp: Date
+  memory: {
+    used: number
+    total: number
+    percentage: number
+  }
+  cpu: {
+    usage: number
+    cores: number
+  }
+  bandwidth: {
+    incoming: number
+    outgoing: number
+  }
 }/** * 错误指标 */
 export interface ErrorMetric { id: string type: 'javascript' | 'network' | 'resource' | 'api' message: string stack?: string source?: string line?: number column?: number timestamp: Date // 上下文 url: string user_agent: string user_id?: string session_id?: string // 影响 affected_users: number occurrence_count: number }
 /** * 监控配置 */

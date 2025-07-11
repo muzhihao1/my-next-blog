@@ -177,30 +177,138 @@ export class AnalyticsAggregator {
         startDate = new Date(now.getTime() - 60 * 60 * 1000)
         tableName = 'analytics_hourly'
         break
-case TimeGranularity.DAY: startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000) tableName = 'analytics_daily' break
-case TimeGranularity.WEEK: startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000) tableName = 'analytics_weekly' break
-case TimeGranularity.MONTH: startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000) tableName = 'analytics_monthly' break
-default: throw new Error(`Unsupported granularity: ${granularity}`) }
-// 聚合数据 const stats = await this.aggregateStats(startDate, now, granularity) // 保存到数据库 const { error } = await this.supabase .from(tableName) .insert({ period_start: startDate.toISOString(), period_end: now.toISOString(), stats: stats, created_at: now.toISOString(), }) if (error) { console.error(`Failed to save ${granularity}
-aggregation:`, error) throw error }
-// 执行异常检测 await this.detectAnomalies(stats, granularity) // 更新内容分数 await this.updateContentScores(stats) return stats }
-/** * 计算会话时长 */
-private async calculateSessionDurations(sessionIds: string[]): Promise<number[]> { const durations: number[] = []
-for (const sessionId of sessionIds) { const { data } = await this.supabase .from('analytics_events') .select('timestamp') .eq('session_id', sessionId) .order('timestamp', { ascending: true }) if (data && data.length > 0) { const start = new Date(data[0].timestamp).getTime() const end = new Date(data[data.length - 1].timestamp).getTime() durations.push((end - start) / 1000) // 转换为秒 }
-}
-return durations }
-/** * 计算跳出率 */
-private async calculateBounceRate(sessionIds: string[]): Promise<number> { let bounces = 0 for (const sessionId of sessionIds) { const { count } = await this.supabase .from('analytics_events') .select('id', { count: 'exact', head: true }) .eq('session_id', sessionId) .eq('event_type', EventType.PAGE_VIEW) if (count === 1) { bounces++ }
-}
-return sessionIds.length > 0 ? bounces / sessionIds.length : 0 }
-/** * 计算参与度 */
-private async calculateEngagementRate(events: AnalyticsEvent[]): Promise<number> { const engagementEvents = events.filter(e => [EventType.POST_READ, EventType.COMMENT_CREATE, EventType.LIKE, EventType.SHARE] .includes(e.event_type) ) const sessions = new Set(events.map(e => e.session_id)) const engagedSessions = new Set(engagementEvents.map(e => e.session_id)) return sessions.size > 0 ? engagedSessions.size / sessions.size : 0 }
-/** * 计算用户指标 */
-private async calculateUserMetrics(events: AnalyticsEvent[], periodStart: Date) { const userIds = new Set(events.map(e => e.user_id || e.anonymous_id)) let newUsers = 0 let returningUsers = 0 for (const userId of userIds) { const { count } = await this.supabase .from('analytics_events') .select('id', { count: 'exact', head: true }) .eq('anonymous_id', userId) .lt('timestamp', periodStart.toISOString()) if (count === 0) { newUsers++ }
-else { returningUsers++ }
-}
-return { newUsers, returningUsers }
-}/** * 计算留存率 */
+      case TimeGranularity.DAY:
+        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+        tableName = 'analytics_daily'
+        break
+      case TimeGranularity.WEEK:
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        tableName = 'analytics_weekly'
+        break
+      case TimeGranularity.MONTH:
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+        tableName = 'analytics_monthly'
+        break
+      default:
+        throw new Error(`Unsupported granularity: ${granularity}`)
+    }
+    
+    // 聚合数据
+    const stats = await this.aggregateStats(startDate, now, granularity)
+    
+    // 保存到数据库
+    const { error } = await this.supabase
+      .from(tableName)
+      .insert({
+        period_start: startDate.toISOString(),
+        period_end: now.toISOString(),
+        stats: stats,
+        created_at: now.toISOString(),
+      })
+      
+    if (error) {
+      console.error(`Failed to save ${granularity}
+ aggregation:`, error)
+      throw error
+    }
+    
+    // 执行异常检测
+    await this.detectAnomalies(stats, granularity)
+    
+    // 更新内容分数
+    await this.updateContentScores(stats)
+    
+    return stats
+  }
+  
+  /**
+   * 计算会话时长
+   */
+  private async calculateSessionDurations(sessionIds: string[]): Promise<number[]> {
+    const durations: number[] = []
+    
+    for (const sessionId of sessionIds) {
+      const { data } = await this.supabase
+        .from('analytics_events')
+        .select('timestamp')
+        .eq('session_id', sessionId)
+        .order('timestamp', { ascending: true })
+        
+      if (data && data.length > 0) {
+        const start = new Date(data[0].timestamp).getTime()
+        const end = new Date(data[data.length - 1].timestamp).getTime()
+        durations.push((end - start) / 1000) // 转换为秒
+      }
+    }
+    
+    return durations
+  }
+  
+  /**
+   * 计算跳出率
+   */
+  private async calculateBounceRate(sessionIds: string[]): Promise<number> {
+    let bounces = 0
+    
+    for (const sessionId of sessionIds) {
+      const { count } = await this.supabase
+        .from('analytics_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('session_id', sessionId)
+        .eq('event_type', EventType.PAGE_VIEW)
+        
+      if (count === 1) {
+        bounces++
+      }
+    }
+    
+    return sessionIds.length > 0 ? bounces / sessionIds.length : 0
+  }
+  
+  /**
+   * 计算参与度
+   */
+  private async calculateEngagementRate(events: AnalyticsEvent[]): Promise<number> {
+    const engagementEvents = events.filter(e => 
+      [EventType.POST_READ, EventType.COMMENT_CREATE, EventType.LIKE, EventType.SHARE]
+        .includes(e.event_type)
+    )
+    
+    const sessions = new Set(events.map(e => e.session_id))
+    const engagedSessions = new Set(engagementEvents.map(e => e.session_id))
+    
+    return sessions.size > 0 ? engagedSessions.size / sessions.size : 0
+  }
+  
+  /**
+   * 计算用户指标
+   */
+  private async calculateUserMetrics(events: AnalyticsEvent[], periodStart: Date) {
+    const userIds = new Set(events.map(e => e.user_id || e.anonymous_id))
+    let newUsers = 0
+    let returningUsers = 0
+    
+    for (const userId of userIds) {
+      const { count } = await this.supabase
+        .from('analytics_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('anonymous_id', userId)
+        .lt('timestamp', periodStart.toISOString())
+        
+      if (count === 0) {
+        newUsers++
+      }
+      else {
+        returningUsers++
+      }
+    }
+    
+    return { newUsers, returningUsers }
+  }
+  
+  /**
+   * 计算留存率
+   */
 private async calculateRetentionRate(startDate: Date, endDate: Date): Promise<number> { // 获取上一期间的用户 const previousPeriodStart = new Date(startDate.getTime() - (endDate.getTime() - startDate.getTime())) const { data: previousUsers } = await this.supabase .from('analytics_events') .select('anonymous_id') .gte('timestamp', previousPeriodStart.toISOString()) .lt('timestamp', startDate.toISOString()) const { data: currentUsers } = await this.supabase .from('analytics_events') .select('anonymous_id') .gte('timestamp', startDate.toISOString()) .lte('timestamp', endDate.toISOString()) if (!previousUsers || previousUsers.length === 0) return 0 const previousSet = new Set(previousUsers.map(u => u.anonymous_id)) const currentSet = new Set(currentUsers?.map(u => u.anonymous_id) || []) return UserBehaviorAnalysis.calculateRetention(previousSet, currentSet) }
 /** * 计算分布 */
 private calculateBreakdown(events: AnalyticsEvent[], field: string): Record<string, number> { const breakdown: Record<string, number> = {}

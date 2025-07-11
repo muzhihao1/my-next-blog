@@ -1,4 +1,7 @@
-/** * 告警管理器 * 负责监控指标告警的检测、触发和通知 */
+/**
+ * 告警管理器
+ * 负责监控指标告警的检测、触发和通知
+ */
 import { createClient }
 from '@/lib/supabase/server' 
 
@@ -6,18 +9,87 @@ import { MetricDataPoint, MetricType, Alert, AlertRule, AlertChannel, Monitoring
 from './types' 
 
 import { DEFAULT_CONFIG, DEFAULT_ALERT_RULES }
-from './config' /** * 告警管理器 */
-export class AlertManager { private config: MonitoringConfig private supabase: any constructor(config?: Partial<MonitoringConfig>) { this.config = { ...DEFAULT_CONFIG, ...config }
-this.initializeSupabase() }
-private async initializeSupabase() { this.supabase = await createClient() }
-/** * 检查告警条件 */
-async checkAlerts(metrics: MetricDataPoint[]) { if (!this.config.alerting.enabled) return // 获取启用的告警规则 const enabledRules = this.config.alerting.rules.filter(rule => rule.enabled) // 按指标类型分组 const metricsByType = new Map<MetricType, MetricDataPoint[]>() metrics.forEach(metric => { if (!metricsByType.has(metric.metric_type)) { metricsByType.set(metric.metric_type, []) }
-metricsByType.get(metric.metric_type)!.push(metric) }) // 检查每个规则 for (const rule of enabledRules) { const typeMetrics = metricsByType.get(rule.metric_type) || []
-if (typeMetrics.length === 0) continue await this.evaluateRule(rule, typeMetrics) }
-}/** * 评估告警规则 */
-private async evaluateRule(rule: AlertRule, metrics: MetricDataPoint[]) { // 计算指标值 const values = metrics.map(m => m.value) const avgValue = values.reduce((a, b) => a + b, 0) / values.length // 检查条件 const triggered = this.checkCondition(avgValue, rule.condition) if (triggered) { // 检查是否需要持续时间验证 if (rule.condition.duration) { const isConsistent = await this.checkDurationCondition( rule.metric_type, rule.condition, rule.condition.duration ) if (!isConsistent) return }
-// 检查是否需要多次发生 if (rule.condition.occurrence) { const occurrences = await this.checkOccurrenceCondition( rule.metric_type, rule.condition, rule.condition.occurrence ) if (occurrences < rule.condition.occurrence) return }
-// 触发告警 await this.triggerAlert(rule, avgValue, metrics) }
+from './config'
+
+/**
+ * 告警管理器
+ */
+export class AlertManager {
+  private config: MonitoringConfig
+  private supabase: any
+  
+  constructor(config?: Partial<MonitoringConfig>) {
+    this.config = { ...DEFAULT_CONFIG, ...config }
+    this.initializeSupabase()
+  }
+  
+  private async initializeSupabase() {
+    this.supabase = await createClient()
+  }
+  
+  /**
+   * 检查告警条件
+   */
+  async checkAlerts(metrics: MetricDataPoint[]) {
+    if (!this.config.alerting.enabled) return
+    
+    // 获取启用的告警规则
+    const enabledRules = this.config.alerting.rules.filter(rule => rule.enabled)
+    
+    // 按指标类型分组
+    const metricsByType = new Map<MetricType, MetricDataPoint[]>()
+    
+    metrics.forEach(metric => {
+      if (!metricsByType.has(metric.metric_type)) {
+        metricsByType.set(metric.metric_type, [])
+      }
+      metricsByType.get(metric.metric_type)!.push(metric)
+    })
+    
+    // 检查每个规则
+    for (const rule of enabledRules) {
+      const typeMetrics = metricsByType.get(rule.metric_type) || []
+      if (typeMetrics.length === 0) continue
+      
+      await this.evaluateRule(rule, typeMetrics)
+    }
+  }
+  
+  /**
+   * 评估告警规则
+   */
+  private async evaluateRule(rule: AlertRule, metrics: MetricDataPoint[]) {
+    // 计算指标值
+    const values = metrics.map(m => m.value)
+    const avgValue = values.reduce((a, b) => a + b, 0) / values.length
+    
+    // 检查条件
+    const triggered = this.checkCondition(avgValue, rule.condition)
+    
+    if (triggered) {
+      // 检查是否需要持续时间验证
+      if (rule.condition.duration) {
+        const isConsistent = await this.checkDurationCondition(
+          rule.metric_type,
+          rule.condition,
+          rule.condition.duration
+        )
+        if (!isConsistent) return
+      }
+      
+      // 检查是否需要多次发生
+      if (rule.condition.occurrence) {
+        const occurrences = await this.checkOccurrenceCondition(
+          rule.metric_type,
+          rule.condition,
+          rule.condition.occurrence
+        )
+        if (occurrences < rule.condition.occurrence) return
+      }
+      
+      // 触发告警
+      await this.triggerAlert(rule, avgValue, metrics)
+    }
 else { // 检查是否有未解决的告警需要自动解决 await this.checkForResolution(rule, avgValue) }
 }/** * 检查条件是否满足 */
 private checkCondition( value: number, condition: AlertRule['condition'] ): boolean { switch (condition.operator) { case 'gt': return value > condition.threshold case 'lt': return value < condition.threshold case 'gte': return value >= condition.threshold case 'lte': return value <= condition.threshold case 'eq': return value === condition.threshold case 'neq': return value !== condition.threshold default: return false }
