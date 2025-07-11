@@ -1,6 +1,10 @@
-/** * Fallback posts data for when Notion API is unavailable * 当 Notion API 不可用时的后备文章数据 */
-import type { BlogPost }
-from '../types/notion' export const fallbackPosts: BlogPost[] = [ { id: '1', title: "战胜拖延的策略：从'冷启动'到'热启动'", slug: 'overcome-procrastination', excerpt: "战胜拖延的策略，从'冷启动'到'热启动'。", date: '2024-11-24', readTime: '4 min read', category: 'Productivity', author: { name: 'Zhihao Mu', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80' }, tags: ['生产力', '拖延', '效率'], published: true, createdTime: '2024-11-24T00:00:00.000Z', lastEditedTime: '2024-11-24T00:00:00.000Z', content: ` <p>拖延是许多人在工作和生活中都会遇到的问题。我发现许多拖延的根本原因，是任务处于"冷启动"状态——也就是说，任务对我们来说太陌生、太庞大或太困难，让我们不知道从何开始。</p>
+/**
+ * Fallback posts data for when Notion API is unavailable
+ * 当 Notion API 不可用时的后备文章数据
+ */
+import type { BlogPost } from '../types/notion'
+
+export const fallbackPosts: BlogPost[] = [ { id: '1', title: "战胜拖延的策略：从'冷启动'到'热启动'", slug: 'overcome-procrastination', excerpt: "战胜拖延的策略，从'冷启动'到'热启动'。", date: '2024-11-24', readTime: '4 min read', category: 'Productivity', author: { name: 'Zhihao Mu', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80' }, tags: ['生产力', '拖延', '效率'], published: true, createdTime: '2024-11-24T00:00:00.000Z', lastEditedTime: '2024-11-24T00:00:00.000Z', content: ` <p>拖延是许多人在工作和生活中都会遇到的问题。我发现许多拖延的根本原因，是任务处于"冷启动"状态——也就是说，任务对我们来说太陌生、太庞大或太困难，让我们不知道从何开始。</p>
 <h2>拖延的困境</h2>
 <p>当任务处于冷启动状态时，我们的大脑很容易产生抗拒。就像冬天早晨要离开温暖的被窝一样，开始一项陌生的任务需要消耗大量的心理能量。结果就是，我们会不断推迟，直到截止日期逼近。</p>
 <h2>冷启动与热启动</h2>
@@ -29,5 +33,9 @@ from '../types/notion' export const fallbackPosts: BlogPost[] = [ { id: '1', tit
 <p>我喜欢将设计系统想象成一座冰山：表层是UI组件和样式，中层是设计原则和模式，深层是品牌价值和用户体验理念。</p>
 <p>设计系统是一个持续演进的生命体，而不是一个静态的交付物。拥抱变化，保持学习，你的设计系统就会随着产品一起成长。</p> ` }
 ]
-export function getFallbackPosts(): BlogPost[] { return fallbackPosts }
-export function getFallbackPostBySlug(slug: string): BlogPost | null { return fallbackPosts.find(post => post.slug === slug) || null }
+export function getFallbackPosts(): BlogPost[] {
+  return fallbackPosts
+}
+export function getFallbackPostBySlug(slug: string): BlogPost | null {
+  return fallbackPosts.find(post => post.slug === slug) || null
+}
