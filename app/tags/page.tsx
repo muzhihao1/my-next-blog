@@ -36,7 +36,14 @@ postCount - 文章数量 * @property {number}
 projectCount - 项目数量 * @property {number}
 totalCount - 总数量 * @property {string}
 color - 标签颜色 */
-interface TagInfo { name: string slug: string postCount: number projectCount: number totalCount: number color: string }
+interface TagInfo {
+  name: string
+  slug: string
+  postCount: number
+  projectCount: number
+  totalCount: number
+  color: string
+}
 /** * 标签索引页面组件 * @async * @function TagsPage * @returns {Promise<JSX.Element>} 渲染的标签索引页面 * @description 显示所有标签的统计信息和标签云 */
 export default async function TagsPage() { // 获取所有文章和项目 const posts = await getPosts() || fallbackPosts const projects = await getProjects() || fallbackProjects // 统计标签信息 const tagMap = new Map<string, TagInfo>() // 处理文章标签 posts.forEach(post => { post.tags?.forEach(tag => { const slug = createTagSlug(tag) const existing = tagMap.get(slug) if (existing) { existing.postCount++ existing.totalCount++ }
 else { tagMap.set(slug, { name: tag, slug, postCount: 1, projectCount: 0, totalCount: 1, color: getTagColor(slug) }) }

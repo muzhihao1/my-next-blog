@@ -39,9 +39,17 @@ export async function generateStaticParams() {
 /**
  * Get tool data with fallback
  */
-async function getToolData(slug: string): Promise<Tool | null> { try { const tool = await getToolBySlug(slug) if (tool) return tool }
-catch (error) { console.error('Error loading tool:', error) }
-// Try fallback tools return fallbackTools.find(tool => tool.slug === slug) || null }
+async function getToolData(slug: string): Promise<Tool | null> {
+  try {
+    const tool = await getToolBySlug(slug)
+    if (tool) return tool
+  }
+  catch (error) {
+    console.error('Error loading tool:', error)
+  }
+  // Try fallback tools
+  return fallbackTools.find(tool => tool.slug === slug) || null
+}
 /** * Generate metadata for the tool page */
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> { const { slug } = await params const tool = await getToolData(slug) if (!tool) { return { title: '工具不存在', description: '抱歉，找不到这个工具。' }
 }

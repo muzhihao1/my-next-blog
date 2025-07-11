@@ -1,4 +1,6 @@
-'use client' import { useState, useEffect, Suspense }
+'use client'
+
+import { useState, useEffect, Suspense }
 from 'react' 
 
 import { useSearchParams }
