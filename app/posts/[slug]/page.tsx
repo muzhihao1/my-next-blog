@@ -1,43 +1,21 @@
-import { getAllPostSlugs, getPostBySlug, withFallback, formatDate }
-from '@/lib/notion' 
-
-import { getFallbackPostBySlug }
-from '@/lib/fallback-posts' 
-
-import { notFound }
-from 'next/navigation' 
-
-import Link from 'next/link' 
-
+import { getAllPostSlugs, getPostBySlug, withFallback, formatDate } from '@/lib/notion'
+import { getFallbackPostBySlug } from '@/lib/fallback-posts'
+import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import Image from 'next/image' 
 
-import type { Metadata }
-from 'next' import { SEO, generateArticleStructuredData }
-from '@/components/seo/SEO' 
-
-import { calculateWordCount, formatUpdateTime }
-from '@/lib/utils/content' 
-
-import TableOfContents from '@/components/features/TableOfContents' 
-
-import ReadingProgress from '@/components/features/ReadingProgress' 
-
-import { SocialShare }
-from '@/components/features/SocialShare' 
-
-import ArticleReactions from '@/components/features/ArticleReactions' 
-
-import TagList from '@/components/features/TagList' 
-
-import FavoriteButton, { FloatingFavoriteButton }
-from '@/components/features/FavoriteButton' import { FavoriteType }
-from '@/lib/hooks/useFavorites' 
-
-import { ContentContainer }
-from '@/components/ui/Container' 
-
-import { CommentSection }
-from '@/components/comments/CommentSection' // ISR配置：每小时重新验证一次 export const revalidate = 3600 export async function generateStaticParams() { // Use fallback slugs for static export when Notion API may not be available const fallbackSlugs = [ 'overcome-procrastination', 'react-18-concurrent-features', 'personal-knowledge-management', 'design-system-thinking' ]
+import type { Metadata } from 'next'
+import { SEO, generateArticleStructuredData } from '@/components/seo/SEO'
+import { calculateWordCount, formatUpdateTime } from '@/lib/utils/content'
+import TableOfContents from '@/components/features/TableOfContents'
+import ReadingProgress from '@/components/features/ReadingProgress'
+import { SocialShare } from '@/components/features/SocialShare'
+import ArticleReactions from '@/components/features/ArticleReactions'
+import TagList from '@/components/features/TagList'
+import FavoriteButton, { FloatingFavoriteButton } from '@/components/features/FavoriteButton'
+import { FavoriteType } from '@/lib/hooks/useFavorites'
+import { ContentContainer } from '@/components/ui/Container'
+import { CommentSection } from '@/components/comments/CommentSection' // ISR配置：每小时重新验证一次 export const revalidate = 3600 export async function generateStaticParams() { // Use fallback slugs for static export when Notion API may not be available const fallbackSlugs = [ 'overcome-procrastination', 'react-18-concurrent-features', 'personal-knowledge-management', 'design-system-thinking' ]
 try { // Try to get slugs from Notion if environment is configured if (process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID) { const slugs = await getAllPostSlugs() if (slugs.length > 0) { return slugs.map((slug: string) => ({ slug })) }
 } }
 catch (error) { console.warn('Failed to fetch slugs from Notion, using fallback:', error) }
