@@ -21,17 +21,72 @@ import StatsSection from '@/components/sections/StatsSection'
 
 import StatsWidget from '@/components/widgets/StatsWidget' 
 
-import HomeClient from '@/components/features/HomeClient' // ISR配置：每30分钟重新验证一次 export const revalidate = 1800 // 提取 Hero Section 作为独立组件 function HeroSection() { return ( <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-<Container size="md" className="text-center">
-<h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6"> 欢迎来到我的<span className="text-gradient">数字花园</span> </h1>
-<p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"> 在这里，我分享技术见解、展示项目成果、记录学习历程，与你一起探索知识的边界 </p>
-<div className="flex flex-wrap gap-4 justify-center">
-<Link href="/projects" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors" > 查看项目 </Link>
-<Link href="/blog" className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300 transition-colors" > 阅读博客 </Link> </div> </Container> </section> ) }
-export default async function Home() { // 获取数据 const posts = await withFallback( () => getPublishedPosts(), fallbackPosts ) const projects = await withFallback( () => getProjects(), fallbackProjects ) // 获取最新文章和精选项目 const recentPosts = posts.slice(0, 3) const featuredProjects = projects.filter(p => p.featured).slice(0, 3) function getCategoryClass(category: string) { const categoryMap: { [key: string]: string } = { 'Technology': 'category-technology', 'Design': 'category-design', 'Productivity': 'category-productivity', 'Life': 'category-life' }
-return `category-badge ${categoryMap[category] || 'category-technology'}` }
-return ( <div> {/* Hero Section */}
-<HeroSection /> {/* 使用客户端组件处理需要客户端功能的部分 */}
+import HomeClient from '@/components/features/HomeClient'
+
+// ISR配置：每30分钟重新验证一次
+export const revalidate = 1800
+
+// 提取 Hero Section 作为独立组件
+function HeroSection() {
+  return (
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <Container size="md" className="text-center">
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+          欢迎来到我的<span className="text-gradient">数字花园</span>
+        </h1>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          在这里，我分享技术见解、展示项目成果、记录学习历程，与你一起探索知识的边界
+        </p>
+        <div className="flex flex-wrap gap-4 justify-center">
+          <Link
+            href="/projects"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          >
+            查看项目
+          </Link>
+          <Link
+            href="/blog"
+            className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+          >
+            阅读博客
+          </Link>
+        </div>
+      </Container>
+    </section>
+  )
+}
+export default async function Home() {
+  // 获取数据
+  const posts = await withFallback(
+    () => getPublishedPosts(),
+    fallbackPosts
+  )
+  
+  const projects = await withFallback(
+    () => getProjects(),
+    fallbackProjects
+  )
+  
+  // 获取最新文章和精选项目
+  const recentPosts = posts.slice(0, 3)
+  const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
+  
+  function getCategoryClass(category: string) {
+    const categoryMap: { [key: string]: string } = {
+      'Technology': 'category-technology',
+      'Design': 'category-design',
+      'Productivity': 'category-productivity',
+      'Life': 'category-life'
+    }
+    return `category-badge ${categoryMap[category] || 'category-technology'}`
+  }
+  
+  return (
+    <div>
+      {/* Hero Section */}
+      <HeroSection />
+      
+      {/* 使用客户端组件处理需要客户端功能的部分 */}
 <HomeClient> {/* Stats Section */}
 <StatsSection /> {/* Statistics Widget */}
 <section className="py-16">
