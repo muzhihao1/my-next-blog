@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#FFF9E6"/>
+  <g transform="translate(100,100)">
+    <!-- Face -->
+    <circle cx="0" cy="0" r="70" fill="#FDBCB4" stroke="#333" stroke-width="2"/>
+    
+    <!-- Hair -->
+    <path d="M -70,-40 Q -70,-70 -40,-80 Q 0,-85 40,-80 Q 70,-70 70,-40 Q 60,-50 40,-55 Q 0,-60 -40,-55 Q -60,-50 -70,-40" fill="#2F2F2F"/>
+    
+    <!-- Glasses -->
+    <g fill="none" stroke="#333" stroke-width="3">
+      <circle cx="-25" cy="0" r="20"/>
+      <circle cx="25" cy="0" r="20"/>
+      <path d="M -5,0 L 5,0"/>
+      <path d="M -45,0 L -70,-5"/>
+      <path d="M 45,0 L 70,-5"/>
+    </g>
+    
+    <!-- Eyes -->
+    <circle cx="-25" cy="0" r="3" fill="#333"/>
+    <circle cx="25" cy="0" r="3" fill="#333"/>
+    
+    <!-- Smile -->
+    <path d="M -20,20 Q 0,30 20,20" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Suit -->
+    <path d="M -70,70 L -70,90 L -30,90 L -30,60 L 0,70 L 30,60 L 30,90 L 70,90 L 70,70" fill="#4169E1" stroke="#333" stroke-width="2"/>
+    
+    <!-- Tie -->
+    <path d="M 0,60 L -10,65 L -8,85 L 0,90 L 8,85 L 10,65 Z" fill="#7B68EE"/>
+    
+    <!-- Collar -->
+    <path d="M -30,60 L -15,70 L 0,65 L 15,70 L 30,60" fill="white" stroke="#333" stroke-width="2"/>
+  </g>
+</svg>

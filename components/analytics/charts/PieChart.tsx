@@ -1,0 +1,34 @@
+'use client' import { useEffect, useRef }
+from 'react' 
+
+import { useTheme }
+from '@/lib/hooks/useTheme' interface PieData { label: string value: number color?: string }
+interface PieChartProps { data: PieData[]
+title?: string size?: number donut?: boolean showLabels?: boolean showPercentage?: boolean animate?: boolean colors?: string[]
+formatValue?: (value: number) => string className?: string }
+export function PieChart({ data, title, size = 300, donut = false, showLabels = true, showPercentage = true, animate = true, colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'], formatValue = (v) => v.toLocaleString(), className = '' }: PieChartProps) { const canvasRef = useRef<HTMLCanvasElement>(null) const { theme } = useTheme() const animationRef = useRef<number>() const progressRef = useRef(0) const hoverIndexRef = useRef<number | null>(null) useEffect(() => { const canvas = canvasRef.current if (!canvas) return const ctx = canvas.getContext('2d') if (!ctx) return // Set canvas size canvas.width = size * window.devicePixelRatio canvas.height = size * window.devicePixelRatio ctx.scale(window.devicePixelRatio, window.devicePixelRatio) // Calculate total const total = data.reduce((sum, item) => sum + item.value, 0) if (total === 0) { // No data ctx.clearRect(0, 0, size, size) const textColor = theme === 'dark' ? '#9CA3AF' : '#6B7280' ctx.fillStyle = textColor ctx.font = '14px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'middle' ctx.fillText('暂无数据', size / 2, size / 2) return }
+// Animation setup const startTime = Date.now() const duration = animate ? 1000 : 0 const draw = () => { // Clear canvas ctx.clearRect(0, 0, size, size) // Calculate progress const elapsed = Date.now() - startTime progressRef.current = Math.min(elapsed / duration, 1) const progress = animate ? easeOutCubic(progressRef.current) : 1 // Set styles const textColor = theme === 'dark' ? '#F3F4F6' : '#111827' const bgColor = theme === 'dark' ? '#111827' : '#FFFFFF' // Draw background ctx.fillStyle = bgColor ctx.fillRect(0, 0, size, size) // Draw title if (title) { ctx.fillStyle = textColor ctx.font = 'bold 16px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'top' ctx.fillText(title, size / 2, 10) }
+// Calculate dimensions const centerX = size / 2 const centerY = size / 2 const radius = Math.min(size * 0.35, 120) const innerRadius = donut ? radius * 0.6 : 0 // Draw slices let currentAngle = -Math.PI / 2 // Start from top const totalAngle = 2 * Math.PI * progress data.forEach((item, index) => { const sliceAngle = (item.value / total) * totalAngle const color = item.color || colors[index % colors.length]
+const isHovered = hoverIndexRef.current === index // Draw slice ctx.fillStyle = color ctx.beginPath() ctx.moveTo(centerX, centerY) ctx.arc(centerX, centerY, isHovered ? radius * 1.05 : radius, currentAngle, currentAngle + sliceAngle) if (donut) { ctx.arc(centerX, centerY, innerRadius, currentAngle + sliceAngle, currentAngle, true) }
+ctx.closePath() ctx.fill() // Draw slice border ctx.strokeStyle = bgColor ctx.lineWidth = 2 ctx.stroke() // Calculate label position const labelAngle = currentAngle + sliceAngle / 2 const labelRadius = donut ? (radius + innerRadius) / 2 : radius * 0.7 const labelX = centerX + Math.cos(labelAngle) * labelRadius const labelY = centerY + Math.sin(labelAngle) * labelRadius // Draw labels if (showLabels && progress === 1 && item.value > 0) { const percentage = ((item.value / total) * 100).toFixed(1) // Only show label if slice is large enough if (sliceAngle > 0.3) { ctx.fillStyle = '#FFFFFF' ctx.font = 'bold 12px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'middle' if (showPercentage) { ctx.fillText(`${percentage}%`, labelX, labelY) }
+} }
+currentAngle += sliceAngle }) // Draw center circle for donut if (donut) { ctx.fillStyle = bgColor ctx.beginPath() ctx.arc(centerX, centerY, innerRadius - 2, 0, 2 * Math.PI) ctx.fill() // Draw total in center ctx.fillStyle = textColor ctx.font = 'bold 24px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'middle' ctx.fillText(formatValue(total), centerX, centerY - 10) ctx.font = '12px sans-serif' ctx.fillStyle = theme === 'dark' ? '#9CA3AF' : '#6B7280' ctx.fillText('总计', centerX, centerY + 15) }
+// Draw legend if (showLabels && progress === 1) { const legendStartY = title ? size - (data.length * 20 + 20) : size - (data.length * 20 + 10) const legendX = 20 data.forEach((item, index) => { const color = item.color || colors[index % colors.length]
+const y = legendStartY + index * 20 const percentage = ((item.value / total) * 100).toFixed(1) // Color box ctx.fillStyle = color ctx.fillRect(legendX, y, 12, 12) // Label ctx.fillStyle = theme === 'dark' ? '#D1D5DB' : '#374151' ctx.font = '12px sans-serif' ctx.textAlign = 'left' ctx.textBaseline = 'middle' const label = showPercentage ? `${item.label} (${percentage}%)` : `${item.label} (${formatValue(item.value)})` ctx.fillText(label, legendX + 18, y + 6) }) }
+// Continue animation if (progressRef.current < 1) { animationRef.current = requestAnimationFrame(draw) }
+}
+// Mouse interaction const handleMouseMove = (event: MouseEvent) => { const rect = canvas.getBoundingClientRect() const x = event.clientX - rect.left const y = event.clientY - rect.top const centerX = size / 2 const centerY = size / 2 const dx = x - centerX const dy = y - centerY const distance = Math.sqrt(dx * dx + dy * dy) if (distance <= radius && distance >= innerRadius) { // Calculate angle let angle = Math.atan2(dy, dx) + Math.PI / 2 if (angle < 0) angle += 2 * Math.PI // Find which slice let currentAngle = 0 let foundIndex = null for (let i = 0; i < data.length; i++) { const sliceAngle = (data[i].value / total) * 2 * Math.PI if (angle >= currentAngle && angle < currentAngle + sliceAngle) { foundIndex = i break }
+currentAngle += sliceAngle }
+if (foundIndex !== hoverIndexRef.current) { hoverIndexRef.current = foundIndex draw() }
+}
+else if (hoverIndexRef.current !== null) { hoverIndexRef.current = null draw() }
+}
+canvas.addEventListener('mousemove', handleMouseMove) draw() return () => { canvas.removeEventListener('mousemove', handleMouseMove) if (animationRef.current) { cancelAnimationFrame(animationRef.current) }
+} }, [data, title, size, donut, showLabels, showPercentage, animate, colors, formatValue, theme]) // Easing function const easeOutCubic = (t: number): number => { return 1 - Math.pow(1 - t, 3) }
+return ( <div className={`relative inline-block ${className}`}>
+<canvas ref={canvasRef}
+className="cursor-pointer" width={size}
+height={size}
+style={{ width: size, height: size }
+}
+/> </div> ) }

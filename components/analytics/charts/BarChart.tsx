@@ -1,0 +1,38 @@
+'use client' import { useEffect, useRef }
+from 'react' 
+
+import { useTheme }
+from '@/lib/hooks/useTheme' interface BarData { label: string value: number color?: string }
+interface BarChartProps { data: BarData[]
+title?: string xLabel?: string yLabel?: string height?: number orientation?: 'vertical' | 'horizontal' showValues?: boolean animate?: boolean colors?: string[]
+formatValue?: (value: number) => string className?: string }
+export function BarChart({ data, title, xLabel, yLabel, height = 300, orientation = 'vertical', showValues = true, animate = true, colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'], formatValue = (v) => v.toLocaleString(), className = '' }: BarChartProps) { const canvasRef = useRef<HTMLCanvasElement>(null) const { theme } = useTheme() const animationRef = useRef<number>() const progressRef = useRef(0) useEffect(() => { const canvas = canvasRef.current if (!canvas) return const ctx = canvas.getContext('2d') if (!ctx) return // Set canvas size const rect = canvas.getBoundingClientRect() canvas.width = rect.width * window.devicePixelRatio canvas.height = rect.height * window.devicePixelRatio ctx.scale(window.devicePixelRatio, window.devicePixelRatio) // Animation setup const startTime = Date.now() const duration = animate ? 800 : 0 const draw = () => { // Clear canvas ctx.clearRect(0, 0, rect.width, rect.height) // Calculate progress const elapsed = Date.now() - startTime progressRef.current = Math.min(elapsed / duration, 1) const progress = animate ? easeOutCubic(progressRef.current) : 1 // Calculate dimensions const padding = orientation === 'vertical' ? { top: 40, right: 20, bottom: 80, left: 60 } : { top: 40, right: 80, bottom: 60, left: 120 }
+const chartWidth = rect.width - padding.left - padding.right const chartHeight = rect.height - padding.top - padding.bottom // Calculate scales const maxValue = Math.max(...data.map(d => d.value)) const barCount = data.length const gap = 0.2 // 20% gap between bars // Set styles const textColor = theme === 'dark' ? '#9CA3AF' : '#6B7280' const gridColor = theme === 'dark' ? '#374151' : '#E5E7EB' const bgColor = theme === 'dark' ? '#111827' : '#FFFFFF' ctx.font = '12px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'middle' // Draw background ctx.fillStyle = bgColor ctx.fillRect(0, 0, rect.width, rect.height) // Draw title if (title) { ctx.fillStyle = theme === 'dark' ? '#F3F4F6' : '#111827' ctx.font = 'bold 16px sans-serif' ctx.textAlign = 'center' ctx.fillText(title, rect.width / 2, 20) }
+// Draw grid lines ctx.strokeStyle = gridColor ctx.lineWidth = 1 ctx.setLineDash([5, 5]) if (orientation === 'vertical') { // Horizontal grid lines for (let i = 0; i <= 5; i++) { const y = padding.top + (i / 5) * chartHeight ctx.beginPath() ctx.moveTo(padding.left, y) ctx.lineTo(padding.left + chartWidth, y) ctx.stroke() }
+}
+else { // Vertical grid lines for (let i = 0; i <= 5; i++) { const x = padding.left + (i / 5) * chartWidth ctx.beginPath() ctx.moveTo(x, padding.top) ctx.lineTo(x, padding.top + chartHeight) ctx.stroke() }
+}
+ctx.setLineDash([]) // Draw axes ctx.strokeStyle = textColor ctx.lineWidth = 2 // Y-axis ctx.beginPath() ctx.moveTo(padding.left, padding.top) ctx.lineTo(padding.left, padding.top + chartHeight) ctx.stroke() // X-axis ctx.beginPath() ctx.moveTo(padding.left, padding.top + chartHeight) ctx.lineTo(padding.left + chartWidth, padding.top + chartHeight) ctx.stroke() // Draw bars data.forEach((item, index) => { const color = item.color || colors[index % colors.length]
+if (orientation === 'vertical') { const barWidth = chartWidth / barCount * (1 - gap) const barX = padding.left + (index + gap / 2) * (chartWidth / barCount) const barHeight = (item.value / maxValue) * chartHeight * progress const barY = padding.top + chartHeight - barHeight // Draw bar ctx.fillStyle = color ctx.fillRect(barX, barY, barWidth, barHeight) // Draw value label if (showValues && progress === 1) { ctx.fillStyle = textColor ctx.font = '11px sans-serif' ctx.textAlign = 'center' ctx.textBaseline = 'bottom' ctx.fillText(formatValue(item.value), barX + barWidth / 2, barY - 5) }
+// Draw x-axis label ctx.save() ctx.translate(barX + barWidth / 2, padding.top + chartHeight + 10) ctx.rotate(-Math.PI / 4) ctx.textAlign = 'right' ctx.textBaseline = 'middle' ctx.fillStyle = textColor ctx.fillText(item.label, 0, 0) ctx.restore() }
+else { // Horizontal bars const barHeight = chartHeight / barCount * (1 - gap) const barY = padding.top + (index + gap / 2) * (chartHeight / barCount) const barWidth = (item.value / maxValue) * chartWidth * progress const barX = padding.left // Draw bar ctx.fillStyle = color ctx.fillRect(barX, barY, barWidth, barHeight) // Draw value label if (showValues && progress === 1) { ctx.fillStyle = textColor ctx.font = '11px sans-serif' ctx.textAlign = 'left' ctx.textBaseline = 'middle' ctx.fillText(formatValue(item.value), barX + barWidth + 5, barY + barHeight / 2) }
+// Draw y-axis label ctx.fillStyle = textColor ctx.textAlign = 'right' ctx.textBaseline = 'middle' ctx.fillText(item.label, padding.left - 10, barY + barHeight / 2) }
+}) // Draw axis labels ctx.fillStyle = textColor ctx.font = '11px sans-serif' if (orientation === 'vertical') { // Y-axis values ctx.textAlign = 'right' ctx.textBaseline = 'middle' for (let i = 0; i <= 5; i++) { const value = (i / 5) * maxValue const y = padding.top + chartHeight - (i / 5) * chartHeight ctx.fillText(formatValue(value), padding.left - 10, y) }
+// Y-axis label if (yLabel) { ctx.save() ctx.translate(15, rect.height / 2) ctx.rotate(-Math.PI / 2) ctx.textAlign = 'center' ctx.fillText(yLabel, 0, 0) ctx.restore() }
+// X-axis label if (xLabel) { ctx.textAlign = 'center' ctx.textBaseline = 'bottom' ctx.fillText(xLabel, rect.width / 2, rect.height - 5) }
+}
+else { // X-axis values ctx.textAlign = 'center' ctx.textBaseline = 'top' for (let i = 0; i <= 5; i++) { const value = (i / 5) * maxValue const x = padding.left + (i / 5) * chartWidth ctx.fillText(formatValue(value), x, padding.top + chartHeight + 10) }
+// X-axis label if (xLabel) { ctx.textAlign = 'center' ctx.textBaseline = 'bottom' ctx.fillText(xLabel, rect.width / 2, rect.height - 5) }
+// Y-axis label if (yLabel) { ctx.save() ctx.translate(15, rect.height / 2) ctx.rotate(-Math.PI / 2) ctx.textAlign = 'center' ctx.fillText(yLabel, 0, 0) ctx.restore() }
+}
+// Draw legend if (data.length > 1) { const legendY = rect.height - 20 const legendItemWidth = 100 const legendStartX = (rect.width - data.length * legendItemWidth) / 2 data.forEach((item, index) => { const color = item.color || colors[index % colors.length]
+const x = legendStartX + index * legendItemWidth // Color box ctx.fillStyle = color ctx.fillRect(x, legendY, 12, 12) // Label ctx.fillStyle = textColor ctx.font = '11px sans-serif' ctx.textAlign = 'left' ctx.textBaseline = 'middle' ctx.fillText(item.label, x + 16, legendY + 6) }) }
+// Continue animation if (progressRef.current < 1) { animationRef.current = requestAnimationFrame(draw) }
+}
+draw() return () => { if (animationRef.current) { cancelAnimationFrame(animationRef.current) }
+} }, [data, title, xLabel, yLabel, orientation, showValues, animate, colors, formatValue, theme]) // Easing function const easeOutCubic = (t: number): number => { return 1 - Math.pow(1 - t, 3) }
+return ( <div className={`relative ${className}`}>
+<canvas ref={canvasRef}
+className="w-full" style={{ height }
+}
+/> </div> ) }

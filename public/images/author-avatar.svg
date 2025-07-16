@@ -1,0 +1,102 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f4e4c1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d4c5a0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e8d7b3;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="skinGradient">
+      <stop offset="0%" style="stop-color:#fdbcb4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f4a460;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bgGradient)"/>
+  
+  <!-- 头发后部 -->
+  <ellipse cx="200" cy="140" rx="95" ry="100" fill="#2c3e50"/>
+  
+  <!-- 脖子 -->
+  <rect x="170" y="220" width="60" height="60" fill="#f4a460" rx="15"/>
+  
+  <!-- 脸部 -->
+  <ellipse cx="200" cy="160" rx="80" ry="95" fill="url(#skinGradient)"/>
+  
+  <!-- 头发前部 -->
+  <path d="M 120 100 Q 130 80 150 75 T 180 70 T 210 72 T 240 78 T 270 90 Q 280 100 280 120 L 270 110 Q 260 95 240 88 Q 220 85 200 85 Q 180 85 160 88 Q 140 95 130 110 Z" fill="#2c3e50"/>
+  <path d="M 130 110 L 140 100 L 145 105 L 138 115 L 145 108 L 150 113 L 142 120 Z" fill="#2c3e50"/>
+  <path d="M 270 110 L 260 100 L 255 105 L 262 115 L 255 108 L 250 113 L 258 120 Z" fill="#2c3e50"/>
+  
+  <!-- 眼镜框 -->
+  <g stroke="#3a3a3a" stroke-width="4" fill="none">
+    <!-- 左镜片 -->
+    <circle cx="165" cy="160" r="28"/>
+    <!-- 右镜片 -->
+    <circle cx="235" cy="160" r="28"/>
+    <!-- 鼻梁 -->
+    <path d="M 193 160 Q 200 155 207 160"/>
+    <!-- 左镜腿 -->
+    <path d="M 137 160 L 120 158"/>
+    <!-- 右镜腿 -->
+    <path d="M 263 160 L 280 158"/>
+  </g>
+  
+  <!-- 眼镜片反光 -->
+  <ellipse cx="155" cy="150" rx="8" ry="12" fill="#ffffff" opacity="0.6"/>
+  <ellipse cx="225" cy="150" rx="8" ry="12" fill="#ffffff" opacity="0.6"/>
+  
+  <!-- 眼睛 -->
+  <g fill="#2c3e50">
+    <!-- 左眼 -->
+    <ellipse cx="165" cy="162" rx="15" ry="18"/>
+    <ellipse cx="165" cy="162" rx="8" ry="10" fill="#ffffff"/>
+    <ellipse cx="167" cy="160" rx="5" ry="6" fill="#000000"/>
+    <ellipse cx="168" cy="158" rx="2" ry="2" fill="#ffffff"/>
+    
+    <!-- 右眼 -->
+    <ellipse cx="235" cy="162" rx="15" ry="18"/>
+    <ellipse cx="235" cy="162" rx="8" ry="10" fill="#ffffff"/>
+    <ellipse cx="237" cy="160" rx="5" ry="6" fill="#000000"/>
+    <ellipse cx="238" cy="158" rx="2" ry="2" fill="#ffffff"/>
+  </g>
+  
+  <!-- 鼻子 -->
+  <path d="M 200 180 L 195 195 Q 200 198 205 195 L 200 180" fill="#e8a87c" opacity="0.5"/>
+  
+  <!-- 嘴巴 -->
+  <path d="M 180 210 Q 200 220 220 210" stroke="#d4a574" stroke-width="2" fill="none"/>
+  <path d="M 175 210 Q 200 225 225 210" stroke="#e8a87c" stroke-width="1" fill="none" opacity="0.5"/>
+  
+  <!-- 耳朵 -->
+  <ellipse cx="115" cy="165" rx="20" ry="30" fill="#f4a460"/>
+  <ellipse cx="285" cy="165" rx="20" ry="30" fill="#f4a460"/>
+  <path d="M 115 165 Q 125 165 120 175 Q 115 180 110 175" stroke="#e8a87c" stroke-width="2" fill="none"/>
+  <path d="M 285 165 Q 275 165 280 175 Q 285 180 290 175" stroke="#e8a87c" stroke-width="2" fill="none"/>
+  
+  <!-- 西装 -->
+  <path d="M 100 320 Q 100 280 130 260 L 150 250 Q 200 240 250 250 L 270 260 Q 300 280 300 320 L 300 400 L 100 400 Z" fill="#34495e"/>
+  
+  <!-- 衬衫 -->
+  <path d="M 170 250 L 200 270 L 230 250 L 220 290 L 180 290 Z" fill="#f8f8f8"/>
+  <path d="M 190 270 L 200 280 L 210 270" stroke="#e0e0e0" stroke-width="1" fill="none"/>
+  
+  <!-- 领带 -->
+  <path d="M 195 270 L 205 270 L 208 350 L 200 360 L 192 350 Z" fill="#7e57c2"/>
+  <rect x="192" y="270" width="16" height="12" rx="2" fill="#7e57c2"/>
+  <path d="M 195 290 L 205 300" stroke="#6a4c93" stroke-width="1"/>
+  <path d="M 205 290 L 195 300" stroke="#6a4c93" stroke-width="1"/>
+  <path d="M 195 310 L 205 320" stroke="#6a4c93" stroke-width="1"/>
+  <path d="M 205 310 L 195 320" stroke="#6a4c93" stroke-width="1"/>
+  
+  <!-- 西装翻领 -->
+  <path d="M 150 250 L 140 270 L 160 290 Z" fill="#2c3e50"/>
+  <path d="M 250 250 L 260 270 L 240 290 Z" fill="#2c3e50"/>
+  
+  <!-- 西装口袋 -->
+  <rect x="140" y="310" width="35" height="2" fill="#1a252f" rx="1"/>
+  <rect x="225" y="310" width="35" height="2" fill="#1a252f" rx="1"/>
+  
+  <!-- 西装纽扣 -->
+  <circle cx="200" cy="320" r="4" fill="#1a252f"/>
+  <circle cx="200" cy="340" r="4" fill="#1a252f"/>
+</svg>

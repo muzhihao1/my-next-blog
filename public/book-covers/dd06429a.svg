@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#a8edea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fed6e3;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="300" height="450" fill="url(#grad)"/>
+  
+  <!-- 装饰边框 -->
+  <rect x="20" y="20" width="260" height="410" fill="none" stroke="white" stroke-width="2" opacity="0.3"/>
+  
+  <!-- 书名 -->
+  
+  <text x="150" y="150" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Early Retirement</text>
+  <text x="150" y="180" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Extreme: A</text>
+  <text x="150" y="210" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Philosophical and</text>
+  <text x="150" y="240" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Practical Guide to</text>
+  <text x="150" y="270" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Financial</text>
+  <text x="150" y="300" 
+        font-family="Arial, sans-serif" 
+        font-size="24" 
+        font-weight="bold" 
+        fill="white" 
+        text-anchor="middle"
+        filter="url(#shadow)">Independence</text>
+  
+  <!-- 作者名 -->
+  
+  <text x="150" y="380" 
+        font-family="Arial, sans-serif" 
+        font-size="18" 
+        fill="white" 
+        text-anchor="middle"
+        opacity="0.9">Jacob Lund Fisker</text>
+  
+  <!-- 装饰元素 -->
+  <circle cx="150" cy="60" r="3" fill="white" opacity="0.5"/>
+  <circle cx="140" cy="60" r="2" fill="white" opacity="0.3"/>
+  <circle cx="160" cy="60" r="2" fill="white" opacity="0.3"/>
+</svg>

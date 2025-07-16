@@ -1,0 +1,9 @@
+import type { Config }
+from 'jest' import nextJest from 'next/jest' const createJestConfig = nextJest({ // Provide the path to your Next.js app to load next.config.js and .env files in your test environment dir: './', }) const config: Config = { // Add more setup options before each test is run setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'], // if using TypeScript with a baseUrl set to the root directory then you need the below for alias' to work moduleDirectories: ['node_modules', '<rootDir>/'], testEnvironment: 'jest-environment-jsdom', // Test files pattern testMatch: [ '**/
+__tests__/**/*.{js,jsx,ts,tsx}', '**/*.{spec,test}.{js,jsx,ts,tsx}' ], // Coverage settings collectCoverageFrom: [ 'app/**/*.{js,jsx,ts,tsx}', 'components/**/*.{js,jsx,ts,tsx}', 'lib/**/*.{js,jsx,ts,tsx}', 'hooks/**/*.{js,jsx,ts,tsx}', 'contexts/**/*.{js,jsx,ts,tsx}', '!**/*.d.ts', '!**/
+node_modules/**', '!**/
+__tests__/**', '!**/
+__mocks__/**', ], // Module name mapper for static assets and CSS moduleNameMapper: { '^@/(.*)$': '<rootDir>/$1', '\\.(css|less|scss|sass)$': 'identity-obj-proxy', '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/__mocks__/fileMock.js', '@supabase/ssr': '<rootDir>/__mocks__/@supabase/ssr.js', 'lucide-react': '<rootDir>/__mocks__/lucide-react.js', }, // Transform settings transform: { '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel']
+}
+], }, // Ignore patterns transformIgnorePatterns: [ 'node_modules/(?!(isows|@supabase|@tanstack|lucide-react)/)', '^.+\\.module\\.(css|sass|scss)$', ], // Coverage thresholds coverageThreshold: { global: { branches: 70, functions: 70, lines: 70, statements: 70, }, }, }
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async export default createJestConfig(config)
