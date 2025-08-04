@@ -188,75 +188,8 @@
   }
   .category-life {
     @apply bg-yellow-500/10 text-yellow-600;
-  } /* 博客内容样式 */
-  .prose-blog {
-    @apply prose prose-lg prose-gray;
-    max-width: 100% !important;
-    color: var(--color-text);
-    font-size: 1.125rem;
-    line-height: 1.8;
-  }
-  .prose-blog h1,
-  .prose-blog h2,
-  .prose-blog h3,
-  .prose-blog h4 {
-    color: var(--color-text);
-    font-weight: 600;
-  }
-  .prose-blog h1 {
-    @apply text-4xl mb-8 leading-tight;
-  }
-  .prose-blog h2 {
-    @apply text-2xl mt-12 mb-6;
-  }
-  .prose-blog h3 {
-    @apply text-xl mt-8 mb-4;
-  }
-  .prose-blog p {
-    color: var(--color-text-secondary);
-    @apply leading-relaxed mb-6;
-    font-size: 1.125rem;
-    line-height: 1.875;
-  }
-  .prose-blog a {
-    color: var(--color-primary);
-    @apply no-underline hover:underline;
-    pointer-events: auto !important;
-    display: inline-block;
-    cursor: pointer !important;
-    position: relative;
-    z-index: 10;
-  }
-  .prose-blog strong {
-    color: var(--color-text);
-    @apply font-semibold;
-  }
-  .prose-blog blockquote {
-    @apply border-l-4 pl-6 italic py-4;
-    border-color: var(--color-primary);
-    background-color: var(--color-surface);
-    color: var(--color-text-secondary);
-  }
-  .prose-blog code {
-    color: var(--color-primary);
-    background-color: var(--color-surface-secondary);
-    @apply px-2 py-1 rounded font-normal;
-  }
-  .prose-blog pre {
-    @apply rounded-lg p-6;
-    background-color: var(--color-surface-secondary);
-  }
-  .prose-blog ul,
-  .prose-blog ol {
-    @apply space-y-2;
-  }
-  .prose-blog li {
-    color: var(--color-text-secondary);
-    @apply leading-relaxed;
-  }
-  .prose-blog img {
-    @apply rounded-lg shadow-lg;
-  } /* 头像和按钮样式 */
+  } /* 博客内容样式 - 已移动到 article.css */
+  /* Prose styles moved to article.css as .prose-optimized */ /* 头像和按钮样式 */
   .author-avatar {
     @apply w-12 h-12 rounded-full object-cover border-2 border-gray-100;
   }
@@ -499,27 +432,7 @@
     animation: ping-once 0.6s ease-out;
   }
 
-  /* 文章页面布局优化 */
-  .article-center-layout {
-    width: 100%;
-    max-width: 42rem; /* 672px - 最佳阅读宽度 */
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  @media (min-width: 640px) {
-    .article-center-layout {
-      padding-left: 1.5rem;
-      padding-right: 1.5rem;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .article-center-layout {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
+  /* 文章页面布局优化 - 已移动到 article.css */
+  /* Removed article-center-layout styles - now using article.css */
   }
 }

@@ -132,10 +132,10 @@ export default function TableOfContents({
   
   return (
     <nav className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+      <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-lg p-3 shadow-sm dark:shadow-gray-900/20">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-600 dark:text-gray-400">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-semibold text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">
             目录
           </h3>
           <button
@@ -160,10 +160,10 @@ export default function TableOfContents({
         </div>
         
         {/* TOC Items */}
-        <ul className={`space-y-2 text-sm ${isCollapsed ? 'hidden lg:block' : 'block'}`}>
+        <ul className={`space-y-1 text-xs ${isCollapsed ? 'hidden lg:block' : 'block'}`}>
           {tocItems.map((item) => {
             const isActive = activeId === item.id
-            const paddingLeft = (item.level - 2) * 16
+            const paddingLeft = (item.level - 2) * 12
             
             return (
               <li key={item.id}>
@@ -171,13 +171,13 @@ export default function TableOfContents({
                   href={`#${item.id}`}
                   onClick={(e) => handleClick(e, item.id)}
                   className={`
-                    block py-1.5 px-3 rounded transition-all duration-200
+                    block py-1 px-2 rounded transition-all duration-200
                     ${isActive
                       ? 'bg-blue-500 text-white font-medium'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
                     }
                   `}
-                  style={{ paddingLeft: `${paddingLeft + 12}px` }}
+                  style={{ paddingLeft: `${paddingLeft + 8}px` }}
                 >
                   <span className="line-clamp-2">{item.text}</span>
                 </a>
@@ -187,14 +187,14 @@ export default function TableOfContents({
         </ul>
         
         {/* Progress indicator */}
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>阅读进度</span>
-            <span>
+            <span className="text-xs">
               {Math.round((tocItems.findIndex(item => item.id === activeId) + 1) / tocItems.length * 100)}%
             </span>
           </div>
-          <div className="mt-2 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div className="mt-1.5 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-500 transition-all duration-300"
               style={{
