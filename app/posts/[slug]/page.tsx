@@ -111,7 +111,7 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
           </div>
         </div>
         
-        <footer className="article-content mt-20">
+        <footer className="mt-20 max-w-[720px] mx-auto">
           <ShareButtons />
           
           {/* Navigation Buttons */}
