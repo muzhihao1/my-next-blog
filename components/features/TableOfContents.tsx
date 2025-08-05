@@ -131,8 +131,8 @@ export default function TableOfContents({
   }
   
   return (
-    <nav className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto">
-      <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-lg p-3 shadow-sm dark:shadow-gray-900/20">
+    <nav className="toc-container">
+      <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-xl p-4 shadow-lg dark:shadow-gray-900/30">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-semibold text-xs uppercase tracking-wide text-gray-600 dark:text-gray-400">

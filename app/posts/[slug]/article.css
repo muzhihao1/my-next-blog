@@ -2,6 +2,11 @@
    Article Page Styles - Optimized Layout
    =================================== */
 
+/* Smooth scrolling for TOC navigation */
+html {
+  scroll-behavior: smooth;
+}
+
 /* CSS Custom Properties for theming */
 :root {
   /* Content widths */
@@ -212,7 +217,7 @@
 }
 
 /* Desktop 4-column grid */
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .article-layout {
     grid-template-columns: 1fr var(--article-max-width) var(--toc-width) 1fr;
   }
@@ -224,6 +229,23 @@
   .article-toc {
     grid-column: 3;
     display: block !important;
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+  }
+}
+
+/* Medium screens - center content without TOC */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+    max-width: var(--article-max-width);
+    margin: 0 auto;
+  }
+  
+  .article-content {
+    grid-column: 1;
   }
 }
 
@@ -232,31 +254,7 @@
   display: none;
 }
 
-/* Mobile TOC Button */
-@media (max-width: 1023px) {
-  .article-toc-mobile-toggle {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 40;
-    width: 56px;
-    height: 56px;
-    background: var(--color-link);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .article-toc-mobile-toggle:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-  }
-}
+/* Remove old mobile TOC button styles as we're using a new component */
 
 /* ===================================
    Typography System

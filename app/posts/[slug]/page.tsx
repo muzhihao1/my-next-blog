@@ -6,6 +6,7 @@ import Image from 'next/image'
 import ReadingProgress from '@/components/features/ReadingProgress'
 import TableOfContents from '@/components/features/TableOfContents'
 import ShareButtons from '@/components/features/ShareButtons'
+import MobileTOCButton from '@/components/features/MobileTOCButton'
 import './article.css'
 
 // ISR配置：每小时重新验证一次
@@ -67,6 +68,12 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
   return (
     <article className="article-container">
       <ReadingProgress height={3} />
+      
+      {/* Mobile TOC Button */}
+      <MobileTOCButton>
+        <TableOfContents selector=".prose-optimized" />
+      </MobileTOCButton>
+      
       <div className="article-wrapper">
         <header className="article-header">
           <h1 className="article-title">
@@ -99,7 +106,9 @@ export default async function Post({ params }: { params: Promise<{ slug: string 
               dangerouslySetInnerHTML={{ __html: post.content || '<p>内容加载中...</p>' }} 
             />
           </div>
-          <TableOfContents selector=".prose-optimized" />
+          <div className="article-toc">
+            <TableOfContents selector=".prose-optimized" />
+          </div>
         </div>
         
         <footer className="article-content mt-20">
