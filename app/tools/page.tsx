@@ -23,11 +23,13 @@ async function getToolsData(): Promise<Tool[]> {
 
 /** * Import client component */
 import ToolsList from '@/components/features/ToolsList'
+import ToolsListOptimized from '@/components/features/ToolsListOptimized'
 
 /** * Tools content component */
 async function ToolsContent() {
   const tools = await getToolsData()
-  return <ToolsList tools={tools} />
+  // Use the optimized version for better UX
+  return <ToolsListOptimized tools={tools} />
 }
 /** * Loading skeleton */
 function ToolsSkeleton() { return ( <div className="space-y-12"> {[1, 2, 3].map((section: number) => ( <section key={section}>

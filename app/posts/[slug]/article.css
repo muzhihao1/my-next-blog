@@ -16,6 +16,10 @@
   --line-height-base: 1.75;
   --line-height-lg: 1.8;
   
+  /* Chinese-optimized font stack */
+  --font-sans-chinese: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", "Helvetica Neue", Arial, sans-serif;
+  --font-serif-chinese: "Songti SC", "宋体", "STSong", "Noto Serif CJK SC", Georgia, serif;
+  
   /* Spacing scale */
   --space-xs: 0.5rem;
   --space-sm: 1rem;
@@ -223,9 +227,35 @@
   }
 }
 
-/* Hide TOC on mobile */
+/* Hide TOC on mobile by default */
 .article-toc {
   display: none;
+}
+
+/* Mobile TOC Button */
+@media (max-width: 1023px) {
+  .article-toc-mobile-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 40;
+    width: 56px;
+    height: 56px;
+    background: var(--color-link);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .article-toc-mobile-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* ===================================
@@ -236,9 +266,12 @@
 .prose-optimized {
   width: 100%;
   max-width: none;
+  font-family: var(--font-sans-chinese);
   font-size: var(--font-size-base);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
+  letter-spacing: 0.02em; /* Better spacing for Chinese characters */
+  text-rendering: optimizeLegibility;
 }
 
 @media (min-width: 768px) {
